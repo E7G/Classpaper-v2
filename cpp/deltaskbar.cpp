@@ -19,9 +19,6 @@ extern "C" {const GUID IID_ITaskbarList3 = { 0xEA1AFB91, 0x9E28, 0x4B86, {0x90,
 
 void UnregisterTab(HWND tab)
 {
-    LPVOID lp = NULL ;
-    CoInitialize(lp);//初始化COM库：没有这两句隐藏不起作用
-    
     ITaskbarList3 *taskbar;
 
     if(!(tab))
@@ -37,9 +34,6 @@ void UnregisterTab(HWND tab)
 
 BOOL ShowInTaskbar(HWND hWnd, BOOL bShow)
 {
-    LPVOID lp = NULL ;
-    CoInitialize(lp);//初始化COM库：没有这两句隐藏不起作用
-
     HRESULT hr;
     ITaskbarList* pTaskbarList;
     hr = CoCreateInstance( CLSID_TaskbarList, NULL, CLSCTX_INPROC_SERVER, 

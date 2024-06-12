@@ -1,89 +1,130 @@
-ï»¿#include <iostream>
-#include <string>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <windows.h>
 #include <tchar.h>
-HWND workerw=NULL;     //ç¬¬äºŒä¸ªWorkerWçª—å£å¥æŸ„
- 
-inline BOOL CALLBACK EnumWindowsProc1(HWND handle,LPARAM lparam)
-{
-    //è·å–ç¬¬ä¸€ä¸ªWorkerWçª—å£
-    HWND defview = FindWindowEx(handle, 0, _T("SHELLDLL_DefView"), NULL);
- 
-    if (defview != NULL) //æ‰¾åˆ°ç¬¬ä¸€ä¸ªWorkerWçª—å£
-    {
-        //è·å–ç¬¬äºŒä¸ªWorkerWçª—å£çš„çª—å£å¥æŸ„
-        workerw = FindWindowEx(0, handle, _T("WorkerW"), 0);
-    }
-    return true;
-}
- 
-//å‚æ•°myAppHwndä¸ºä½ å¼€å‘çš„çª—å£ç¨‹åºçš„çª—å£å¥æŸ„
-void SetDesktop(HWND myAppHwnd)
-{
-    int result;
-    HWND windowHandle = FindWindow(_T("Progman"), NULL);
-    SendMessageTimeout(windowHandle, 0x052c, 0 ,0, SMTO_NORMAL, 0x3e8,(PDWORD_PTR)&result);
- 
-    //æšä¸¾çª—å£
-    EnumWindows(EnumWindowsProc1,(LPARAM)NULL);
- 
-    //éšè—ç¬¬äºŒä¸ªWorkerWçª—å£ï¼Œå½“ä»¥Progmanä¸ºçˆ¶çª—å£æ—¶éœ€è¦å¯¹å…¶è¿›è¡Œéšè—ï¼Œ
-    //ä¸ç„¶ç¨‹åºçª—å£ä¼šè¢«ç¬¬äºŒä¸ªWorkerWè¦†ç›–
-    ShowWindow(workerw,SW_HIDE);
- 
-    SetParent(myAppHwnd,windowHandle);
-}
 
+BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam);
 
-struct EnumWindowsData {
-    std::string keyword;
-    HWND hwnd = nullptr;
-};
+//ÉùÃ÷Ò»¸ö½á¹¹ÌåÓÃÓÚ´æ´¢»ñÈ¡µ½µÄËùÓĞ´°¿ÚÀàÃû
+typedef struct windows_class {
+    char window_class_name[256];
+    HWND win_hwnd;
+    windows_class* next;
+} windows_class;
 
-BOOL CALLBACK EnumWindowsProc2(HWND hwnd, LPARAM lParam) {
-    EnumWindowsData* data = reinterpret_cast<EnumWindowsData*>(lParam);
+//ÉùÃ÷Ò»¸öÈ«¾Ö½á¹¹Ìå
+windows_class* class_name;
 
-    char buffer[256];
-    GetWindowTextA(hwnd, buffer, sizeof(buffer));
-
-    std::string title(buffer);
-
-    if (title.find(data->keyword) != std::string::npos) {
-        data->hwnd = hwnd;
-        return FALSE;  // åœæ­¢æšä¸¾
-    }
-
-    return TRUE;
-}
+//¼ÇÂ¼ÆÁÄ»´°¿ÚÀàÊıÁ¿
+int num;
 
 int main(int argc ,char **argv)
 {
 	if(argc!=2){
-		printf("usage: program.exe window_name \n use to stick window into desktop.");
+		printf("ÓÃ·¨£º ±¾³ÌĞò ´°¿Ú³ÌĞòÃû³Æ \n ÓÃÓÚ½«´°¿Ú³ÌĞòÇ¶Èë×ÀÃæ");
 		return 0;
 	}
+    //»ñÈ¡´°¿Ú¾ä±ú
+    HWND hWnd = FindWindow(_T("Progman"), _T("Program Manager"));
+    if (hWnd == NULL) {
+        printf("ÎŞ·¨»ñÈ¡×ÀÃæ¾ä±ú");
+        //getchar();
+        return 0;
+    }
 
-    EnumWindowsData data;
-    data.keyword = argv[1];
+    //·¢ËÍ¶àÆÁÏûÏ¢
+    SendMessage(hWnd, 0x052c, 0, 0);
+    //SendMessage(hWnd, 0x052c, 0, 1);
 
-    EnumWindows(EnumWindowsProc2, reinterpret_cast<LPARAM>(&data));
+    //½á¹¹Ìå³õÊ¼»¯
+    class_name = (windows_class*)malloc(sizeof(windows_class));
 
-    if (data.hwnd != nullptr) {
-        std::cout << "found :  " << data.hwnd << std::endl;
+    //Ã¶¾ÙÆÁÄ»ÉÏËùÓĞ´°¿Ú
+    EnumWindows(EnumWindowsProc, 0);
 
-        SetDesktop(data.hwnd);
+    //Ñ­»·±È¶ÔÕÒµ½WorkerWÀà
+    for (int i = 0; i < num; ++i) {
+        if (strncmp(class_name->window_class_name, "WorkerW", strlen(class_name->window_class_name)) == 0) {
+            //ÒÔÓĞĞ§×Ö·û±È¶Ô£¬·ÀÖ¹Á¬Í¬×Ö·û¡°0¡±µÈÎŞĞ§×Ö·ûÒ²Ò»Í¬°üº¬ÔÚÒ»Æğ±È¶Ô
+            HWND window_hwnd = FindWindowExA(class_name->win_hwnd, 0, "SHELLDLL_DefView", NULL);
+            if (window_hwnd == NULL) {
+                //ÎŞ·¨»ñÈ¡¾ä±ú´ú±í¸ÃworkerwÀà´°¿ÚÃ»ÓĞ×Ó´°¿ÚÒ²¾ÍÊÇ»ñÈ¡µ½Í¼±êÏÂÃæµÄWorkerWÀà´°¿ÚÁË
+                //Ö±½Ó¹Ø±Õ¸Ã´°¿Ú
+                SendMessage(class_name->win_hwnd, WM_CLOSE, 0, 0);
+                break;
+            }
+            else {
+                //»ñÈ¡³É¹¦¿´Ò»ÏÂÏÂÒ»¸ö´°¿ÚÊÇ²»ÊÇProgman
+                class_name = class_name->next;
+                if (strcmp(class_name->window_class_name, "Progman") == 0) {
+                    HWND window_hwnd = FindWindowExA(class_name->win_hwnd, 0, "WorkerW", NULL);
+                    //»ñÈ¡Í¼±êÏÂÃæµÄWorkerW×Ó´°¿Ú
+                    if (window_hwnd == NULL) {
+                        //»ñÈ¡²»µ½´ú±í¸Ã´°¿ÚÒÑ¾­±»¹Ø±ÕÁË
+                        printf("¸Ã´°¿ÚÒÑ¾­±»¹Ø±Õ..");
+                        //getchar();
+                        break;
+                    }
+                    else {
+                        //½áÊø´°¿Ú
+                        SendMessage(window_hwnd, WM_CLOSE, 0, 0);
+                    }
+                }
+                else {
+                    //Èç¹û²»ÊÇProgman¾Í´ú±íWorkerWÀà´°¿ÚµÄÆÁÄ»ZĞòÁĞ¸ßÓÚProgman
+                    //¾ÍËµÃ÷»ñÈ¡µ½ÁËWorkerWÀà´°¿Ú£¬Ö±½Ó¹Ø±Õ¼´¿É
+                    SendMessage(class_name->win_hwnd, WM_CLOSE, 0, 0);
+                }
+            }
+        }
+        class_name = class_name->next;
+    }
+
+    //µ½ÁËÕâÒ»²½¾Í¿ÉÒÔ½«ÄãµÄÊÓÆµ´°¿ÚÇ¶Èëµ½ProgmanÀà´°¿Úµ±ÖĞÁË
+    //Ç¶ÈëÖ®ºóÒ²²»»á±»ÕÚµ²£¬ÒòÎªÕÚµ²µÄWorkerW´°¿ÚÒÑ¾­±»¹Ø±ÕÁË
+
+    //ËùÒÔÕâÀïÎÒ¾ÍËæ±ãÇ¶ÈëÒ»¸ö´°¿Ú½øÈë×ÀÃæ¿´Ò»ÏÂ»á²»»á±»ÕÚµ²
+    //»ñÈ¡ÒªÇ¶Èë´°¿ÚµÄ¾ä±ú
+    HWND test_hwnd = FindWindow(NULL, _T(argv[1]));
 
 
-        printf("success");
-    } else {
-        printf("failed ! not found..");
+
+    if (test_hwnd == NULL) {
+        printf("ÒªÇ¶ÈëµÄ´°¿Ú²»´æÔÚ..");
         //getchar();
         return -1;
     }
+    else {
+    
+        SetParent(test_hwnd, hWnd);
 
+
+        printf("´°¿ÚÇ¶ÈëÍê³É");
+    }
         
 	
 
     //getchar();
     return 0;
+}
+
+BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
+{
+    //ÉùÃ÷½á¹¹Ìå
+    windows_class* enum_calss_name;
+    //³õÊ¼»¯
+    enum_calss_name = (windows_class*)malloc(sizeof(windows_class));
+    //Ìî³ä0µ½ÀàÃû±äÁ¿ÖĞ
+    memset(enum_calss_name->window_class_name, 0, sizeof(enum_calss_name->window_class_name));
+    //»ñÈ¡´°¿ÚÀàÃû
+    GetClassNameA(hwnd, enum_calss_name->window_class_name, sizeof(enum_calss_name->window_class_name));
+    //»ñÈ¡´°¿Ú¾ä±ú
+    enum_calss_name->win_hwnd = hwnd;
+    //µİÔöÀàÊıÁ¿
+    num += 1;
+    //Á´±íĞÎÊ½´æ´¢
+    enum_calss_name->next = class_name;
+    class_name = enum_calss_name;
+    return TRUE; //ÕâÀï±ØĞë·µ»ØTRUE,·µ»ØFALSE¾Í²»ÔÚÃ¶¾ÙÁË
 }

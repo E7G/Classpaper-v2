@@ -22,149 +22,7 @@ import (
 	"gopkg.in/ini.v1"
 )
 
-// #cgo LDFLAGS: -lole32 -luuid
-/*
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <windows.h>
-#include <tchar.h>
-#include <Shobjidl.h>
 
-#include <stdbool.h>
-
-
-HWND workerw = NULL;
-HWND target = NULL;
-
-BOOL CALLBACK EnumWindowsProc1(HWND handle, LPARAM lparam) {
-    HWND defview = FindWindowEx(handle, 0, "SHELLDLL_DefView", NULL);
-
-    if (defview != NULL) {
-        workerw = FindWindowEx(0, handle, "WorkerW", 0);
-    }
-    return true;
-}
-
-void SetDesktop(HWND myAppHwnd) {
-    int result;
-    HWND windowHandle = FindWindow("Progman", NULL);
-    SendMessageTimeout(windowHandle, 0x052c, 0, 0, SMTO_NORMAL, 0x3e8, (PDWORD_PTR)&result);
-
-    EnumWindows(EnumWindowsProc1, (LPARAM)NULL);
-
-    ShowWindow(workerw, SW_HIDE);
-
-    SetParent(myAppHwnd, windowHandle);
-}
-
-void UnregisterTab(HWND tab) {
-    CoInitialize(NULL);
-
-    ITaskbarList3 *taskbar;
-    if (!(tab)) {
-        return;
-    }
-
-    if (S_OK != CoCreateInstance(&CLSID_TaskbarList, 0, CLSCTX_INPROC_SERVER, &IID_ITaskbarList, (void**)&taskbar)) {
-        return;
-    }
-    taskbar->lpVtbl->HrInit(taskbar);
-    taskbar->lpVtbl->UnregisterTab(taskbar, tab);
-    taskbar->lpVtbl->Release(taskbar);
-}
-
-BOOL ShowInTaskbar(HWND hWnd, BOOL bShow)
-{
-    CoInitialize(NULL);
-
-    HRESULT hr;
-    ITaskbarList* pTaskbarList;
-    hr = CoCreateInstance(&CLSID_TaskbarList, NULL, CLSCTX_INPROC_SERVER, &IID_ITaskbarList, (void**)&pTaskbarList );
-    if (SUCCEEDED(hr))
-    {
-        pTaskbarList->lpVtbl->HrInit(pTaskbarList);
-        if (bShow)
-            pTaskbarList->lpVtbl->AddTab(pTaskbarList, hWnd);
-        else
-            pTaskbarList->lpVtbl->DeleteTab(pTaskbarList, hWnd);
-        pTaskbarList->lpVtbl->Release(pTaskbarList);
-        return TRUE;
-    }
-
-    return FALSE;
-}
-
-void deltab(){
-	
-	HWND test_hwnd;
-	test_hwnd=target;
-    //ShowWindow(test_hwnd, SW_HIDE);
-
-    //SetWindowLongPtr(test_hwnd, GWL_EXSTYLE, WS_EX_TOOLWINDOW);
-    //SetWindowLongPtr(test_hwnd, GWL_EXSTYLE, GetWindowLongPtr(test_hwnd, GWL_EXSTYLE) | WS_EX_NOACTIVATE);
-
-    //SetWindowLongPtr(test_hwnd, GWL_STYLE, WS_POPUP);
-     
-    //ShowWindow(test_hwnd, SW_SHOW);
-     
-    //UpdateWindow(test_hwnd);
-
-    UnregisterTab(test_hwnd);
-
-    ShowInTaskbar(test_hwnd, FALSE);
-
-    printf("deltab worked\n");
-}
-
-
-struct EnumWindowsData {
-    const char* keyword;
-    HWND hwnd;
-};
-
-BOOL CALLBACK EnumWindowsProc2(HWND hwnd, LPARAM lParam) {
-    struct EnumWindowsData* data = (struct EnumWindowsData*)lParam;
-
-    char buffer[256];
-    GetWindowText(hwnd, buffer, sizeof(buffer));
-
-    if (strstr(buffer, data->keyword) != NULL) {
-        data->hwnd = hwnd;
-        return FALSE;//停止遍历窗口
-    }
-
-	return TRUE;
-}
-
-BOOL funcmain(const char* wname){
-struct EnumWindowsData data;
-data.keyword = wname;
-data.hwnd = NULL;
-
-EnumWindows(EnumWindowsProc2, (LPARAM)&data);
-
-if (data.hwnd != NULL) {
-    printf("found: %p\n", data.hwnd);
-	target= data.hwnd;
-    deltab();
-    SetDesktop(data.hwnd);
-    //Sleep(300);
-    //deltab();
-    //Sleep(1000 * 5);
-    //deltab();
-    return true;
-} else {
-    printf("not found\n");
-    return false;
-}
-
-}
-
-*/
-import "C"
-
-import "unsafe"
 
 var (
 	mainWindow lorca.UI
@@ -174,7 +32,6 @@ var (
 //	lorcaui w32.HWND
 	lorcaname string
 	logFile *os.File
-	t *time.Ticker
 )
 
 const (
@@ -289,7 +146,7 @@ func setWallpaper(){
 	style = style | w32.WS_CHILD // 设置WS_CHILD样式
 	w32.SetWindowLong(hwnd, w32.GWL_STYLE, uint32(style))
 
-
+*/	
 
 	// 获取当前可执行文件路径
 	execPath, err := os.Executable()
@@ -322,29 +179,7 @@ func setWallpaper(){
 	if err != nil {
 		log.Println("Error starting setwallpaper:", err)
 	}
-*/	
 
-
-
-    wname := C.CString(lorcaname)         // C.CString 会在C的内存空间申请一个C语言字符串对象，再将Go字符串拷贝到C字符串
-
-    ret := C.funcmain(wname)                       // &cblob 取C语言对象cblob的地址
-
-    log.Println("cgo result: ", ret)
-
-    C.free(unsafe.Pointer(wname))               // C.CString 申请的C空间内存不会自动释放，需要显示调用C中的free释放
-
-
-    t = time.NewTicker(time.Second)
-
-	go func(){
-	  for {
-	    select {
-	      case <- t.C:
-	      C.deltab()
-	     }
-	  }
-	}()
 
 	// 等待以允许窗口更新
 	//time.Sleep(time.Second)
@@ -440,23 +275,21 @@ func runLorcaUI() {
 	// 使用生成的随机字符串设置文档标题
 	ui.Eval("document.title='" + lorcaname + "'")
 // 等待以允许窗口更新
-	//time.Sleep(time.Millisecond*100)	
+//	time.Sleep(time.Millisecond*10)	
 	
-	//time.Sleep(time.Second)
-/*	
+//	time.Sleep(time.Second*5)
+	
 for range time.Tick( time.Second ) {
  
 	setWallpaper()
 	time.Sleep(time.Millisecond*10)
 }
-*/	
+	
 	//setWallpaper()
 
-	time.Sleep(time.Millisecond*300)	
+	//time.Sleep(time.Millisecond*100)	
 
-	setWallpaper()
-
-
+	//setWallpaper()
 
 	<-ui.Done()
 	
@@ -527,7 +360,6 @@ func onExit() {
 	}
 
 	logFile.Sync()
-	t.Stop()
 }
 
 func openSettings() {
@@ -579,7 +411,6 @@ func endup(){
 	systray.Quit()
 	
 	logFile.Sync()
-	t.Stop()
 }
 
 // Config represents the structure of the configuration file
