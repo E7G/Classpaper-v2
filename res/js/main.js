@@ -1,28 +1,5 @@
-﻿
-// 获取body元素
-const body = document.querySelector('body');
-
-// 定义切换壁纸函数
-function changeWallpaper() {
-  // 随机选择壁纸
-  const wallpaperIndex = Math.floor(Math.random() * wallpaperlist.length);
-  const wallpaper = wallpaperlist[wallpaperIndex];
-
-  // 设置背景图片
-  body.style.backgroundImage = `url(${wallpaper})`;
-  body.style.backgroundRepeat = 'no-repeat';
-  body.style.backgroundPosition = 'center';
-  body.style.backgroundSize = 'cover';
-}
-
-// 初始化时调用一次切换壁纸函数
-changeWallpaper();
-
-// 每30秒调用一次切换壁纸函数
-setInterval(changeWallpaper, 30*1000);
-
-// 监听窗口大小变化事件，当窗口大小发生变化时重新调用切换壁纸函数
-//window.addEventListener('resize', changeWallpaper);
+﻿const WIDTH = 1920;
+const HEIGHT = 1920;
 
 setInterval(setTime, 1000);
 //计算本年的周数
@@ -57,3 +34,4 @@ document.getElementById("date-a").innerHTML = date.toLocaleDateString('zh');
 }
 
 setTime();
+console.log("屏幕大小：" + WIDTH + '*' + HEIGHT);
