@@ -1,0 +1,1 @@
+const wallpaperlist=["wallpaper/bg1.jpg","wallpaper/bg2.jpg"];

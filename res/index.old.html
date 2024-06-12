@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classboard</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: row;
+            font-family: Arial, sans-serif;
+        }
+
+        .background {
+            flex: 1;
+            height: 100vh;
+            background-repeat: no-repeat;
+            background-size: cover;
+            transition: background-image 0.5s;
+        }
+
+        .schedule {
+            flex: 1;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        h2 {
+            margin-top: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            text-align: center;
+        }
+
+        ul li {
+            margin: 5px 0;
+        }
+
+        strong {
+            color: #333;
+        }
+
+        p {
+            text-align: center;
+            color: #555;
+        }
+
+        .weather {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 24px;
+            color: #ff6600;
+        }
+    </style>
+</head>
+<body>
+    <div class="background" id="background"></div>
+    <div class="schedule">
+        <h1>Classboard</h1>
+        <h2>当天课程</h2>
+        <div id="scheduleContent"></div>
+        <p id="timeDate"></p>
+        <div class="weather" id="weatherInfo"></div>
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        // JavaScript代码部分可以根据您的需求添加亮点功能，如天气信息、提示消息等。
+        // 请根据您的需求和数据源自行添加相应的代码。
+        // 这里是一个简单示例，显示时间、日期和一个随机提示消息。
+
+        function updateTimeDate() {
+            const now = new Date();
+            const timeDateElement = document.getElementById("timeDate");
+            timeDateElement.textContent = now.toLocaleTimeString() + " " + now.toLocaleDateString();
+        }
+
+        function getRandomMessage() {
+            const messages = [
+                "加油，今天要有个好心情！",
+                "一天的计划，从早上的第一节课开始！",
+                "不要忘记完成今天的作业哦！",
+                "学无止境，每天都要有新收获！"
+            ];
+            const randomIndex = Math.floor(Math.random() * messages.length);
+            return messages[randomIndex];
+        }
+
+        setInterval(updateTimeDate, 1000); // 更新时间日期
+        updateTimeDate();
+
+        // 随机提示消息
+        const messageElement = document.getElementById("message");
+        messageElement.textContent = getRandomMessage();
+    </script>
+</body>
+</html>
