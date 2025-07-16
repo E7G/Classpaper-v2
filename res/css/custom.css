@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --spacing: 5px;
 }
 
@@ -6,20 +6,16 @@
   align-items: center;
 }
 
-
-#time-a ,
-#date-a ,
-#week-a{
-  background-color: #0089a700;
-  font-size: xx-large;
---border-color:white;
-}
 #evcal {
   margin-left: 20px;
 }
 
 #evcal>li {
-  list-style-type: ''; font-size: 60px
+  list-style-type: '';
+  color: #fcfcfc;
+  font-size: 52px;
+  /* margin: 0; */
+  /* padding: 0; */
 }
 
 
@@ -32,8 +28,11 @@
   height: 100%;
   border: 0;
   font-weight: 450;
-  color: #fff;
-  background: transparent;  backdrop-filter: blur(12px);}
+  color: #fcfcfc;
+  border-radius: 10px;
+  background: transparent;
+  backdrop-filter: blur(12px);
+}
 
 
 .help {
@@ -52,13 +51,15 @@
   -webkit-column-rule-style: dotted;
 }
 
-#classtable, #nav-pro {
+#classtable,
+#nav-pro {
   background: transparent;
   backdrop-filter: blur(12px);
 }
 
 article {
-  max-width: 635px;
+  /*font-family: "Noto Serif CJK SC", serif;*/
+  max-width: 640px;
   margin-left: auto;
   /* background: transparent; */
   /* backdrop-filter: blur(6px); */
@@ -74,12 +75,13 @@ article {
 
 
 body {
-  background-image: url("wallpaper/bg2.jpg");
+  /*background-image: url("css/wallpaper/kdedark.png");
+  background-image: url("wallpaper/飘带放缩.png");*/
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 1920px;
+  
   position: absolute;
-  height: 1080px;
+  height: 1440px;
 }
 
 
@@ -87,18 +89,76 @@ main {
   background: transparent;
 }
 
-strong{
-	font-size: 52px;
-	color: white;
-}
-mark{
-	font-size: 52px;
-	color: black;
+strong {
+  /* font-size: 52px; */
+  color: #fcfcfc;
 }
 
-article{
-	color: white;
-	font-size: 36px;
-	background: transparent;
+mark {
+  /* font-size: 52px; */
+  color: black;
+  border-radius: 10px;
+}
+
+article {
+  color: #fcfcfc;
+  font-size: 36px;
+  background: #31363d30;
+  border-radius: 25px;
   backdrop-filter: blur(12px);
 }
+
+/* For Chrome or Safari */
+
+progress::-webkit-progress-bar {
+  background-color: #7f8c8d;
+}
+
+progress::-webkit-progress-value {
+  background-color: #3daee9 !important;
+}
+
+/* For Firefox */
+
+progress {
+  background-color: #7f8c8d;
+}
+
+progress::-moz-progress-bar {
+  background-color: #3daee9 !important;
+}
+
+/* For IE10 */
+
+progress {
+  background-color: #3daee9;
+}
+
+#calart {
+  padding-bottom: 1px;
+}
+
+#clockart,
+#helpart {
+  padding: 15px 30px;
+}
+
+
+hr {
+  border: 1px solid #eff0f1;
+}
+
+body {
+  font-family: -apple-system, "HarmonyOS Sans SC", "Noto Sans CJK SC", MiSans, "MiSans L3", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+#remember {
+  max-width: 1440px;
+  margin-left: 100px;
+}
+
+/*
+
+#remember-txt.mark{
+  
+}*/

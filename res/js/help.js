@@ -1,5 +1,5 @@
 ﻿/**告示牌 */
 
-source_str = sth;
+var source_str = sth;
 
-document.getElementById("help").innerHTML = source_str;                               
+document.getElementById("help").innerHTML = source_str/* .replace('\n','<br>') */;                             

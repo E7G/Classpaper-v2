@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClassPaper 设置</title>
+    <script src="config/config.js"></script>
+    <style>
+        :root {
+            --primary-color: #1a2a6c;
+            --secondary-color: #4a90e2;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --text-color: #333;
+            --bg-color: #f5f5f5;
+            --card-bg: #fff;
+            --border-color: #ddd;
+            --hover-color: #f8f9fa;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary-color: #4a90e2;
+                --secondary-color: #6c757d;
+                --text-color: #e1e1e1;
+                --bg-color: #1a1a1a;
+                --card-bg: #2d2d2d;
+                --border-color: #404040;
+                --hover-color: #363636;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        h3 {
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-section {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .form-section-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .form-section-title i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="time"],
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+        }
+
+        .help-text {
+            font-size: 0.9em;
+            color: var(--secondary-color);
+            margin-top: 5px;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        button.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        button.secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        button.add {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        button.delete {
+            background-color: var(--danger-color);
+            color: white;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .tab-container {
+            margin-bottom: 30px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 2px;
+            margin-bottom: 30px;
+            background: var(--border-color);
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background-color: transparent;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .tab-button.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .tab-button:hover:not(.active) {
+            background-color: var(--hover-color);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--hover-color);
+            font-weight: 500;
+        }
+
+        tr:hover {
+            background-color: var(--hover-color);
+        }
+
+        .event-list, .wallpaper-list {
+            margin-bottom: 20px;
+        }
+
+        .event-item, .wallpaper-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 15px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .event-item:hover, .wallpaper-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .notice-editor {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Microsoft YaHei', sans-serif;
+            resize: vertical;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .preview-box {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--hover-color);
+        }
+
+        .status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            display: none;
+            animation: slideIn 0.3s;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .status.success {
+            background-color: var(--success-color);
+            color: white;
+            display: block;
+        }
+
+        .status.error {
+            background-color: var(--danger-color);
+            color: white;
+            display: block;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .tab-buttons {
+                flex-direction: column;
+            }
+
+            .event-item, .wallpaper-item {
+                flex-direction: column;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ClassPaper 设置</h1>
+        
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="switchTab('basic')">基本设置</button>
+                <button class="tab-button" onclick="switchTab('schedule')">课程表</button>
+                <button class="tab-button" onclick="switchTab('events')">事件</button>
+                <button class="tab-button" onclick="switchTab('wallpapers')">壁纸</button>
+                <button class="tab-button" onclick="switchTab('notice')">告示牌</button>
+            </div>
+        </div>
+
+        <div id="basic" class="tab-content active">
+            <div class="form-section">
+                <div class="form-section-title">
+                    <h2>学期时间</h2>
+                </div>
+                <div class="form-group">
+                    <label for="semester-begin">学期开始时间</label>
+                    <input type="date" id="semester-begin">
+                    <div class="help-text">设置本学期的开始日期</div>
+                </div>
+                <div class="form-group">
+                    <label for="semester-end">学期结束时间</label>
+                    <input type="date" id="semester-end">
+                    <div class="help-text">设置本学期的结束日期</div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="form-section-title">
+                    <h2>周数设置</h2>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="week-offset-enabled">
+                        启用自定义周数
+                    </label>
+                    <div class="help-text">开启后可以自定义显示的周数</div>
+                </div>
+                <div class="form-group">
+                    <label for="week-offset">周数偏移值</label>
+                    <input type="number" id="week-offset" min="0" max="52">
+                    <div class="help-text">实际显示的周数 = 本年第几周 - 偏移值。例如：如果现在是本年第9周，偏移值为7，则显示为第2周。</div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="form-section-title">
+                    <h2>提示音设置</h2>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="notifications-enabled">
+                        启用课堂提示音
+                    </label>
+                    <div class="help-text">开启后会在上课期间定期播放提示音</div>
+                </div>
+                <div class="form-group">
+                    <label for="regular-interval">常规提示间隔（分钟）</label>
+                    <input type="number" id="regular-interval" min="1" max="30">
+                    <div class="help-text">设置两次提示音之间的时间间隔</div>
+                </div>
+                <div class="form-group">
+                    <label for="ending-time">结束提示时间（分钟）</label>
+                    <input type="number" id="ending-time" min="1" max="30">
+                    <div class="help-text">设置课程结束前多少分钟播放结束提示音</div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="form-section-title">
+                    <h2>系统设置</h2>
+                </div>
+                <div class="form-group">
+                    <label for="url">壁纸页面URL</label>
+                    <input type="text" id="url" placeholder="输入页面URL或本地文件路径">
+                    <div class="help-text">可以是网页地址或本地壁纸文件夹路径</div>
+                </div>
+                <div class="form-group">
+                    <label for="browser">浏览器路径（可选）</label>
+                    <input type="text" id="browser" placeholder="输入Chrome浏览器路径">
+                    <div class="help-text">如果系统无法自动找到Chrome浏览器，请手动指定路径</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="schedule" class="tab-content">
+            <div class="form-section">
+                <div class="form-section-title">
+                    <h2>课程时间安排</h2>
+                </div>
+                <div class="table-container">
+                    <table id="timeTable">
+                        <thead>
+                            <tr>
+                                <th>节次</th>
+                                <th>上课时间</th>
+                                <th>下课时间</th>
+                                <th>休息时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <button class="add" onclick="addTimeSlot()">添加时间段</button>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="form-section-title">
+                    <h2>课程安排</h2>
+                </div>
+                <div class="table-container">
+                    <table id="scheduleTable">
+                        <thead>
+                            <tr>
+                                <th>星期/节次</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="events" class="tab-content">
+            <div class="form-section">
+                <div class="form-section-title">
+                    <h2>事件列表</h2>
+                </div>
+                <div class="event-list" id="eventList">
+                </div>
+                <button class="add" onclick="addEvent()">添加事件</button>
+            </div>
+        </div>
+
+        <div id="wallpapers" class="tab-content">
+            <div class="form-section">
+                <div class="form-section-title">
+                    <h2>壁纸列表</h2>
+                </div>
+                <div class="wallpaper-list" id="wallpaperList">
+                </div>
+                <div class="button-group">
+                    <button class="secondary" onclick="scanWallpapers()">扫描壁纸文件夹</button>
+                    <button class="add" onclick="addWallpaper()">添加壁纸</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="notice" class="tab-content">
+            <div class="form-section">
+                <div class="form-section-title">
+                    <h2>告示内容</h2>
+                </div>
+                <div class="form-group">
+                    <label for="notice-content">告示内容（支持HTML）</label>
+                    <textarea id="notice-content" class="notice-editor" 
+                            placeholder="在这里输入告示内容，支持HTML标签"
+                            oninput="updatePreview()"></textarea>
+                </div>
+                <div class="preview-box">
+                    <h3>预览</h3>
+                    <div id="notice-preview"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="status" class="status"></div>
+        <div class="button-group">
+            <button class="secondary" onclick="handleReset()">重置</button>
+            <button class="primary" onclick="handleSave()">保存</button>
+        </div>
+    </div>
+
+    <script>
+        let currentConfig = null;
+
+        function switchTab(tabId) {
+            // 隐藏所有标签页内容
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // 取消所有标签按钮的激活状态
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // 显示选中的标签页内容
+            document.getElementById(tabId).classList.add('active');
+            // 激活对应的标签按钮
+            document.querySelector(`.tab-button[onclick="switchTab('${tabId}')"]`).classList.add('active');
+        }
+
+        // 检查函数是否已绑定
+        function waitForBinding(funcName) {
+            return new Promise((resolve) => {
+                const check = () => {
+                    if (typeof window[funcName] === 'function') {
+                        resolve();
+                    } else {
+                        setTimeout(check, 100);
+                    }
+                };
+                check();
+            });
+        }
+
+        // 扫描壁纸文件夹
+        async function scanWallpapers() {
+            try {
+                await waitForBinding('scanWallpaperDir');
+                
+                if (typeof window.scanWallpaperDir !== 'function') {
+                    throw new Error('scanWallpaperDir 函数未定义');
+                }
+
+                const wallpapers = await window.scanWallpaperDir();
+                if (Array.isArray(wallpapers)) {
+                    // 获取现有壁纸列表
+                    const container = document.getElementById('wallpaperList');
+                    const existingItems = Array.from(container.children);
+                    
+                    // 规范化路径（移除前导./，统一分隔符，确保相对于index.html）
+                    const normalizePath = (path) => {
+                        // 移除前导./和res/
+                        return path.replace(/^\.\//, '')
+                                 .replace(/^res\//, '')
+                                 .replace(/\\/g, '/');
+                    };
+                    
+                    const existingPaths = new Set(
+                        existingItems.map(item => 
+                            normalizePath(item.querySelector('input').value)
+                        )
+                    );
+
+                    // 只添加不存在的壁纸
+                    let addedCount = 0;
+                    wallpapers.forEach(wallpaper => {
+                        const normalizedPath = normalizePath(wallpaper);
+                        if (!existingPaths.has(normalizedPath)) {
+                            container.innerHTML += `
+                                <div class="wallpaper-item">
+                                    <input type="text" placeholder="壁纸路径" value="${wallpaper}">
+                                    <button class="delete" onclick="deleteWallpaper(${container.children.length})">删除</button>
+                                </div>
+                            `;
+                            addedCount++;
+                        }
+                    });
+                    
+                    if (addedCount > 0) {
+                        showStatus(`已添加 ${addedCount} 个新壁纸`, 'success');
+                    } else {
+                        showStatus('没有发现新的壁纸', 'success');
+                    }
+                } else {
+                    throw new Error('无效的壁纸列表数据');
+                }
+            } catch (e) {
+                console.error('扫描壁纸文件夹失败:', e);
+                showStatus('扫描壁纸文件夹失败: ' + e, 'error');
+            }
+        }
+
+        // 初始化课程表
+        function initScheduleTable(config) {
+            const table = document.getElementById('scheduleTable');
+            const thead = table.querySelector('thead tr');
+            const tbody = table.querySelector('tbody');
+            
+            // 清空现有内容
+            thead.innerHTML = '<th>星期/节次</th>';
+            tbody.innerHTML = '';
+
+            // 添加表头
+            config.lessons.headers.slice(1).forEach(header => {
+                thead.innerHTML += `<th>${header}</th>`;
+            });
+
+            // 添加表格内容
+            config.lessons.schedule.forEach(day => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${day.day}</td>`;
+                day.classes.forEach(lesson => {
+                    row.innerHTML += `<td><input type="text" value="${lesson}" style="width: 50px;"></td>`;
+                });
+                tbody.appendChild(row);
+            });
+        }
+
+        // 初始化事件列表
+        function initEventList(events) {
+            const container = document.getElementById('eventList');
+            container.innerHTML = '';
+            events.forEach((event, index) => {
+                container.innerHTML += `
+                    <div class="event-item">
+                        <input type="text" placeholder="事件名称" value="${event.name}">
+                        <input type="datetime-local" value="${event.date.split('T')[0]}T${event.date.split('T')[1].split('.')[0]}">
+                        <button class="delete" onclick="deleteEvent(${index})">删除</button>
+                    </div>
+                `;
+            });
+        }
+
+        // 初始化壁纸列表
+        function initWallpaperList(wallpapers) {
+            const container = document.getElementById('wallpaperList');
+            container.innerHTML = '';
+            wallpapers.forEach((wallpaper, index) => {
+                container.innerHTML += `
+                    <div class="wallpaper-item">
+                        <input type="text" placeholder="壁纸路径" value="${wallpaper}">
+                        <button class="delete" onclick="deleteWallpaper(${index})">删除</button>
+                    </div>
+                `;
+            });
+        }
+
+        // 添加事件
+        function addEvent() {
+            const container = document.getElementById('eventList');
+            const now = new Date().toISOString().slice(0, 16);
+            container.innerHTML += `
+                <div class="event-item">
+                    <input type="text" placeholder="事件名称">
+                    <input type="datetime-local" value="${now}">
+                    <button class="delete" onclick="deleteEvent(${container.children.length})">删除</button>
+                </div>
+            `;
+        }
+
+        // 删除事件
+        function deleteEvent(index) {
+            const container = document.getElementById('eventList');
+            container.children[index].remove();
+        }
+
+        // 添加壁纸
+        function addWallpaper() {
+            const container = document.getElementById('wallpaperList');
+            container.innerHTML += `
+                <div class="wallpaper-item">
+                    <input type="text" placeholder="相对于index.html的壁纸路径，例如：wallpaper/bg.jpg">
+                    <button class="delete" onclick="deleteWallpaper(${container.children.length})">删除</button>
+                </div>
+            `;
+        }
+
+        // 删除壁纸
+        function deleteWallpaper(index) {
+            const container = document.getElementById('wallpaperList');
+            container.children[index].remove();
+        }
+
+        // 初始化告示内容
+        function initNotice(sth) {
+            document.getElementById('notice-content').value = sth || '';
+            updatePreview();
+        }
+
+        // 更新预览
+        function updatePreview() {
+            const content = document.getElementById('notice-content').value;
+            document.getElementById('notice-preview').innerHTML = content;
+        }
+
+        // 收集课程表数据
+        function getScheduleData() {
+            const table = document.getElementById('scheduleTable');
+            const rows = table.querySelectorAll('tbody tr');
+            const schedule = [];
+
+            rows.forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                const classes = Array.from(inputs).map(input => input.value);
+                schedule.push({
+                    day: row.cells[0].textContent,
+                    classes: classes
+                });
+            });
+
+            return schedule;
+        }
+
+        // 收集事件数据
+        function getEventData() {
+            const container = document.getElementById('eventList');
+            const events = [];
+            Array.from(container.children).forEach(item => {
+                const inputs = item.querySelectorAll('input');
+                events.push({
+                    name: inputs[0].value,
+                    date: inputs[1].value + ':00'
+                });
+            });
+            return events;
+        }
+
+        // 收集壁纸数据
+        function getWallpaperData() {
+            const container = document.getElementById('wallpaperList');
+            return Array.from(container.children).map(item => item.querySelector('input').value);
+        }
+
+        // 获取告示内容
+        function getNoticeData() {
+            return document.getElementById('notice-content').value;
+        }
+
+        // 添加时间段
+        function addTimeSlot() {
+            const tbody = document.getElementById('timeTable').querySelector('tbody');
+            const newRow = document.createElement('tr');
+            const period = tbody.children.length + 1;
+            newRow.innerHTML = `
+                <td>${period}</td>
+                <td><input type="time" class="time-begin"></td>
+                <td><input type="time" class="time-end"></td>
+                <td><input type="time" class="rest-begin"> - <input type="time" class="rest-end"></td>
+                <td><button class="delete" onclick="deleteTimeSlot(this)">删除</button></td>
+            `;
+            tbody.appendChild(newRow);
+        }
+
+        // 删除时间段
+        function deleteTimeSlot(button) {
+            const row = button.closest('tr');
+            row.remove();
+            // 重新编号
+            const tbody = document.getElementById('timeTable').querySelector('tbody');
+            Array.from(tbody.children).forEach((row, index) => {
+                row.cells[0].textContent = index + 1;
+            });
+        }
+
+        // 初始化时间表
+        function initTimeTable(config) {
+            const tbody = document.getElementById('timeTable').querySelector('tbody');
+            tbody.innerHTML = '';
+            
+            config.lessons.times.schedule.forEach(slot => {
+                const row = document.createElement('tr');
+                const [restBegin, restEnd] = slot.rest ? slot.rest.split('-') : ['', ''];
+                row.innerHTML = `
+                    <td>${slot.period}</td>
+                    <td><input type="time" class="time-begin" value="${slot.begin}"></td>
+                    <td><input type="time" class="time-end" value="${slot.end}"></td>
+                    <td><input type="time" class="rest-begin" value="${restBegin}"> - <input type="time" class="rest-end" value="${restEnd}"></td>
+                    <td><button class="delete" onclick="deleteTimeSlot(this)">删除</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // 获取时间表数据
+        function getTimeData() {
+            const tbody = document.getElementById('timeTable').querySelector('tbody');
+            const schedule = [];
+            
+            Array.from(tbody.children).forEach(row => {
+                const period = parseInt(row.cells[0].textContent);
+                const begin = row.querySelector('.time-begin').value;
+                const end = row.querySelector('.time-end').value;
+                const restBegin = row.querySelector('.rest-begin').value;
+                const restEnd = row.querySelector('.rest-end').value;
+                
+                schedule.push({
+                    period: period,
+                    begin: begin,
+                    end: end,
+                    rest: restBegin && restEnd ? `${restBegin}-${restEnd}` : null
+                });
+            });
+            
+            return schedule;
+        }
+
+        // 重命名函数以避免冲突
+        async function handleSave() {
+            try {
+                // 等待所有必要的函数绑定
+                await Promise.all([
+                    waitForBinding('saveConfig'),
+                    waitForBinding('writeFile'),
+                    waitForBinding('reloadMainWindow')
+                ]);
+
+                // 确保CONFIG已经加载
+                if (typeof CONFIG === 'undefined') {
+                    showStatus('保存失败：CONFIG未定义', 'error');
+                    return;
+                }
+
+                // 更新CONFIG对象
+                CONFIG.lessons.schedule = getScheduleData();
+                CONFIG.lessons.times.schedule = getTimeData();
+                CONFIG.lessons.times.semester = {
+                    begin: document.getElementById('semester-begin').value,
+                    end: document.getElementById('semester-end').value
+                };
+                
+                // 保存提示音设置
+                CONFIG.notifications = {
+                    enabled: document.getElementById('notifications-enabled').checked,
+                    regularInterval: parseInt(document.getElementById('regular-interval').value) || 5,
+                    endingTime: parseInt(document.getElementById('ending-time').value) || 5
+                };
+                
+                // 保存周数设置
+                CONFIG.weekOffset = {
+                    enabled: document.getElementById('week-offset-enabled').checked,
+                    offset: parseInt(document.getElementById('week-offset').value) || 7
+                };
+                CONFIG.events = getEventData();
+                CONFIG.wallpapers = getWallpaperData();
+                CONFIG.sth = getNoticeData();
+                
+                // 保存config.js
+                const configContent = `const CONFIG = ${JSON.stringify(CONFIG, null, 2)};
+
+// 为了保持向后兼容，导出原有的变量名
+const lessons = CONFIG.lessons.headers.join(",") + "\\n" + 
+  CONFIG.lessons.schedule.map(day => " ," + day.day + "," + day.classes.join(",")).join("\\n") + "\\n";
+
+const events = "事件,日期,\\n" + 
+  CONFIG.events.map(event => \`\${event.name},\${event.date}\`).join("\\n");
+
+const wallpaperlist = CONFIG.wallpapers;
+
+const sth = CONFIG.sth;`;
+
+                try {
+                    if (typeof window.writeFile !== 'function') {
+                        throw new Error('writeFile 函数未定义');
+                    }
+                    await window.writeFile('res/config/config.js', configContent);
+                } catch (e) {
+                    console.error('保存config.js失败:', e);
+                    showStatus('保存config.js失败: ' + e, 'error');
+                    return;
+                }
+
+                // 保存config.toml
+                const basicConfig = {
+                    Default: {
+                        URL: document.getElementById('url').value.trim(),
+                        BrowserPath: document.getElementById('browser').value.trim()
+                    }
+                };
+
+                try {
+                    if (typeof window.saveConfig !== 'function') {
+                        throw new Error('saveConfig 函数未定义');
+                    }
+                    await window.saveConfig(JSON.stringify(basicConfig));
+                    
+                    // 重新加载配置并刷新主窗口
+                    await handleReset();
+                    
+                    // 刷新主窗口
+                    if (typeof window.reloadMainWindow === 'function') {
+                        await window.reloadMainWindow();
+                        showStatus('配置已保存并刷新主窗口', 'success');
+                    } else {
+                        showStatus('配置已保存（主窗口刷新失败）', 'success');
+                    }
+                } catch (e) {
+                    console.error('保存config.toml失败:', e);
+                    showStatus('保存config.toml失败: ' + e, 'error');
+                }
+            } catch (e) {
+                console.error('保存配置失败:', e);
+                showStatus('保存配置失败: ' + e, 'error');
+            }
+        }
+
+        // 重命名函数以避免冲突
+        async function handleReset() {
+            try {
+                await waitForBinding('readConfig');
+                
+                if (typeof window.readConfig !== 'function') {
+                    throw new Error('readConfig 函数未定义');
+                }
+
+                const config = await window.readConfig();
+                currentConfig = config;
+                
+                if (config && config.Default) {
+                    document.getElementById('url').value = config.Default.URL || '';
+                    document.getElementById('browser').value = config.Default.BrowserPath || '';
+                    
+                    if (typeof CONFIG !== 'undefined') {
+                        // 设置学期时间
+                        document.getElementById('semester-begin').value = CONFIG.lessons.times.semester.begin;
+                        document.getElementById('semester-end').value = CONFIG.lessons.times.semester.end;
+                        
+                        // 加载提示音设置
+                        document.getElementById('notifications-enabled').checked = CONFIG.notifications.enabled;
+                        document.getElementById('regular-interval').value = CONFIG.notifications.regularInterval;
+                        document.getElementById('ending-time').value = CONFIG.notifications.endingTime;
+                        
+                        // 加载周数设置
+                        document.getElementById('week-offset-enabled').checked = CONFIG.weekOffset.enabled;
+                        document.getElementById('week-offset').value = CONFIG.weekOffset.offset;
+                        
+                        initTimeTable(CONFIG);
+                        initScheduleTable(CONFIG);
+                        initEventList(CONFIG.events);
+                        initWallpaperList(CONFIG.wallpapers);
+                        initNotice(CONFIG.sth);
+                    } else {
+                        showStatus('配置加载失败：CONFIG未定义', 'error');
+                    }
+                    
+                    showStatus('配置已加载', 'success');
+                } else {
+                    showStatus('配置格式不正确', 'error');
+                }
+            } catch (e) {
+                console.error('加载配置失败:', e);
+                showStatus('加载配置失败: ' + e, 'error');
+            }
+        }
+
+        // 显示状态信息
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = 'status ' + type;
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 3000);
+        }
+
+        // 页面加载时读取配置
+        document.addEventListener('DOMContentLoaded', handleReset);
+    </script>
+</body>
+</html> 

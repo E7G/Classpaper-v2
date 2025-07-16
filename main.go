@@ -17,6 +17,7 @@ import (
 	"github.com/getlantern/systray"
 	"github.com/pelletier/go-toml"
 	"github.com/zserge/lorca"
+	"encoding/json"
 )
 
 // ====== WinAPI相关区域 ======
@@ -26,6 +27,7 @@ import (
 // ====== 全局变量和常量区 ======
 var (
 	mainWindow lorca.UI
+	settingsWindow lorca.UI
 	isRunning  bool
 	urlStr     string
 	BwPath     string
@@ -102,7 +104,7 @@ func ParseConfig() (*Config, error) {
 		}
 		
 		err = os.WriteFile("config.toml", configData, 0644)
-		if err != nil {
+	if err != nil {
 			return nil, fmt.Errorf("写入默认配置失败: %v", err)
 		}
 		
@@ -118,7 +120,7 @@ func ParseConfig() (*Config, error) {
 	if err != nil {
 		return nil, fmt.Errorf("解析配置文件失败: %v", err)
 	}
-	
+
 	// 验证配置
 	if config.Default.URL == "" {
 		config.Default.URL = "./res/index.html"
@@ -140,14 +142,14 @@ func NormalizeURL(url string) string {
 func setWallpaper() {
 	ret := SetupWallpaper(lorcaname)
 	log.Printf("[桌面穿透] SetupWallpaper(%s) 返回: %v", lorcaname, ret)
-	t = time.NewTicker(time.Second)
+    t = time.NewTicker(time.Second)
 	go func() {
 		for range t.C {
 			log.Println("[桌面穿透] 定时调用 RemoveFromTaskbar 保持窗口状态")
 			if hwnd := FindWindowByTitle(lorcaname); hwnd != 0 {
 				RemoveFromTaskbar(hwnd)
-			}
-		}
+	     }
+	  }
 	}()
 }
 
@@ -212,7 +214,7 @@ func onReady() {
 	systray.SetTooltip(title)
 	reloadMenuItem := systray.AddMenuItem("重载网页", "Reload Page")
 	setPenetrationMenuItem := systray.AddMenuItem("设置程序桌面穿透", "Set Window Penetration")
-	restartWebpageMenuItem := systray.AddMenuItem("重启网页显示程序", "Restart Webpage Display")
+    restartWebpageMenuItem := systray.AddMenuItem("重启网页显示程序", "Restart Webpage Display")
 	settingsMenuItem := systray.AddMenuItem("设置", "Open Settings")
 	restartMenuItem := systray.AddMenuItem("重启程序", "Restart Application")
 	quitMenuItem := systray.AddMenuItem("退出程序", "Quit Application")
@@ -227,9 +229,9 @@ func onReady() {
 			case <-setPenetrationMenuItem.ClickedCh:
 				log.Println("[托盘] 手动触发桌面穿透")
 				setWallpaper()
-			case <-restartWebpageMenuItem.ClickedCh:
+            case <-restartWebpageMenuItem.ClickedCh:
 				log.Println("[托盘] 手动重启网页显示程序")
-				restartWebpageDisplayProgram()
+                restartWebpageDisplayProgram()
 			case <-settingsMenuItem.ClickedCh:
 				log.Println("[托盘] 打开设置窗口")
 				openSettings()
@@ -246,32 +248,145 @@ func onReady() {
 	}()
 }
 
-func onExit() {
-	log.Println("[退出] 程序退出，清理资源...")
-	if mainWindow != nil {
-		mainWindow.Close()
-	}
-	if logFile != nil {
-		logFile.Sync()
-	}
-	if t != nil {
-		t.Stop()
-	}
-}
-
 func openSettings() {
-	execPath, err := os.Executable()
-	if err != nil {
-		log.Printf("[设置] 获取可执行文件路径失败: %v", err)
+	if settingsWindow != nil {
+		log.Println("[设置] 设置窗口已经打开")
 		return
 	}
-	execDir := filepath.Dir(execPath)
-	cmd := exec.Command("./setting")
-	cmd.Dir = execDir
-	err = cmd.Start()
+
+	settingsURL, err := getFilePathURL("res/settings.html")
 	if err != nil {
-		log.Printf("[设置] 启动设置窗口失败: %v", err)
+		log.Printf("[设置] 获取设置页面URL失败: %v", err)
+		return
 	}
+
+	// 获取屏幕尺寸
+	screenWidth := GetScreenWidth()
+	screenHeight := GetScreenHeight()
+
+	// 设置窗口尺寸（屏幕宽度的60%，高度的80%）
+	width := int(float64(screenWidth) * 0.6)
+	height := int(float64(screenHeight) * 0.8)
+
+	// 确保窗口尺寸在合理范围内
+	if width < 1000 {
+		width = 1000 // 最小宽度
+	}
+	if height < 800 {
+		height = 800 // 最小高度
+	}
+
+	// 计算窗口位置（居中）
+	x := (screenWidth - width) / 2
+	y := (screenHeight - height) / 2
+
+	// 创建窗口并设置位置
+	ui, err := lorca.New(settingsURL, "", "", width, height)
+	if err != nil {
+		log.Printf("[设置] 创建设置窗口失败: %v", err)
+		return
+	}
+
+	// 设置窗口位置
+	ui.Eval(fmt.Sprintf(`
+		window.moveTo(%d, %d);
+		document.title = "ClassPaper 设置";
+	`, x, y))
+
+	settingsWindow = ui
+
+	// 立即绑定函数
+	log.Println("[设置] 开始绑定函数...")
+	
+	// 绑定配置相关函数
+	err = ui.Bind("readConfig", func() (interface{}, error) {
+		config, err := ParseConfig()
+		if err != nil {
+			log.Printf("[设置] 读取配置失败: %v", err)
+			return nil, err
+		}
+		log.Printf("[设置] 读取到配置: %+v", config)
+		return map[string]interface{}{
+			"Default": map[string]interface{}{
+				"URL":         config.Default.URL,
+				"BrowserPath": config.Default.BrowserPath,
+			},
+		}, nil
+	})
+	if err != nil {
+		log.Printf("[设置] 绑定readConfig失败: %v", err)
+	}
+
+	err = ui.Bind("saveConfig", func(configJSON string) error {
+		log.Printf("[设置] 保存配置JSON: %s", configJSON)
+		var config Config
+		err := json.Unmarshal([]byte(configJSON), &config)
+		if err != nil {
+			log.Printf("[设置] 解析配置JSON失败: %v", err)
+			return fmt.Errorf("解析配置JSON失败: %v", err)
+		}
+
+		// 将配置写入文件
+		configData, err := toml.Marshal(config)
+		if err != nil {
+			log.Printf("[设置] 序列化配置失败: %v", err)
+			return fmt.Errorf("序列化配置失败: %v", err)
+		}
+
+		err = os.WriteFile("config.toml", configData, 0644)
+		if err != nil {
+			log.Printf("[设置] 写入配置文件失败: %v", err)
+			return fmt.Errorf("写入配置文件失败: %v", err)
+		}
+
+		log.Printf("[设置] 配置已保存: %+v", config)
+
+		// 更新当前运行的配置
+		urlStr = NormalizeURL(config.Default.URL)
+		BwPath = config.Default.BrowserPath
+
+		return nil
+	})
+	if err != nil {
+		log.Printf("[设置] 绑定saveConfig失败: %v", err)
+	}
+
+	// 绑定文件写入函数
+	err = ui.Bind("writeFile", func(path string, content string) error {
+		log.Printf("[设置] 写入文件 %s", path)
+		return os.WriteFile(path, []byte(content), 0644)
+	})
+	if err != nil {
+		log.Printf("[设置] 绑定writeFile失败: %v", err)
+	}
+
+	// 绑定壁纸扫描函数
+	err = ui.Bind("scanWallpaperDir", scanWallpaperDir)
+	if err != nil {
+		log.Printf("[设置] 绑定scanWallpaperDir失败: %v", err)
+	}
+
+	// 绑定主窗口刷新函数
+	err = ui.Bind("reloadMainWindow", func() error {
+		if mainWindow != nil {
+			log.Println("[设置] 刷新主窗口")
+			mainWindow.Eval("location.reload(true)")
+			return nil
+		}
+		return fmt.Errorf("主窗口未打开")
+	})
+	if err != nil {
+		log.Printf("[设置] 绑定reloadMainWindow失败: %v", err)
+	}
+
+	log.Println("[设置] 函数绑定完成")
+
+	// 监听窗口关闭
+	go func() {
+		<-ui.Done()
+		settingsWindow = nil
+		log.Println("[设置] 设置窗口已关闭")
+	}()
 }
 
 func restartProgram() {
@@ -294,14 +409,33 @@ func endup() {
 	if mainWindow != nil {
 		mainWindow.Close()
 	}
+	if settingsWindow != nil {
+		settingsWindow.Close()
+	}
 	systray.Quit()
+	if logFile != nil {
+	logFile.Sync()
+	}
+	if t != nil {
+	t.Stop()
+}
+}
+
+func onExit() {
+	log.Println("[退出] 程序退出，清理资源...")
+	if mainWindow != nil {
+		mainWindow.Close()
+	}
+	if settingsWindow != nil {
+		settingsWindow.Close()
+	}
 	if logFile != nil {
 		logFile.Sync()
 	}
 	if t != nil {
 		t.Stop()
 	}
-}
+	}
 
 // ====== 主程序入口和初始化 ======
 func main() {
@@ -334,3 +468,29 @@ func init() {
 }
 
 // ====== END ======
+
+// 扫描壁纸文件夹
+func scanWallpaperDir() ([]string, error) {
+	wallpapers := []string{}
+	
+	// 扫描res/wallpaper目录
+	files, err := os.ReadDir("res/wallpaper")
+	if err != nil {
+		return nil, fmt.Errorf("读取壁纸目录失败: %v", err)
+	}
+
+	// 添加文件到列表，使用相对于index.html的路径
+	for _, file := range files {
+		if !file.IsDir() {
+			// 检查是否是图片文件
+			name := file.Name()
+			ext := strings.ToLower(filepath.Ext(name))
+			if ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".gif" {
+				// 使用相对于index.html的路径
+				wallpapers = append(wallpapers, "wallpaper/"+name)
+			}
+		}
+	}
+
+	return wallpapers, nil
+}

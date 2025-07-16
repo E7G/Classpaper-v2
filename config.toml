@@ -1,3 +1,4 @@
+
 [default]
-url = "./res/index.html"
-browser_path = ""
+  browser_path = ""
+  url = "./res/index.html"
