@@ -4,8 +4,9 @@ go 1.20
 
 require (
 	github.com/getlantern/systray v1.2.2
+	github.com/go-ole/go-ole v1.3.0
+	github.com/pelletier/go-toml v1.9.5
 	github.com/zserge/lorca v0.0.0-00010101000000-000000000000
-	gopkg.in/ini.v1 v1.67.0
 )
 
 require (
@@ -23,4 +24,3 @@ require (
 
 replace github.com/zserge/lorca => ./lib/lorca
 
-replace github.com/AllenDang/w32 => ./lib/w32
