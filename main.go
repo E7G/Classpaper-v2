@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"math/rand"
@@ -78,22 +79,51 @@ func generateRandomString(length int) string {
 // url = "..."
 // browser_path = "..."
 type Config struct {
-	URL         string `toml:"url"`
-	BrowserPath string `toml:"browser_path"`
+	Default struct {
+		URL         string `toml:"url"`
+		BrowserPath string `toml:"browser_path"`
+	} `toml:"default"`
 }
 
 func ParseConfig() (*Config, error) {
 	// 读取 config.toml
 	data, err := os.ReadFile("config.toml")
 	if err != nil {
-		return nil, err
+		log.Printf("[启动] 配置文件不存在，创建默认配置")
+		// 创建默认配置
+		defaultConfig := &Config{}
+		defaultConfig.Default.URL = "./res/index.html"
+		defaultConfig.Default.BrowserPath = ""
+		
+		// 将默认配置写入文件
+		configData, err := toml.Marshal(defaultConfig)
+		if err != nil {
+			return nil, fmt.Errorf("生成默认配置失败: %v", err)
+		}
+		
+		err = os.WriteFile("config.toml", configData, 0644)
+		if err != nil {
+			return nil, fmt.Errorf("写入默认配置失败: %v", err)
+		}
+		
+		return defaultConfig, nil
 	}
+
+	log.Println("[启动] 读取配置文件: config.toml")
+	log.Println("[启动] 配置文件内容:", string(data))
+	
 	config := &Config{}
 	// 直接解析 toml 到结构体
 	err = toml.Unmarshal(data, config)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("解析配置文件失败: %v", err)
 	}
+	
+	// 验证配置
+	if config.Default.URL == "" {
+		config.Default.URL = "./res/index.html"
+	}
+	
 	return config, nil
 }
 
@@ -288,9 +318,9 @@ func main() {
 		log.Printf("[启动] 读取配置失败: %v", err)
 		return
 	}
-	log.Printf("[启动] 加载配置URL: %s", config.URL)
-	urlStr = NormalizeURL(config.URL)
-	BwPath = config.BrowserPath
+	log.Printf("[启动] 加载配置URL: %s", config.Default.URL)
+	urlStr = NormalizeURL(config.Default.URL)
+	BwPath = config.Default.BrowserPath
 	log.Printf("[启动] 标准化URL: %s", urlStr)
 	log.Printf("[启动] 浏览器路径: %s", BwPath)
 	systray.Run(onReady, onExit)
