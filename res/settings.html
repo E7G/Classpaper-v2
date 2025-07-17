@@ -1257,7 +1257,7 @@ const sth = CONFIG.sth;`;
                 return h * 60 + m;
             }
             function minToTimeStr(m) {
-                const h = Math.floor(m / 60);
+                const h = Math.floor(m / 60).toString().padStart(2, '0');
                 const mm = (m % 60).toString().padStart(2, '0');
                 return `${h}:${mm}`;
             }
