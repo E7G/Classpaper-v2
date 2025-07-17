@@ -14,7 +14,7 @@ const CONFIG = {
       "10",
       "11"
     ],
-    "displayMode": "day",
+    "displayMode": "scroll",
     "schedule": [
       {
         "day": "周一",
@@ -239,7 +239,7 @@ const CONFIG = {
 const lessons = CONFIG.lessons.headers.join(",") + "\n" + 
   CONFIG.lessons.schedule.map(day => " ," + day.day + "," + day.classes.join(",")).join("\n") + "\n";
 
-  const events = "事件,日期,\n" + 
+const events = "事件,日期,\n" + 
   CONFIG.events.map(event => `${event.name},${event.date},`).join("\n");
 
 const wallpaperlist = CONFIG.wallpapers;

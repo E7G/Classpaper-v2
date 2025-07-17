@@ -518,6 +518,10 @@
                 <div class="form-section-title">
                     <h2>课程时间安排</h2>
                 </div>
+                <div style="display:flex;align-items:center;gap:18px;margin-bottom:10px;">
+                    <button class="add" onclick="smartGuessTimeTable()">智能推算</button>
+                    <span class="help-text">一键自动生成常见作息时间（如每节课40分钟，课间10分钟，中午休息长等），可手动微调。</span>
+                </div>
                 <div class="table-container">
                     <table id="timeTable">
                         <thead>
@@ -1136,7 +1140,7 @@ const sth = CONFIG.sth;`;
                 if (typeof window.readConfig !== 'function') {
                     throw new Error('readConfig 函数未定义');
                 }
-
+                
                 const config = await window.readConfig();
                 currentConfig = config;
                 
@@ -1208,6 +1212,7 @@ const sth = CONFIG.sth;`;
             const status = document.getElementById('status');
             status.textContent = message;
             status.className = 'status ' + type;
+            status.style.display = 'block'; // 修复：每次调用都先显示
             setTimeout(() => {
                 status.style.display = 'none';
             }, 3000);
@@ -1222,6 +1227,70 @@ const sth = CONFIG.sth;`;
         function doReset() {
             closeResetDialog();
             handleReset();
+        }
+
+        function smartGuessTimeTable() {
+            const tbody = document.getElementById('timeTable').querySelector('tbody');
+            const rows = Array.from(tbody.children);
+            // 找到最后一个已完整填写的节次
+            let lastIdx = -1;
+            let lastEnd = '';
+            let lastRest = '';
+            for (let i = 0; i < rows.length; i++) {
+                const begin = rows[i].querySelector('.time-begin').value;
+                const end = rows[i].querySelector('.time-end').value;
+                const restBegin = rows[i].querySelector('.rest-begin').value;
+                const restEnd = rows[i].querySelector('.rest-end').value;
+                if (begin && end && restBegin && restEnd) {
+                    lastIdx = i;
+                    lastEnd = end;
+                    lastRest = restEnd;
+                }
+            }
+            if (lastIdx === -1 || lastIdx === rows.length - 1) {
+                showStatus('请先手动填写前几节课的时间（至少一节），再使用智能推算。', 'error');
+                return;
+            }
+            // 计算课时、休息时长
+            function timeStrToMin(t) {
+                const [h, m] = t.split(':').map(Number);
+                return h * 60 + m;
+            }
+            function minToTimeStr(m) {
+                const h = Math.floor(m / 60);
+                const mm = (m % 60).toString().padStart(2, '0');
+                return `${h}:${mm}`;
+            }
+            const prevBegin = rows[lastIdx].querySelector('.time-begin').value;
+            const prevEnd = rows[lastIdx].querySelector('.time-end').value;
+            const prevRestBegin = rows[lastIdx].querySelector('.rest-begin').value;
+            const prevRestEnd = rows[lastIdx].querySelector('.rest-end').value;
+            const classLen = timeStrToMin(prevEnd) - timeStrToMin(prevBegin);
+            let restLen = timeStrToMin(prevRestEnd) - timeStrToMin(prevEnd);
+            if (restLen <= 0) restLen = 10; // 默认10分钟
+            // 补全后续节次
+            let curTime = timeStrToMin(prevRestEnd);
+            for (let i = lastIdx + 1; i < rows.length; i++) {
+                // 上课时间
+                const begin = minToTimeStr(curTime);
+                // 下课时间
+                const end = minToTimeStr(curTime + classLen);
+                // 休息时间
+                let nextRestLen = restLen;
+                // 若上一节休息大于30分钟，推断为午休/晚休，后续休息恢复为10分钟
+                if (restLen >= 30) nextRestLen = 10;
+                const restBegin = end;
+                const restEnd = minToTimeStr(timeStrToMin(end) + nextRestLen);
+                // 填入表格
+                rows[i].querySelector('.time-begin').value = begin;
+                rows[i].querySelector('.time-end').value = end;
+                rows[i].querySelector('.rest-begin').value = restBegin;
+                rows[i].querySelector('.rest-end').value = restEnd;
+                // 更新推算基准
+                curTime = timeStrToMin(restEnd);
+                restLen = nextRestLen;
+            }
+            showStatus('已根据已填时间智能补全后续节次，请根据实际情况微调。', 'success');
         }
 
         // 页面加载时读取配置

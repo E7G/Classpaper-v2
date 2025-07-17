@@ -173,8 +173,12 @@ function nowClass() {
     if (displayMode === 'scroll' || displayMode === 'day') {
         let arranged;
         if (displayMode === 'scroll') {
-            if (inClassTime || inRestTime) {
+            if (inClassTime) {
                 arranged = arrangeClasses(it, today_vec, prev_vec, next_vec);
+            } else if (inRestTime) {
+                // 休息时间，将第7项（当前课程）显示为“休息”
+                arranged = arrangeClasses(it, today_vec, prev_vec, next_vec);
+                arranged[6] = "休息";
             } else {
                 arranged = arrangeClasses(-1, today_vec, prev_vec, next_vec);
             }
