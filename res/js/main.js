@@ -57,11 +57,19 @@ function changeWallpaper() {
   };
 }
 
+let wallpaperTimer = null;
+function startWallpaperTimer() {
+  if (wallpaperTimer) clearInterval(wallpaperTimer);
+  let interval = (CONFIG.wallpaperInterval || 30) * 1000;
+  wallpaperTimer = setInterval(changeWallpaper, interval);
+}
+
 // 初始化时调用一次切换壁纸函数
 changeWallpaper();
+startWallpaperTimer();
 
-// 每30秒调用一次切换壁纸函数
-setInterval(changeWallpaper, 30 * 1000);
+// 如果有全局配置变更（如保存设置后），可暴露 window.reloadWallpaperTimer = startWallpaperTimer;
+window.reloadWallpaperTimer = startWallpaperTimer;
 
 // 定时更新时间
 setInterval(setTime, 1000);
@@ -97,7 +105,13 @@ function setTime() {
   const prog = document.getElementById('prog');
   prog.max = msOverall;
   prog.value = msPassed;
-  document.getElementById('prog-description').textContent = "高三剩余 " + percentageLeft.toFixed(4) + "%";
+  let percentText = '';
+  if ((CONFIG.progressPercentMode || 'left') === 'left') {
+    percentText = (CONFIG.progressDescription || '高三剩余') + ' ' + (100 - msPassed / msOverall * 100).toFixed(4) + '%';
+  } else {
+    percentText = (CONFIG.progressDescription || '高三已过') + ' ' + (msPassed / msOverall * 100).toFixed(4) + '%';
+  }
+  document.getElementById('prog-description').textContent = percentText;
 }
 
 setTime();

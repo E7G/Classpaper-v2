@@ -340,6 +340,49 @@
             display: block;
         }
 
+        .wallpaper-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 14px;
+            padding: 12px 18px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: box-shadow 0.2s, background 0.2s;
+        }
+        .wallpaper-item:hover {
+            background: var(--hover-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .wallpaper-thumb {
+            width: 48px;
+            height: 32px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background: #eee;
+        }
+        .wallpaper-item input[type="text"] {
+            flex: 1;
+            min-width: 180px;
+            max-width: 400px;
+            padding: 8px 10px;
+        }
+        .wallpaper-item button.delete {
+            background: var(--danger-color);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 16px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .wallpaper-item button.delete:hover {
+            background: #b71c1c;
+        }
+
         /* 响应式设计 */
         @media (max-width: 768px) {
             .container {
@@ -381,17 +424,34 @@
         <div id="basic" class="tab-content active">
             <div class="form-section">
                 <div class="form-section-title">
-                    <h2>学期时间</h2>
+                    <h2>进度条设置</h2>
                 </div>
                 <div class="form-group">
-                    <label for="semester-begin">学期开始时间</label>
+                    <label for="progress-description">进度条自定义描述</label>
+                    <input type="text" id="progress-description" maxlength="30" placeholder="如：高三剩余、距离毕业、距离高考...">
+                    <div class="help-text">设置主界面进度条下方的自定义描述文本，支持任意内容。</div>
+                </div>
+                <div class="form-group">
+                    <label for="semester-begin">进度条事件开始时间</label>
                     <input type="date" id="semester-begin">
-                    <div class="help-text">设置本学期的开始日期</div>
+                    <div class="help-text">设置进度条事件的开始日期</div>
                 </div>
                 <div class="form-group">
-                    <label for="semester-end">学期结束时间</label>
+                    <label for="semester-end">进度条事件结束时间</label>
                     <input type="date" id="semester-end">
-                    <div class="help-text">设置本学期的结束日期</div>
+                    <div class="help-text">设置进度条事件的结束日期</div>
+                </div>
+                <div class="form-group">
+                    <label>百分比显示方式</label>
+                    <label class="checkbox-label" style="margin-right: 18px;">
+                        <input type="radio" name="progress-percent-mode" id="progress-percent-left" value="left" checked>
+                        显示剩余百分比
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="radio" name="progress-percent-mode" id="progress-percent-passed" value="passed">
+                        显示已过百分比
+                    </label>
+                    <div class="help-text">可切换进度条下方显示“剩余”或“已过”百分比。</div>
                 </div>
             </div>
 
@@ -478,6 +538,23 @@
 
             <div class="form-section">
                 <div class="form-section-title">
+                    <h2>课表显示模式</h2>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="radio" name="display-mode" id="display-mode-scroll" value="scroll">
+                        滚动模式（当前课程居中，前后天填充空白）
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="radio" name="display-mode" id="display-mode-day" value="day">
+                        一天进度模式（只显示当天全部课程，按时间高亮）
+                    </label>
+                    <div class="help-text">选择课表的显示方式，滚动模式适合大屏，进度模式适合移动端或简洁需求。</div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="form-section-title">
                     <h2>课程安排</h2>
                 </div>
                 <div class="form-group">
@@ -519,11 +596,17 @@
         <div id="wallpapers" class="tab-content">
             <div class="form-section">
                 <div class="form-section-title">
-                    <h2>壁纸列表</h2>
+                    <h2>壁纸管理</h2>
                 </div>
-                <div class="wallpaper-list" id="wallpaperList">
+                <div class="wallpaper-list" id="wallpaperList" style="margin-bottom: 24px;">
+                    <!-- 动态生成壁纸项，每项含缩略图、路径输入、删除按钮 -->
                 </div>
-                <div class="button-group">
+                <div class="form-group" style="display: flex; align-items: center; gap: 16px;">
+                    <label for="wallpaper-interval" style="min-width: 120px;">切换间隔（秒）</label>
+                    <input type="number" id="wallpaper-interval" min="5" max="3600" step="1" value="30" style="width: 120px;">
+                    <span class="help-text" style="margin-left: 8px;">壁纸自动切换的时间间隔，建议不小于5秒</span>
+                </div>
+                <div class="button-group" style="justify-content: flex-start; gap: 16px; margin-top: 18px;">
                     <button class="secondary" onclick="scanWallpapers()">扫描壁纸文件夹</button>
                     <button class="add" onclick="addWallpaper()">添加壁纸</button>
                 </div>
@@ -549,8 +632,19 @@
         </div>
 
         <div id="status" class="status"></div>
+        <!-- 重置确认对话框 -->
+    <div id="reset-dialog" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.18); z-index:2000; align-items:center; justify-content:center;">
+        <div style="background:var(--card-bg); border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.18); padding:32px 36px; min-width:320px; max-width:90vw; text-align:center;">
+            <div style="font-size:1.2em; margin-bottom:18px; color:var(--primary-color); font-weight:600;">确认重置？</div>
+            <div style="color:var(--text-color); margin-bottom:24px;">确定要重置并重新加载所有设置吗？<br>未保存的更改将丢失。</div>
+            <div style="display:flex; justify-content:center; gap:24px;">
+                <button class="secondary" onclick="closeResetDialog()">取消</button>
+                <button class="primary" onclick="doReset()">确定</button>
+            </div>
+        </div>
+    </div>
         <div class="button-group">
-            <button class="secondary" onclick="handleReset()">重置</button>
+            <button class="secondary" onclick="showResetDialog()">重置</button>
             <button class="primary" onclick="handleSave()">保存</button>
         </div>
     </div>
@@ -692,8 +786,14 @@
             const container = document.getElementById('wallpaperList');
             container.innerHTML = '';
             wallpapers.forEach((wallpaper, index) => {
+                // 支持本地相对路径缩略图
+                let thumbSrc = wallpaper;
+                if (!/^https?:\/\//.test(wallpaper) && !/^data:/.test(wallpaper)) {
+                    thumbSrc = wallpaper.replace(/^\.\//, '').replace(/^res\//, '');
+                }
                 container.innerHTML += `
                     <div class="wallpaper-item">
+                        <img class="wallpaper-thumb" src="${thumbSrc}" alt="预览" onerror="this.src='icon/icon.png'">
                         <input type="text" placeholder="壁纸路径" value="${wallpaper}">
                         <button class="delete" onclick="deleteWallpaper(${index})">删除</button>
                     </div>
@@ -957,6 +1057,18 @@
                 CONFIG.wallpapers = getWallpaperData();
                 CONFIG.sth = getNoticeData();
                 
+                // 保存课表显示模式
+                CONFIG.lessons.displayMode = document.getElementById('display-mode-scroll').checked ? 'scroll' : 'day';
+                
+                // 保存壁纸切换间隔
+                CONFIG.wallpaperInterval = parseInt(document.getElementById('wallpaper-interval').value) || 30;
+                
+                // 保存进度条描述
+                CONFIG.progressDescription = document.getElementById('progress-description').value.trim();
+                
+                // 保存百分比显示方式
+                CONFIG.progressPercentMode = document.getElementById('progress-percent-left').checked ? 'left' : 'passed';
+                
                 // 保存config.js
                 const configContent = `const CONFIG = ${JSON.stringify(CONFIG, null, 2)};
 
@@ -965,7 +1077,7 @@ const lessons = CONFIG.lessons.headers.join(",") + "\\n" +
   CONFIG.lessons.schedule.map(day => " ," + day.day + "," + day.classes.join(",")).join("\\n") + "\\n";
 
 const events = "事件,日期,\\n" + 
-  CONFIG.events.map(event => \`\${event.name},\${event.date}\`).join("\\n");
+  CONFIG.events.map(event => \`\${event.name},\${event.date},\`).join("\\n");
 
 const wallpaperlist = CONFIG.wallpapers;
 
@@ -1051,6 +1163,26 @@ const sth = CONFIG.sth;`;
                         initEventList(CONFIG.events);
                         initWallpaperList(CONFIG.wallpapers);
                         initNotice(CONFIG.sth);
+
+                        // 加载课表显示模式
+                        if (CONFIG.lessons.displayMode === 'day') {
+                            document.getElementById('display-mode-day').checked = true;
+                        } else {
+                            document.getElementById('display-mode-scroll').checked = true;
+                        }
+
+                        // 加载壁纸切换间隔
+                        document.getElementById('wallpaper-interval').value = CONFIG.wallpaperInterval || 30;
+
+                        // 加载进度条描述
+                        document.getElementById('progress-description').value = CONFIG.progressDescription || '';
+
+                        // 加载百分比显示方式
+                        if (CONFIG.progressPercentMode === 'left') {
+                            document.getElementById('progress-percent-left').checked = true;
+                        } else {
+                            document.getElementById('progress-percent-passed').checked = true;
+                        }
                     } else {
                         showStatus('配置加载失败：CONFIG未定义', 'error');
                     }
@@ -1065,6 +1197,12 @@ const sth = CONFIG.sth;`;
             }
         }
 
+        function confirmReset() {
+            if (window.confirm('确定要重置并重新加载所有设置吗？未保存的更改将丢失。')) {
+                handleReset();
+            }
+        }
+
         // 显示状态信息
         function showStatus(message, type) {
             const status = document.getElementById('status');
@@ -1073,6 +1211,17 @@ const sth = CONFIG.sth;`;
             setTimeout(() => {
                 status.style.display = 'none';
             }, 3000);
+        }
+
+        function showResetDialog() {
+            document.getElementById('reset-dialog').style.display = 'flex';
+        }
+        function closeResetDialog() {
+            document.getElementById('reset-dialog').style.display = 'none';
+        }
+        function doReset() {
+            closeResetDialog();
+            handleReset();
         }
 
         // 页面加载时读取配置

@@ -14,6 +14,7 @@ const CONFIG = {
       "10",
       "11"
     ],
+    "displayMode": "day",
     "schedule": [
       {
         "day": "周一",
@@ -216,6 +217,10 @@ const CONFIG = {
     {
       "name": "高考",
       "date": "2026-06-07T00:00:00"
+    },
+    {
+      "name": "明天",
+      "date": "2025-07-18T06:50:00"
     }
   ],
   "wallpapers": [
@@ -224,6 +229,9 @@ const CONFIG = {
     "wallpaper/kdedark.png",
     "wallpaper/kdelight.png"
   ],
+  "wallpaperInterval": 30,
+  "progressDescription": "高三剩余",
+  "progressPercentMode": "left",
   "sth": "一鸣从此始，相望青云端"
 };
 
@@ -231,8 +239,8 @@ const CONFIG = {
 const lessons = CONFIG.lessons.headers.join(",") + "\n" + 
   CONFIG.lessons.schedule.map(day => " ," + day.day + "," + day.classes.join(",")).join("\n") + "\n";
 
-const events = "事件,日期,\n" + 
-  CONFIG.events.map(event => `${event.name},${event.date}`).join("\n");
+  const events = "事件,日期,\n" + 
+  CONFIG.events.map(event => `${event.name},${event.date},`).join("\n");
 
 const wallpaperlist = CONFIG.wallpapers;
 
