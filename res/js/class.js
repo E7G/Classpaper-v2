@@ -98,6 +98,18 @@ function findNearestClasses(now, schedule) {
     return { prevIdx, nextIdx };
 }
 
+// 新增判断当前是否有课的函数
+function hasCurrentClass(now, schedule) {
+    for (const period of schedule) {
+        const classBegin = parseTime(period.begin);
+        const classEnd = parseTime(period.end);
+        if (now >= classBegin && now <= classEnd) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // 主函数：刷新当前课程显示
 function nowClass() {
     const date = new Date();
@@ -170,17 +182,42 @@ function nowClass() {
     }
 
     if (displayMode === 'scroll') {
-        // 滚动模式（新逻辑：始终显示最近课程）
-        const { nextIdx } = findNearestClasses(now, schedule);
-        const currentIndex = nextIdx !== -1 ? nextIdx : 0;
-        const arranged = arrangeClasses(currentIndex, today_vec, prev_vec, next_vec);
+        // 滚动模式（新逻辑：智能填充课程）
+        const { prevIdx, nextIdx } = findNearestClasses(now, schedule);
+        const currentIndex = nextIdx !== -1 ? nextIdx : prevIdx;
+        let arranged = arrangeClasses(currentIndex, today_vec, prev_vec, next_vec);
 
+        // 新增休息状态处理
+        const hasCurrent = hasCurrentClass(now, schedule);
+        if (!hasCurrent) {
+            // 中间位置显示休息
+            arranged[6] = "休息";
+            
+            // 向前追溯填充前一天课程
+            for (let i = 5; i >= 0; i--) {
+                if (!arranged[i] && prev_vec) {
+                    const prevIndex = prev_vec.length - (6 - i);
+                    arranged[i] = prevIndex >= 0 ? prev_vec[prevIndex] : "...";
+                }
+            }
+            
+            // 向后追溯填充后一天课程
+            for (let i = 7; i < 12; i++) {
+                if (!arranged[i] && next_vec) {
+                    const nextIndex = i - 7;
+                    arranged[i] = nextIndex < next_vec.length ? next_vec[nextIndex] : "...";
+                }
+            }
+        }
+
+        // 渲染课程表
         for (let i = 0; i < arranged.length; i++) {
             let content = arranged[i] || "";
             let opacity = (i === 6) ? "" : "opacity: 0.5;";
             document.getElementById('c' + i).innerHTML =
                 `<a href="#" role="button" class="contrast" id="c_b${i}" style="${opacity}">${content}</a>`;
         }
+
         const c_b6 = document.getElementById('c_b6');
         c_b6.style.backgroundColor = '#93cee97f';
         c_b6.style.fontWeight = '600';
@@ -215,6 +252,9 @@ function nowClass() {
                 elStyle = 'background-color:; font-weight:400; opacity:0.5;';
             } else if (i < highlightIdx) {
                 // 已上过
+                elStyle = 'background-color:#3daee940; font-weight:400; opacity:0.8;';
+            } else if (i == highlightIdx && !hasCurrentClass(now, schedule)) { // 新增无课条件
+                // 无课时
                 elStyle = 'background-color:#3daee940; font-weight:400; opacity:0.8;';
             } else if (i === highlightIdx) {
                 // 当前/即将上课
