@@ -405,6 +405,89 @@
                 width: 100%;
             }
         }
+        #schedule .form-section {
+            margin-bottom: 32px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border-radius: 14px;
+            border: 1.5px solid var(--border-color);
+        }
+        #schedule .form-section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.18em;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 10px;
+        }
+        #schedule .table-container {
+            border-radius: 10px;
+            overflow: auto;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+        }
+        #schedule table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        #schedule th, #schedule td {
+            padding: 10px 8px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        #schedule th {
+            background: var(--hover-color);
+            font-weight: 600;
+        }
+        #schedule tr:nth-child(even) {
+            /* 斑马纹已移除 */
+        }
+        #schedule tr:hover {
+            background: #e3f0fa;
+        }
+        #schedule input[type="text"], #schedule input[type="time"] {
+            width: 90px;
+            padding: 6px 8px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+        }
+        #schedule .add, #schedule .secondary {
+            min-width: 90px;
+            margin-right: 8px;
+        }
+        #schedule .form-group {
+            margin-bottom: 18px;
+        }
+        #schedule .help-text {
+            font-size: 0.92em;
+            color: var(--secondary-color);
+        }
+        #schedule .form-section {
+            padding: 24px 28px 18px 28px;
+        }
+        #schedule .form-section:not(:last-child) {
+            margin-bottom: 36px;
+        }
+        #schedule .form-section-title i {
+            color: var(--primary-color);
+        }
+        #schedule .button-group {
+            margin-top: 18px;
+        }
+        @media (max-width: 900px) {
+            #schedule .form-section {
+                padding: 12px 6px;
+            }
+            #schedule input[type="text"], #schedule input[type="time"] {
+                width: 70px;
+            }
+        }
     </style>
 </head>
 <body>

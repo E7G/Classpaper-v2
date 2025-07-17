@@ -169,24 +169,11 @@ function nowClass() {
         }
     }
 
-    // 滚动模式和一天模式样式保持一致
-    if (displayMode === 'scroll' || displayMode === 'day') {
-        let arranged;
-        if (displayMode === 'scroll') {
-            if (inClassTime) {
-                arranged = arrangeClasses(it, today_vec, prev_vec, next_vec);
-            } else if (inRestTime) {
-                // 休息时间，将第7项（当前课程）显示为“休息”
-                arranged = arrangeClasses(it, today_vec, prev_vec, next_vec);
-                arranged[6] = "休息";
-            } else {
-                arranged = arrangeClasses(-1, today_vec, prev_vec, next_vec);
-            }
-        } else {
-            // 一天模式下，直接用 today_vec，补齐到12项
-            arranged = today_vec.slice(0, 12);
-            while (arranged.length < 12) arranged.push("");
-        }
+    if (displayMode === 'scroll') {
+        // 滚动模式（新逻辑：始终显示最近课程）
+        const { nextIdx } = findNearestClasses(now, schedule);
+        const currentIndex = nextIdx !== -1 ? nextIdx : 0;
+        const arranged = arrangeClasses(currentIndex, today_vec, prev_vec, next_vec);
 
         for (let i = 0; i < arranged.length; i++) {
             let content = arranged[i] || "";
@@ -194,42 +181,50 @@ function nowClass() {
             document.getElementById('c' + i).innerHTML =
                 `<a href="#" role="button" class="contrast" id="c_b${i}" style="${opacity}">${content}</a>`;
         }
-
-        // 高亮第6项（当前/即将上课）
         const c_b6 = document.getElementById('c_b6');
-        if (displayMode === 'scroll') {
-            c_b6.style.backgroundColor = colorize ? '#93cee97f' : '#3daee940';
-            c_b6.style.fontWeight = colorize ? '600' : '400';
-        } else {
-            // 一天模式下，判断当前高亮项
-            let highlightIdx = -1;
-            if (inClassTime) {
-                highlightIdx = it;
-            } else {
-                const { prevIdx, nextIdx } = findNearestClasses(now, schedule);
-                highlightIdx = nextIdx;
-            }
-            if (highlightIdx === 6) {
-                c_b6.style.backgroundColor = '#93cee97f';
-                c_b6.style.fontWeight = '600';
-            } else {
-                c_b6.style.backgroundColor = '#3daee940';
-                c_b6.style.fontWeight = '400';
-            }
-        }
+        c_b6.style.backgroundColor = '#93cee97f';
+        c_b6.style.fontWeight = '600';
         c_b6.style.opacity = '1';
-
-        // 其余前6项淡色
         for (let i = 0; i < 6; i++) {
             const el = document.getElementById('c_b' + i);
             el.style.backgroundColor = '#3daee940';
             el.style.fontWeight = '400';
         }
-        // 后面项清空
         for (let i = 7; i < 12; i++) {
             const el = document.getElementById('c_b' + i);
             el.style.backgroundColor = '';
             el.style.fontWeight = '400';
+        }
+    }
+    else if (displayMode === 'day') {
+        // 一天进度模式：只显示当天全部课程，前/当前/后课程有进度感
+        const todayClasses = today_vec.slice(0, -1);
+        let highlightIdx = -1;
+        if (inClassTime) {
+            highlightIdx = it;
+        } else {
+            // 不在上课时间，定位最近上一节/下一节
+            const { prevIdx, nextIdx } = findNearestClasses(now, schedule);
+            highlightIdx = nextIdx; // 可选：也可不高亮任何课程
+        }
+        for (let i = 0; i < todayClasses.length; i++) {
+            let content = todayClasses[i] || "";
+            let elStyle = '';
+            if (highlightIdx === -1) {
+                // 没有高亮，全部淡色
+                elStyle = 'background-color:; font-weight:400; opacity:0.5;';
+            } else if (i < highlightIdx) {
+                // 已上过
+                elStyle = 'background-color:#3daee940; font-weight:400; opacity:0.8;';
+            } else if (i === highlightIdx) {
+                // 当前/即将上课
+                elStyle = 'background-color:#93cee97f; font-weight:600; opacity:1;';
+            } else {
+                // 未上课
+                elStyle = 'background-color:; font-weight:400; opacity:0.5;';
+            }
+            document.getElementById('c' + i).innerHTML =
+                `<a href="#" role="button" class="contrast" id="c_b${i}" style="${elStyle}">${content}</a>`;
         }
     }
 }

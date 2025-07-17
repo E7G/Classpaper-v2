@@ -14,7 +14,7 @@ const CONFIG = {
       "10",
       "11"
     ],
-    "displayMode": "scroll",
+    "displayMode": "day",
     "schedule": [
       {
         "day": "周一",
