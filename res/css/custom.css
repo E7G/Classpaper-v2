@@ -73,15 +73,19 @@ article {
   margin: 0 auto
 }
 
+html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden !important;
+}
 
 body {
-  /*background-image: url("css/wallpaper/kdedark.png");
-  background-image: url("wallpaper/飘带放缩.png");*/
-  background-repeat: no-repeat;
-  background-position: center;
-  
-  position: absolute;
-  height: 1440px;
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 

@@ -13,7 +13,7 @@ function changeWallpaper() {
   // 预加载壁纸图片，确保切换时已加载完成
   const img = new window.Image();
   img.src = wallpaper;
-  img.onload = function() {
+  img.onload = function () {
     // 创建一个新的div用于过渡
     const transitionDiv = document.createElement('div');
     transitionDiv.className = 'wallpaper-transition-optimized';
@@ -51,7 +51,11 @@ function changeWallpaper() {
         backgroundImage: `url(${wallpaper})`,
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center center',
-        backgroundSize: 'cover'
+        backgroundSize: 'cover',
+        backgroundAttachment: 'fixed',  // 固定背景防止滚动
+        overflow: 'hidden',  // 隐藏滚动条
+        margin: '0',  // 清除默认边距
+        padding: '0'   // 清除默认内边距
       });
     }, 1100);
   };
