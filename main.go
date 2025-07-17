@@ -14,10 +14,11 @@ import (
 	"strings"
 	"time"
 
+	"encoding/json"
+
 	"github.com/getlantern/systray"
 	"github.com/pelletier/go-toml"
 	"github.com/zserge/lorca"
-	"encoding/json"
 )
 
 // ====== WinAPI相关区域 ======
@@ -26,14 +27,14 @@ import (
 
 // ====== 全局变量和常量区 ======
 var (
-	mainWindow lorca.UI
+	mainWindow     lorca.UI
 	settingsWindow lorca.UI
-	isRunning  bool
-	urlStr     string
-	BwPath     string
-	lorcaname  string
-	logFile    *os.File
-	t          *time.Ticker
+	isRunning      bool
+	urlStr         string
+	BwPath         string
+	lorcaname      string
+	logFile        *os.File
+	t              *time.Ticker
 )
 
 const (
@@ -96,24 +97,24 @@ func ParseConfig() (*Config, error) {
 		defaultConfig := &Config{}
 		defaultConfig.Default.URL = "./res/index.html"
 		defaultConfig.Default.BrowserPath = ""
-		
+
 		// 将默认配置写入文件
 		configData, err := toml.Marshal(defaultConfig)
 		if err != nil {
 			return nil, fmt.Errorf("生成默认配置失败: %v", err)
 		}
-		
+
 		err = os.WriteFile("config.toml", configData, 0644)
-	if err != nil {
+		if err != nil {
 			return nil, fmt.Errorf("写入默认配置失败: %v", err)
 		}
-		
+
 		return defaultConfig, nil
 	}
 
 	log.Println("[启动] 读取配置文件: config.toml")
 	log.Println("[启动] 配置文件内容:", string(data))
-	
+
 	config := &Config{}
 	// 直接解析 toml 到结构体
 	err = toml.Unmarshal(data, config)
@@ -125,7 +126,7 @@ func ParseConfig() (*Config, error) {
 	if config.Default.URL == "" {
 		config.Default.URL = "./res/index.html"
 	}
-	
+
 	return config, nil
 }
 
@@ -342,7 +343,7 @@ func openSettings() {
 
 	// 立即绑定函数
 	log.Println("[设置] 开始绑定函数...")
-	
+
 	// 绑定配置相关函数
 	err = ui.Bind("readConfig", func() (interface{}, error) {
 		config, err := ParseConfig()
@@ -459,11 +460,11 @@ func endup() {
 	}
 	systray.Quit()
 	if logFile != nil {
-	logFile.Sync()
+		logFile.Sync()
 	}
 	if t != nil {
-	t.Stop()
-}
+		t.Stop()
+	}
 }
 
 func onExit() {
@@ -480,7 +481,7 @@ func onExit() {
 	if t != nil {
 		t.Stop()
 	}
-	}
+}
 
 // ====== 主程序入口和初始化 ======
 func main() {
@@ -509,6 +510,11 @@ func init() {
 	if runtime.GOOS == "windows" {
 		os.Setenv("WINGUI_NO_CONSOLE", "1")
 		exec.Command("cmd", "/c", "chcp", "65001").Run()
+
+		// 处理DPI感知结果
+		if !SetDPIAware() {
+			log.Printf("[启动] DPI感知设置失败")
+		}
 	}
 }
 
@@ -517,7 +523,7 @@ func init() {
 // 扫描壁纸文件夹
 func scanWallpaperDir() ([]string, error) {
 	wallpapers := []string{}
-	
+
 	// 扫描res/wallpaper目录
 	files, err := os.ReadDir("res/wallpaper")
 	if err != nil {

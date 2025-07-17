@@ -7,35 +7,35 @@ import (
 )
 
 var (
-	user32                  = syscall.NewLazyDLL("user32.dll")
-	findWindow             = user32.NewProc("FindWindowW")
-	findWindowEx           = user32.NewProc("FindWindowExW")
-	sendMessageTimeout     = user32.NewProc("SendMessageTimeoutW")
-	enumWindows            = user32.NewProc("EnumWindows")
-	getWindowText          = user32.NewProc("GetWindowTextW")
-	setParent              = user32.NewProc("SetParent")
-	showWindow             = user32.NewProc("ShowWindow")
-	getSystemMetrics      = user32.NewProc("GetSystemMetrics")
-	
-	ole32                  = syscall.NewLazyDLL("ole32.dll")
-	coInitialize          = ole32.NewProc("CoInitialize")
-	coCreateInstance      = ole32.NewProc("CoCreateInstance")
+	user32             = syscall.NewLazyDLL("user32.dll")
+	findWindow         = user32.NewProc("FindWindowW")
+	findWindowEx       = user32.NewProc("FindWindowExW")
+	sendMessageTimeout = user32.NewProc("SendMessageTimeoutW")
+	enumWindows        = user32.NewProc("EnumWindows")
+	getWindowText      = user32.NewProc("GetWindowTextW")
+	setParent          = user32.NewProc("SetParent")
+	showWindow         = user32.NewProc("ShowWindow")
+	getSystemMetrics   = user32.NewProc("GetSystemMetrics")
+
+	ole32            = syscall.NewLazyDLL("ole32.dll")
+	coInitialize     = ole32.NewProc("CoInitialize")
+	coCreateInstance = ole32.NewProc("CoCreateInstance")
 )
 
 const (
 	CLSID_TaskbarList = "{56FDF344-FD6D-11d0-958A-006097C9A090}"
 	IID_ITaskbarList  = "{56FDF31B-FD6D-11d0-958A-006097C9A090}"
-	
+
 	SW_HIDE     = 0
 	SMTO_NORMAL = 0
-	
+
 	SM_CXSCREEN = 0
 	SM_CYSCREEN = 1
 )
 
 var (
-	workerw uintptr
-	target  uintptr
+	workerw     uintptr
+	target      uintptr
 	searchTitle string // 用于在 EnumWindowsProc2 中传递搜索字符串
 )
 
@@ -124,10 +124,10 @@ func EnumWindowsProc2(hwnd, lparam uintptr) uintptr {
 		uintptr(unsafe.Pointer(&title[0])),
 		256,
 	)
-	
+
 	// 转换为 Go 字符串
 	titleStr := syscall.UTF16ToString(title[:])
-	
+
 	if titleStr == searchTitle {
 		target = hwnd
 		return 0 // 停止枚举
@@ -152,16 +152,18 @@ func RemoveFromTaskbar(hwnd uintptr) error {
 		return fmt.Errorf("获取 IID 失败: %v", err)
 	}
 
-	var pTaskbar **struct{ vtbl *struct{ 
-		QueryInterface uintptr
-		AddRef        uintptr
-		Release       uintptr
-		HrInit        uintptr
-		AddTab        uintptr
-		DeleteTab     uintptr
-		ActivateTab   uintptr
-		SetActiveAlt  uintptr
-	}}
+	var pTaskbar **struct {
+		vtbl *struct {
+			QueryInterface uintptr
+			AddRef         uintptr
+			Release        uintptr
+			HrInit         uintptr
+			AddTab         uintptr
+			DeleteTab      uintptr
+			ActivateTab    uintptr
+			SetActiveAlt   uintptr
+		}
+	}
 
 	ret, _, _ := coCreateInstance.Call(
 		uintptr(unsafe.Pointer(clsid)),
@@ -177,7 +179,7 @@ func RemoveFromTaskbar(hwnd uintptr) error {
 
 	// 调用 HrInit
 	syscall.Syscall((*pTaskbar).vtbl.HrInit, 1, uintptr(unsafe.Pointer(*pTaskbar)), 0, 0)
-	
+
 	// 调用 DeleteTab
 	syscall.Syscall((*pTaskbar).vtbl.DeleteTab, 2, uintptr(unsafe.Pointer(*pTaskbar)), hwnd, 0)
 
@@ -229,4 +231,15 @@ func GetWindowsDarkMode() bool {
 	}
 	// 0 表示暗色模式，1 表示亮色模式
 	return data[0] == 0
+}
+
+// SetDPIAware 设置DPI感知，返回是否成功
+func SetDPIAware() bool {
+	const (
+		DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = ^uintptr(3)
+	)
+
+	proc := user32.NewProc("SetProcessDpiAwarenessContext")
+	ret, _, _ := proc.Call(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)
+	return ret != 0
 }
