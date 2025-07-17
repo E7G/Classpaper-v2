@@ -309,10 +309,11 @@ func openSettings() {
 	// 获取屏幕尺寸
 	screenWidth := GetScreenWidth()
 	screenHeight := GetScreenHeight()
+	log.Printf("[设置] 屏幕尺寸: %dx%d", screenWidth, screenHeight) // 新增日志
 
-	// 设置窗口尺寸（屏幕宽度的60%，高度的80%）
-	width := int(float64(screenWidth) * 0.6)
-	height := int(float64(screenHeight) * 0.8)
+	// 设置窗口尺寸（调整为屏幕宽度的50%，高度的70%）
+	width := int(float64(screenWidth) * 0.5)   // 原0.6改为0.5
+	height := int(float64(screenHeight) * 0.7) // 原0.8改为0.7
 
 	// 确保窗口尺寸在合理范围内
 	if width < 1000 {
@@ -423,6 +424,28 @@ func openSettings() {
 	})
 	if err != nil {
 		log.Printf("[设置] 绑定reloadMainWindow失败: %v", err)
+	}
+
+	// 新增浏览器打开绑定
+	err = ui.Bind("openURLInBrowser", func(url string) bool {
+		var cmd *exec.Cmd
+		switch runtime.GOOS {
+		case "windows":
+			cmd = exec.Command("cmd", "/c", "start", url)
+		case "darwin":
+			cmd = exec.Command("open", url)
+		default: // linux
+			cmd = exec.Command("xdg-open", url)
+		}
+
+		if err := cmd.Start(); err != nil {
+			log.Printf("[调试] 打开浏览器失败: %v", err)
+			return false
+		}
+		return true
+	})
+	if err != nil {
+		log.Printf("[设置] 绑定openURLInBrowser失败: %v", err)
 	}
 
 	log.Println("[设置] 函数绑定完成")

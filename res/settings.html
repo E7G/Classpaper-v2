@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -50,10 +51,12 @@
             background: var(--card-bg);
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        h1, h2, h3 {
+        h1,
+        h2,
+        h3 {
             color: var(--primary-color);
             margin-bottom: 20px;
         }
@@ -187,7 +190,7 @@
 
         button:hover {
             transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         button:active {
@@ -238,8 +241,13 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .table-container {
@@ -255,7 +263,8 @@
             border-collapse: collapse;
         }
 
-        th, td {
+        th,
+        td {
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
@@ -270,11 +279,13 @@
             background-color: var(--hover-color);
         }
 
-        .event-list, .wallpaper-list {
+        .event-list,
+        .wallpaper-list {
             margin-bottom: 20px;
         }
 
-        .event-item, .wallpaper-item {
+        .event-item,
+        .wallpaper-item {
             display: flex;
             align-items: center;
             gap: 12px;
@@ -286,9 +297,10 @@
             transition: all 0.3s;
         }
 
-        .event-item:hover, .wallpaper-item:hover {
+        .event-item:hover,
+        .wallpaper-item:hover {
             transform: translateY(-2px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .notice-editor {
@@ -320,12 +332,19 @@
             display: none;
             animation: slideIn 0.3s;
             z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         .status.success {
@@ -351,10 +370,12 @@
             border-radius: 8px;
             transition: box-shadow 0.2s, background 0.2s;
         }
+
         .wallpaper-item:hover {
             background: var(--hover-color);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
+
         .wallpaper-thumb {
             width: 48px;
             height: 32px;
@@ -363,12 +384,14 @@
             border: 1px solid var(--border-color);
             background: #eee;
         }
+
         .wallpaper-item input[type="text"] {
             flex: 1;
             min-width: 180px;
             max-width: 400px;
             padding: 8px 10px;
         }
+
         .wallpaper-item button.delete {
             background: var(--danger-color);
             color: #fff;
@@ -379,6 +402,7 @@
             cursor: pointer;
             transition: background 0.2s;
         }
+
         .wallpaper-item button.delete:hover {
             background: #b71c1c;
         }
@@ -393,7 +417,8 @@
                 flex-direction: column;
             }
 
-            .event-item, .wallpaper-item {
+            .event-item,
+            .wallpaper-item {
                 flex-direction: column;
             }
 
@@ -405,12 +430,14 @@
                 width: 100%;
             }
         }
+
         #schedule .form-section {
             margin-bottom: 32px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
             border-radius: 14px;
             border: 1.5px solid var(--border-color);
         }
+
         #schedule .form-section-title {
             display: flex;
             align-items: center;
@@ -422,12 +449,14 @@
             border-left: 4px solid var(--primary-color);
             padding-left: 10px;
         }
+
         #schedule .table-container {
             border-radius: 10px;
             overflow: auto;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
         }
+
         #schedule table {
             width: 100%;
             border-collapse: separate;
@@ -435,65 +464,81 @@
             border-radius: 10px;
             overflow: hidden;
         }
-        #schedule th, #schedule td {
+
+        #schedule th,
+        #schedule td {
             padding: 10px 8px;
             text-align: center;
             border-bottom: 1px solid var(--border-color);
         }
+
         #schedule th {
             background: var(--hover-color);
             font-weight: 600;
         }
-        #schedule tr:nth-child(even) {
-            /* 斑马纹已移除 */
-        }
+
+
         #schedule tr:hover {
             background: #e3f0fa;
         }
-        #schedule input[type="text"], #schedule input[type="time"] {
+
+        #schedule input[type="text"],
+        #schedule input[type="time"] {
             width: 90px;
             padding: 6px 8px;
             border-radius: 6px;
             border: 1px solid var(--border-color);
             background: var(--card-bg);
         }
-        #schedule .add, #schedule .secondary {
+
+        #schedule .add,
+        #schedule .secondary {
             min-width: 90px;
             margin-right: 8px;
         }
+
         #schedule .form-group {
             margin-bottom: 18px;
         }
+
         #schedule .help-text {
             font-size: 0.92em;
             color: var(--secondary-color);
         }
+
         #schedule .form-section {
             padding: 24px 28px 18px 28px;
         }
+
         #schedule .form-section:not(:last-child) {
             margin-bottom: 36px;
         }
+
         #schedule .form-section-title i {
             color: var(--primary-color);
         }
+
         #schedule .button-group {
             margin-top: 18px;
         }
+
         @media (max-width: 900px) {
             #schedule .form-section {
                 padding: 12px 6px;
             }
-            #schedule input[type="text"], #schedule input[type="time"] {
+
+            #schedule input[type="text"],
+            #schedule input[type="time"] {
                 width: 70px;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>ClassPaper 设置</h1>
-        
+
         <div class="tab-container">
             <div class="tab-buttons">
                 <button class="tab-button active" onclick="switchTab('basic')">基本设置</button>
@@ -527,7 +572,8 @@
                 <div class="form-group">
                     <label>百分比显示方式</label>
                     <label class="checkbox-label" style="margin-right: 18px;">
-                        <input type="radio" name="progress-percent-mode" id="progress-percent-left" value="left" checked>
+                        <input type="radio" name="progress-percent-mode" id="progress-percent-left" value="left"
+                            checked>
                         显示剩余百分比
                     </label>
                     <label class="checkbox-label">
@@ -583,9 +629,9 @@
                 <div class="form-section-title">
                     <h2>系统设置</h2>
                 </div>
-        <div class="form-group">
+                <div class="form-group">
                     <label for="url">壁纸页面URL</label>
-            <input type="text" id="url" placeholder="输入页面URL或本地文件路径">
+                    <input type="text" id="url" placeholder="输入页面URL或本地文件路径">
                     <div class="help-text">可以是网页地址或本地壁纸文件夹路径</div>
                 </div>
                 <div class="form-group">
@@ -593,6 +639,8 @@
                     <input type="text" id="browser" placeholder="输入Chrome浏览器路径">
                     <div class="help-text">如果系统无法自动找到Chrome浏览器，请手动指定路径</div>
                 </div>
+                <!-- 新增调试按钮 -->
+                <button class="secondary" onclick="openInBrowser()">在浏览器中打开调试</button>
             </div>
         </div>
 
@@ -646,8 +694,7 @@
                 </div>
                 <div class="form-group">
                     <label for="schedule-import">导入课程表</label>
-                    <textarea id="schedule-import" class="notice-editor" style="min-height: 100px;"
-                            placeholder="粘贴课程表文本，格式如下：
+                    <textarea id="schedule-import" class="notice-editor" style="min-height: 100px;" placeholder="粘贴课程表文本，格式如下：
 星期,1,2,3,4,5,6,7,8,9,10,11,
 周一,升旗,班会,物理,英语,数学,数学,生物,化学,语文,晚修,晚修,
 周二,语文,语文,数学,英语,体育,物理,生物,化学,自习,晚修,晚修,
@@ -690,7 +737,8 @@
                 </div>
                 <div class="form-group" style="display: flex; align-items: center; gap: 16px;">
                     <label for="wallpaper-interval" style="min-width: 120px;">切换间隔（秒）</label>
-                    <input type="number" id="wallpaper-interval" min="5" max="3600" step="1" value="30" style="width: 120px;">
+                    <input type="number" id="wallpaper-interval" min="5" max="3600" step="1" value="30"
+                        style="width: 120px;">
                     <span class="help-text" style="margin-left: 8px;">壁纸自动切换的时间间隔，建议不小于5秒</span>
                 </div>
                 <div class="button-group" style="justify-content: flex-start; gap: 16px; margin-top: 18px;">
@@ -704,12 +752,11 @@
             <div class="form-section">
                 <div class="form-section-title">
                     <h2>告示内容</h2>
-        </div>
-        <div class="form-group">
+                </div>
+                <div class="form-group">
                     <label for="notice-content">告示内容（支持HTML）</label>
-                    <textarea id="notice-content" class="notice-editor" 
-                            placeholder="在这里输入告示内容，支持HTML标签"
-                            oninput="updatePreview()"></textarea>
+                    <textarea id="notice-content" class="notice-editor" placeholder="在这里输入告示内容，支持HTML标签"
+                        oninput="updatePreview()"></textarea>
                 </div>
                 <div class="preview-box">
                     <h3>预览</h3>
@@ -720,16 +767,19 @@
 
         <div id="status" class="status"></div>
         <!-- 重置确认对话框 -->
-    <div id="reset-dialog" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.18); z-index:2000; align-items:center; justify-content:center;">
-        <div style="background:var(--card-bg); border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.18); padding:32px 36px; min-width:320px; max-width:90vw; text-align:center;">
-            <div style="font-size:1.2em; margin-bottom:18px; color:var(--primary-color); font-weight:600;">确认重置？</div>
-            <div style="color:var(--text-color); margin-bottom:24px;">确定要重置并重新加载所有设置吗？<br>未保存的更改将丢失。</div>
-            <div style="display:flex; justify-content:center; gap:24px;">
-                <button class="secondary" onclick="closeResetDialog()">取消</button>
-                <button class="primary" onclick="doReset()">确定</button>
+        <div id="reset-dialog"
+            style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.18); z-index:2000; align-items:center; justify-content:center;">
+            <div
+                style="background:var(--card-bg); border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.18); padding:32px 36px; min-width:320px; max-width:90vw; text-align:center;">
+                <div style="font-size:1.2em; margin-bottom:18px; color:var(--primary-color); font-weight:600;">确认重置？
+                </div>
+                <div style="color:var(--text-color); margin-bottom:24px;">确定要重置并重新加载所有设置吗？<br>未保存的更改将丢失。</div>
+                <div style="display:flex; justify-content:center; gap:24px;">
+                    <button class="secondary" onclick="closeResetDialog()">取消</button>
+                    <button class="primary" onclick="doReset()">确定</button>
+                </div>
             </div>
         </div>
-    </div>
         <div class="button-group">
             <button class="secondary" onclick="showResetDialog()">重置</button>
             <button class="primary" onclick="handleSave()">保存</button>
@@ -748,7 +798,7 @@
             document.querySelectorAll('.tab-button').forEach(button => {
                 button.classList.remove('active');
             });
-            
+
             // 显示选中的标签页内容
             document.getElementById(tabId).classList.add('active');
             // 激活对应的标签按钮
@@ -773,7 +823,7 @@
         async function scanWallpapers() {
             try {
                 await waitForBinding('scanWallpaperDir');
-                
+
                 if (typeof window.scanWallpaperDir !== 'function') {
                     throw new Error('scanWallpaperDir 函数未定义');
                 }
@@ -783,17 +833,17 @@
                     // 获取现有壁纸列表
                     const container = document.getElementById('wallpaperList');
                     const existingItems = Array.from(container.children);
-                    
+
                     // 规范化路径（移除前导./，统一分隔符，确保相对于index.html）
                     const normalizePath = (path) => {
                         // 移除前导./和res/
                         return path.replace(/^\.\//, '')
-                                 .replace(/^res\//, '')
-                                 .replace(/\\/g, '/');
+                            .replace(/^res\//, '')
+                            .replace(/\\/g, '/');
                     };
-                    
+
                     const existingPaths = new Set(
-                        existingItems.map(item => 
+                        existingItems.map(item =>
                             normalizePath(item.querySelector('input').value)
                         )
                     );
@@ -812,7 +862,7 @@
                             addedCount++;
                         }
                     });
-                    
+
                     if (addedCount > 0) {
                         showStatus(`已添加 ${addedCount} 个新壁纸`, 'success');
                     } else {
@@ -832,7 +882,7 @@
             const table = document.getElementById('scheduleTable');
             const thead = table.querySelector('thead tr');
             const tbody = table.querySelector('tbody');
-            
+
             // 清空现有内容
             thead.innerHTML = '<th>星期/节次</th>';
             tbody.innerHTML = '';
@@ -1010,7 +1060,7 @@
         function initTimeTable(config) {
             const tbody = document.getElementById('timeTable').querySelector('tbody');
             tbody.innerHTML = '';
-            
+
             config.lessons.times.schedule.forEach(slot => {
                 const row = document.createElement('tr');
                 const [restBegin, restEnd] = slot.rest ? slot.rest.split('-') : ['', ''];
@@ -1029,14 +1079,14 @@
         function getTimeData() {
             const tbody = document.getElementById('timeTable').querySelector('tbody');
             const schedule = [];
-            
+
             Array.from(tbody.children).forEach(row => {
                 const period = parseInt(row.cells[0].textContent);
                 const begin = row.querySelector('.time-begin').value;
                 const end = row.querySelector('.time-end').value;
                 const restBegin = row.querySelector('.rest-begin').value;
                 const restEnd = row.querySelector('.rest-end').value;
-                
+
                 schedule.push({
                     period: period,
                     begin: begin,
@@ -1044,7 +1094,7 @@
                     rest: restBegin && restEnd ? `${restBegin}-${restEnd}` : null
                 });
             });
-            
+
             return schedule;
         }
 
@@ -1076,7 +1126,7 @@
                 for (let i = 1; i < lines.length; i++) {
                     const line = lines[i].trim();
                     if (!line) continue;
-                    
+
                     const cells = line.split(',').map(c => c.trim());
                     if (cells.length < 2) continue;
 
@@ -1127,14 +1177,14 @@
                     begin: document.getElementById('semester-begin').value,
                     end: document.getElementById('semester-end').value
                 };
-                
+
                 // 保存提示音设置
                 CONFIG.notifications = {
                     enabled: document.getElementById('notifications-enabled').checked,
                     regularInterval: parseInt(document.getElementById('regular-interval').value) || 5,
                     endingTime: parseInt(document.getElementById('ending-time').value) || 5
                 };
-                
+
                 // 保存周数设置
                 CONFIG.weekOffset = {
                     enabled: document.getElementById('week-offset-enabled').checked,
@@ -1143,19 +1193,19 @@
                 CONFIG.events = getEventData();
                 CONFIG.wallpapers = getWallpaperData();
                 CONFIG.sth = getNoticeData();
-                
+
                 // 保存课表显示模式
                 CONFIG.lessons.displayMode = document.getElementById('display-mode-scroll').checked ? 'scroll' : 'day';
-                
+
                 // 保存壁纸切换间隔
                 CONFIG.wallpaperInterval = parseInt(document.getElementById('wallpaper-interval').value) || 30;
-                
+
                 // 保存进度条描述
                 CONFIG.progressDescription = document.getElementById('progress-description').value.trim();
-                
+
                 // 保存百分比显示方式
                 CONFIG.progressPercentMode = document.getElementById('progress-percent-left').checked ? 'left' : 'passed';
-                
+
                 // 保存config.js
                 const configContent = `const CONFIG = ${JSON.stringify(CONFIG, null, 2)};
 
@@ -1194,10 +1244,10 @@ const sth = CONFIG.sth;`;
                         throw new Error('saveConfig 函数未定义');
                     }
                     await window.saveConfig(JSON.stringify(basicConfig));
-                    
+
                     // 重新加载配置并刷新主窗口
                     await handleReset();
-                    
+
                     // 刷新主窗口
                     if (typeof window.reloadMainWindow === 'function') {
                         await window.reloadMainWindow();
@@ -1219,32 +1269,32 @@ const sth = CONFIG.sth;`;
         async function handleReset() {
             try {
                 await waitForBinding('readConfig');
-                
+
                 if (typeof window.readConfig !== 'function') {
                     throw new Error('readConfig 函数未定义');
                 }
-                
+
                 const config = await window.readConfig();
                 currentConfig = config;
-                
+
                 if (config && config.Default) {
                     document.getElementById('url').value = config.Default.URL || '';
                     document.getElementById('browser').value = config.Default.BrowserPath || '';
-                    
+
                     if (typeof CONFIG !== 'undefined') {
                         // 设置学期时间
                         document.getElementById('semester-begin').value = CONFIG.lessons.times.semester.begin;
                         document.getElementById('semester-end').value = CONFIG.lessons.times.semester.end;
-                        
+
                         // 加载提示音设置
                         document.getElementById('notifications-enabled').checked = CONFIG.notifications.enabled;
                         document.getElementById('regular-interval').value = CONFIG.notifications.regularInterval;
                         document.getElementById('ending-time').value = CONFIG.notifications.endingTime;
-                        
+
                         // 加载周数设置
                         document.getElementById('week-offset-enabled').checked = CONFIG.weekOffset.enabled;
                         document.getElementById('week-offset').value = CONFIG.weekOffset.offset;
-                        
+
                         initTimeTable(CONFIG);
                         initScheduleTable(CONFIG);
                         initEventList(CONFIG.events);
@@ -1273,7 +1323,7 @@ const sth = CONFIG.sth;`;
                     } else {
                         showStatus('配置加载失败：CONFIG未定义', 'error');
                     }
-                    
+
                     showStatus('配置已加载', 'success');
                 } else {
                     showStatus('配置格式不正确', 'error');
@@ -1376,8 +1426,28 @@ const sth = CONFIG.sth;`;
             showStatus('已根据已填时间智能补全后续节次，请根据实际情况微调。', 'success');
         }
 
+
+        async function openInBrowser() {
+            const url = document.getElementById('url').value.trim();
+            if (!url) {
+                showStatus('请先输入有效的URL', 'error');
+                return;
+            }
+
+            try {
+                await waitForBinding('openURLInBrowser');
+                const result = await window.openURLInBrowser(url);
+                showStatus(result ? '已在浏览器中打开页面' : '打开浏览器失败',
+                    result ? 'success' : 'error');
+            } catch (e) {
+                console.error('打开浏览器失败:', e);
+                showStatus('打开浏览器失败: ' + e.message, 'error');
+            }
+        }
+
         // 页面加载时读取配置
         document.addEventListener('DOMContentLoaded', handleReset);
     </script>
 </body>
-</html> 
+
+</html>

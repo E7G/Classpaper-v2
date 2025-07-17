@@ -239,6 +239,8 @@ function nowClass() {
         let highlightIdx = -1;
         if (inClassTime) {
             highlightIdx = it;
+            //schedule和todayClasses的差距修正
+            highlightIdx++;
         } else {
             // 不在上课时间，定位最近上一节/下一节
             const { prevIdx, nextIdx } = findNearestClasses(now, schedule);
@@ -246,8 +248,6 @@ function nowClass() {
         }
 
         // console.log('[课程定位] 高亮课程',  todayClasses[highlightIdx]);
-        //schedule和todayClasses的差距修正
-        highlightIdx++;
 
         for (let i = 0; i < todayClasses.length; i++) {
             let content = todayClasses[i] || "";
