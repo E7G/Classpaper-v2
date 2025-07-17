@@ -99,16 +99,16 @@ function findNearestClasses(now, schedule) {
 }
 
 // 新增判断当前是否有课的函数
-function hasCurrentClass(now, schedule) {
-    for (const period of schedule) {
-        const classBegin = parseTime(period.begin);
-        const classEnd = parseTime(period.end);
-        if (now >= classBegin && now <= classEnd) {
-            return true;
-        }
-    }
-    return false;
-}
+// function hasCurrentClass(now, schedule) {
+//     for (const period of schedule) {
+//         const classBegin = parseTime(period.begin);
+//         const classEnd = parseTime(period.end);
+//         if (now >= classBegin && now <= classEnd) {
+//             return true;
+//         }
+//     }
+//     return false;
+// }
 
 // 主函数：刷新当前课程显示
 function nowClass() {
@@ -188,7 +188,7 @@ function nowClass() {
         let arranged = arrangeClasses(currentIndex, today_vec, prev_vec, next_vec);
 
         // 新增休息状态处理
-        const hasCurrent = hasCurrentClass(now, schedule);
+        const hasCurrent = inClassTime;
         if (!hasCurrent) {
             // 中间位置显示休息
             arranged[6] = "休息";
@@ -244,6 +244,11 @@ function nowClass() {
             const { prevIdx, nextIdx } = findNearestClasses(now, schedule);
             highlightIdx = nextIdx; // 可选：也可不高亮任何课程
         }
+
+        // console.log('[课程定位] 高亮课程',  todayClasses[highlightIdx]);
+        //schedule和todayClasses的差距修正
+        highlightIdx++;
+
         for (let i = 0; i < todayClasses.length; i++) {
             let content = todayClasses[i] || "";
             let elStyle = '';
@@ -253,7 +258,7 @@ function nowClass() {
             } else if (i < highlightIdx) {
                 // 已上过
                 elStyle = 'background-color:#3daee940; font-weight:400; opacity:0.8;';
-            } else if (i == highlightIdx && !hasCurrentClass(now, schedule)) { // 新增无课条件
+            } else if (i == highlightIdx && !inClassTime) { // 新增无课条件
                 // 无课时
                 elStyle = 'background-color:#3daee940; font-weight:400; opacity:0.8;';
             } else if (i === highlightIdx) {
