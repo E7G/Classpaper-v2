@@ -168,6 +168,11 @@ func runLorcaUI() {
 	ui, err := lorca.New(urlStr, "", BwPath, 0, 0, "--kiosk", "--autoplay-policy=no-user-gesture-required")
 	if err != nil {
 		log.Printf("[Lorca] 创建UI失败: %v", err)
+		// 失败后清理步骤
+		if ui != nil {
+			ui.Close()
+		}
+		mainWindow = nil
 		return
 	}
 	mainWindow = ui
@@ -197,7 +202,20 @@ func runLorcaUI() {
 		return names, nil
 	})
 
-	time.Sleep(time.Millisecond * 300)
+	// 增加检测机制，确保窗口已创建并渲染后再设置壁纸
+	maxWait := 30 // 最多等待30次（约3秒）
+	for i := 0; i < maxWait; i++ {
+		// 检查窗口是否可用（可根据实际情况调整检测条件）
+		res := ui.Eval("document.readyState")
+		if res != nil && res.String() == "complete" {
+			break
+		}
+		time.Sleep(100 * time.Millisecond)
+		if i == maxWait-1 {
+			log.Println("[Lorca] 警告：等待窗口渲染超时，强制继续")
+		}
+	}
+
 	setWallpaper()
 	log.Println("[Lorca] 等待窗口关闭...")
 	<-ui.Done()
