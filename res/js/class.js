@@ -1,156 +1,153 @@
-﻿/*课表 */
+﻿/* 课表优化版 */
 
-var source = lessons;
+const source = lessons;
+const source_vec = source.split(',');
 
-let source_vec = source.split(',');
-//console.log(source_vec)
-
-var classtable = document.getElementById('classtable');
+const classtable = document.getElementById('classtable');
 
 // 音频元素
 const regularNotification = document.getElementById('regularNotification');
 const endingNotification = document.getElementById('endingNotification');
 
-// 上次提示的时间
+// 上次提示的时间戳
 let lastNotificationTime = 0;
 // 是否已经发出结束提示
 let endingNotified = false;
 
-// 播放提示音的函数
+// 播放提示音
 function playNotification(type) {
-    // 检查提示音是否启用
-    if (!CONFIG.notifications.enabled) {
-        return;
-    }
-
+    if (!CONFIG.notifications.enabled) return;
     if (type === 'regular') {
-        regularNotification.play();
+        regularNotification && regularNotification.play();
     } else if (type === 'ending') {
-        endingNotification.play();
+        endingNotification && endingNotification.play();
     }
 }
 
-var date = new Date();
-
-var week = new Date().getDay();
-
-var offset = week * 12
-if (week == 0) {
-    offset = 7 * 12;
+// 获取今天、前一天、后一天的课程数组
+function getDayVectors() {
+    const week = new Date().getDay();
+    let offset = week === 0 ? 7 * 12 : week * 12;
+    // 13是因为每天12节课+1个空元素
+    return {
+        today_vec: source_vec.slice(offset, offset + 13),
+        prev_vec: offset >= 12 ? source_vec.slice(offset - 12, offset + 1) : null,
+        next_vec: offset + 25 < source_vec.length ? source_vec.slice(offset + 13, offset + 25) : null
+    };
 }
 
-var today_vec = source_vec.slice(offset, offset + 13);
-var prev_vec = offset >= 12 ? source_vec.slice(offset - 12, offset + 1) : null;
-var next_vec = offset + 25 < source_vec.length ? source_vec.slice(offset + 13, offset + 25) : null;
+// 重新排列课程顺序，当前课程在第7个位置
+function arrangeClasses(currentIndex, today_vec, prev_vec, next_vec) {
+    const showBefore = 6;
+    const classes = today_vec.slice(0, -1);
+    const arranged = new Array(12);
 
-// 根据当前课程重新排列课程顺序
-function arrangeClasses(currentIndex) {
-    // 复制今天的课程数组
-    let classes = today_vec.slice(0, -1);  // 去掉最后一个空元素
-    
-    // 计算需要在当前课程前显示多少节课
-    const showBefore = 6;  // 当前课程要显示在第7个位置
-    
-    // 构建新的显示顺序
-    let arranged = [];
-    
-    // 添加当前课程之前的课程
-    for (let i = showBefore - 1; i >= 0; i--) {
-        let index = currentIndex - (showBefore - i);
-        if (index >= 0) {
-            arranged[i] = classes[index];
+    // 前6节
+    for (let i = 0; i < showBefore; i++) {
+        let idx = currentIndex - (showBefore - i);
+        if (idx >= 0) {
+            arranged[i] = classes[idx];
+        } else if (prev_vec) {
+            let prevIndex = prev_vec.length - 1 + idx;
+            arranged[i] = prevIndex >= 0 ? prev_vec[prevIndex] : "";
         } else {
-            // 使用前一天对应时间的课程
-            if (prev_vec) {
-                let prevIndex = prev_vec.length - 1 + index; // -1 因为要去掉最后一个空元素
-                arranged[i] = prevIndex >= 0 ? prev_vec[prevIndex] : "";
-            } else {
-                arranged[i] = "";
-            }
+            arranged[i] = "";
         }
     }
-    
-    // 添加当前课程
+    // 当前
     arranged[showBefore] = classes[currentIndex];
-    
-    // 添加当前课程之后的课程
+    // 后5节
     for (let i = showBefore + 1; i < 12; i++) {
-        let index = currentIndex + (i - showBefore);
-        if (index < classes.length) {
-            arranged[i] = classes[index];
+        let idx = currentIndex + (i - showBefore);
+        if (idx < classes.length) {
+            arranged[i] = classes[idx];
+        } else if (next_vec) {
+            let nextIndex = idx - classes.length;
+            arranged[i] = nextIndex < next_vec.length - 1 ? next_vec[nextIndex] : "";
         } else {
-            // 使用下一天对应时间的课程
-            if (next_vec) {
-                let nextIndex = index - classes.length;
-                arranged[i] = nextIndex < next_vec.length - 1 ? next_vec[nextIndex] : "";
-            } else {
-                arranged[i] = "";
-            }
+            arranged[i] = "";
         }
     }
-    
     return arranged;
 }
 
-// 解析时间字符串为Date对象
+// 解析时间字符串为当天的Date对象
 function parseTime(timeStr) {
     const [hours, minutes] = timeStr.split(':').map(Number);
     const now = new Date();
-    now.setHours(hours, minutes, 0);
-    return now;
+    now.setHours(hours, minutes, 0, 0);
+    return now.getTime();
 }
 
+// 主函数：刷新当前课程显示
 function nowClass() {
-    var date = new Date();
-    
-    // 检查是否在学期时间范围内
+    const date = new Date();
+    const { today_vec, prev_vec, next_vec } = getDayVectors();
+
+    // 检查是否在学期时间范围
     const semesterBegin = new Date(CONFIG.lessons.times.semester.begin);
     const semesterEnd = new Date(CONFIG.lessons.times.semester.end);
-    
     if (date < semesterBegin || date > semesterEnd) {
-        // 不在学期时间范围内，显示空课表
+        // 非学期内，全部显示“无”
+        for (let i = 0; i < 12; i++) {
+            let opacity = (i === 6) ? "" : "opacity: 0.5;";
+            document.getElementById('c' + i).innerHTML =
+                `<a href="#" role="button" class="contrast" id="c_b${i}" style="${opacity}">无</a>`;
+        }
+        // 当前课程高亮
+        const c_b6 = document.getElementById('c_b6');
+        c_b6.style.backgroundColor = '#93cee97f';
+        c_b6.style.fontWeight = '600';
+        c_b6.style.opacity = '1';
+        // 之前课程样式
+        for (let i = 0; i < 6; i++) {
+            const el = document.getElementById('c_b' + i);
+            el.style.backgroundColor = '#3daee940';
+            el.style.fontWeight = '400';
+        }
+        // 之后课程样式
+        for (let i = 7; i < 12; i++) {
+            const el = document.getElementById('c_b' + i);
+            el.style.backgroundColor = '';
+            el.style.fontWeight = '400';
+        }
         return;
     }
-
-    var colorize = true;
-    var it = 0;
 
     // 获取当前时间对应的课程
     const schedule = CONFIG.lessons.times.schedule;
     const now = date.getTime();
+    let it = 0;
+    let colorize = true;
 
-    // 遍历课程时间表，找到当前时间对应的课程
-    for (let i = schedule.length - 1; i >= 0; i--) {
+    // 优化遍历顺序，正序遍历更直观
+    for (let i = 0; i < schedule.length; i++) {
         const period = schedule[i];
         const classBegin = parseTime(period.begin);
         const classEnd = parseTime(period.end);
-        
+
         if (now >= classBegin && now <= classEnd) {
             it = i;
             // 课程倒计时提示
-            const remainingTime = (classEnd - date) / (1000 * 60); // 剩余分钟数
-            
-            // 根据设置的间隔时间提示
+            const remainingTime = (classEnd - now) / (1000 * 60); // 剩余分钟数
             const regularInterval = CONFIG.notifications.regularInterval;
-            if (remainingTime > CONFIG.notifications.endingTime && 
+            if (remainingTime > CONFIG.notifications.endingTime &&
                 (now - lastNotificationTime) >= regularInterval * 60 * 1000) {
                 playNotification('regular');
                 lastNotificationTime = now;
             }
-            
-            // 根据设置的结束时间提示
             if (remainingTime <= CONFIG.notifications.endingTime && !endingNotified) {
                 playNotification('ending');
                 endingNotified = true;
             }
             break;
         } else if (period.rest && i > 0) {
+            // 课间休息
             const restBegin = schedule[i - 1].end;
             const restTime = parseTime(restBegin);
             if (now >= classEnd && now <= restTime) {
                 it = i;
                 colorize = false;
-                // 重置提示状态
                 endingNotified = false;
                 break;
             }
@@ -158,34 +155,37 @@ function nowClass() {
     }
 
     // 重新排列课程
-    let arranged = arrangeClasses(it);
-    
-    // 更新显示
+    const arranged = arrangeClasses(it, today_vec, prev_vec, next_vec);
+
+    // 批量更新DOM，减少重排
     for (let i = 0; i < arranged.length; i++) {
         let content = arranged[i] || "";
-        let opacity = i < 6 ? "opacity: 0.5;" : (i > 6 ? "opacity: 0.5;" : "");
-        document.getElementById('c' + i).innerHTML = 
+        let opacity = (i === 6) ? "" : "opacity: 0.5;";
+        document.getElementById('c' + i).innerHTML =
             `<a href="#" role="button" class="contrast" id="c_b${i}" style="${opacity}">${content}</a>`;
     }
 
-    // 设置当前课程样式
-    document.getElementById('c_b6').style.backgroundColor = colorize ? '#93cee97f' : '#3daee940';
-    document.getElementById('c_b6').style.fontWeight = colorize ? '600' : '400';
-    document.getElementById('c_b6').style.opacity = '1';
+    // 当前课程高亮
+    const c_b6 = document.getElementById('c_b6');
+    c_b6.style.backgroundColor = colorize ? '#93cee97f' : '#3daee940';
+    c_b6.style.fontWeight = colorize ? '600' : '400';
+    c_b6.style.opacity = '1';
 
-    // 设置之前课程的样式
+    // 之前课程样式
     for (let i = 0; i < 6; i++) {
-        document.getElementById('c_b' + i).style.backgroundColor = '#3daee940';
-        document.getElementById('c_b' + i).style.fontWeight = '400';
+        const el = document.getElementById('c_b' + i);
+        el.style.backgroundColor = '#3daee940';
+        el.style.fontWeight = '400';
     }
-
-    // 清除之后课程的样式
+    // 之后课程样式
     for (let i = 7; i < 12; i++) {
-        document.getElementById('c_b' + i).style.backgroundColor = '';
-        document.getElementById('c_b' + i).style.fontWeight = '400';
+        const el = document.getElementById('c_b' + i);
+        el.style.backgroundColor = '';
+        el.style.fontWeight = '400';
     }
 }
 
+// 首次加载
 nowClass();
-
+// 每秒刷新
 setInterval(nowClass, 1000);

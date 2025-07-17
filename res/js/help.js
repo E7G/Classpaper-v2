@@ -1,5 +1,9 @@
-﻿/**告示牌 */
+﻿/** 告示牌优化版 */
 
-var source_str = sth;
+const sourceStr = typeof sth === 'string' ? sth : '';
 
-document.getElementById("help").innerHTML = source_str/* .replace('\n','<br>') */;                             
+const helpElem = document.getElementById("help");
+if (helpElem) {
+    // 支持多行换行显示
+    helpElem.innerHTML = sourceStr.replace(/\n/g, '<br>');
+}

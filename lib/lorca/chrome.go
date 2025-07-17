@@ -73,6 +73,8 @@ func newChromeWithArgs(chromeBinary string, args ...string) (*chrome, error) {
 		return nil, err
 	}
 	wsURL := m[1]
+	// 输出WebSocket调试地址，便于开发者调试和排查问题
+	log.Println("Chrome DevTools WebSocket 地址:", wsURL)
 
 	// Open a websocket
 	c.ws, err = websocket.Dial(wsURL, "", "http://127.0.0.1")
@@ -270,7 +272,46 @@ func (c *chrome) readLoop() {
 			json.Unmarshal([]byte(params.Message), &res)
 
 			if res.ID == 0 && res.Method == "Runtime.consoleAPICalled" || res.Method == "Runtime.exceptionThrown" {
-				log.Println(params.Message)
+				// 优化控制台输出，便于开发者阅读
+				var pretty map[string]interface{}
+				if err := json.Unmarshal([]byte(params.Message), &pretty); err == nil {
+					if method, ok := pretty["method"].(string); ok && method == "Runtime.consoleAPICalled" {
+						if paramsMap, ok := pretty["params"].(map[string]interface{}); ok {
+							msgType := paramsMap["type"]
+							args := paramsMap["args"]
+							stack := ""
+							if st, ok := paramsMap["stackTrace"].(map[string]interface{}); ok {
+								if frames, ok := st["callFrames"].([]interface{}); ok && len(frames) > 0 {
+									if frame, ok := frames[0].(map[string]interface{}); ok {
+										stack = fmt.Sprintf("%s:%v", frame["url"], frame["lineNumber"])
+									}
+								}
+							}
+							// 格式化输出console.log内容
+							log.Printf("[Chrome Console][%v] %v @ %v", msgType, args, stack)
+						} else {
+							log.Println(params.Message)
+						}
+					} else if method == "Runtime.exceptionThrown" {
+						if paramsMap, ok := pretty["params"].(map[string]interface{}); ok {
+							if details, ok := paramsMap["exceptionDetails"].(map[string]interface{}); ok {
+								text := details["text"]
+								url := details["url"]
+								line := details["lineNumber"]
+								col := details["columnNumber"]
+								log.Printf("[Chrome Exception] %v @ %v:%v:%v", text, url, line, col)
+							} else {
+								log.Println(params.Message)
+							}
+						} else {
+							log.Println(params.Message)
+						}
+					} else {
+						log.Println(params.Message)
+					}
+				} else {
+					log.Println(params.Message)
+				}
 			} else if res.ID == 0 && res.Method == "Runtime.bindingCalled" {
 				payload := struct {
 					Name string            `json:"name"`

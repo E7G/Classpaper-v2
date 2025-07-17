@@ -142,19 +142,30 @@ func NormalizeURL(url string) string {
 func setWallpaper() {
 	ret := SetupWallpaper(lorcaname)
 	log.Printf("[桌面穿透] SetupWallpaper(%s) 返回: %v", lorcaname, ret)
-    t = time.NewTicker(time.Second)
+	t = time.NewTicker(time.Second)
 	go func() {
+		failCount := 0
 		for range t.C {
-			log.Println("[桌面穿透] 定时调用 RemoveFromTaskbar 保持窗口状态")
 			if hwnd := FindWindowByTitle(lorcaname); hwnd != 0 {
-				RemoveFromTaskbar(hwnd)
-	     }
-	  }
+				err := RemoveFromTaskbar(hwnd)
+				if err != nil {
+					failCount++
+					if failCount == 1 || failCount%60 == 0 {
+						log.Printf("[桌面穿透] RemoveFromTaskbar 失败: %v（累计 %d 次）", err, failCount)
+					}
+				} else {
+					if failCount > 0 {
+						log.Printf("[桌面穿透] RemoveFromTaskbar 恢复正常")
+					}
+					failCount = 0
+				}
+			}
+		}
 	}()
 }
 
 func runLorcaUI() {
-	ui, err := lorca.New(urlStr, "", BwPath, 0, 0, "--kiosk")
+	ui, err := lorca.New(urlStr, "", BwPath, 0, 0, "--kiosk", "--autoplay-policy=no-user-gesture-required")
 	if err != nil {
 		log.Printf("[Lorca] 创建UI失败: %v", err)
 		return

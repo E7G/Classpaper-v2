@@ -204,13 +204,13 @@ const CONFIG = {
     }
   },
   "weekOffset": {
-    "enabled": true,           // 是否启用自定义周数
-    "offset": 7               // 周数偏移值，默认为7
+    "enabled": true,
+    "offset": 7
   },
   "notifications": {
-    "enabled": true,           // 提示音总开关
-    "regularInterval": 5,      // 常规提示间隔（分钟）
-    "endingTime": 5           // 结束提示时间（分钟）
+    "enabled": true,
+    "regularInterval": 5,
+    "endingTime": 5
   },
   "events": [
     {

@@ -6,15 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/pico.css">
     <link rel="stylesheet" href="css/custom.css">
-    <title>Background</title> 
+    <title>背景课表</title>
     <script src="config/config.js"></script>
-    <!-- 添加音频元素 -->
+    <!-- 音频通知 -->
     <audio id="regularNotification" src="audio/regular_notification.mp3" preload="auto"></audio>
     <audio id="endingNotification" src="audio/ending_notification.mp3" preload="auto"></audio>
 </head>
 
-<body style='overflow:scroll;overflow-x:hidden;overflow-y:hidden' id="body-html">
-
+<body id="body-html" style="overflow:hidden;">
 
     <main class="container-fluid">
         <div id="glass">
@@ -33,44 +32,44 @@
                 <div id="c11">晚修2</div>
             </div>
             <progress id="nav-pro" value="25" max="100" hidden></progress>
-            </nav>
             <script src="js/class.js"></script>
             <section>
                 <div class="grid">
-                    <!-- <div class="emtry">
+                    <!-- 记忆功能可选启用
+                    <div class="emtry">
                         <article id="remember">
                             <div id="remember-txt"></div>
                             <progress id="rem-pro" max="60" hidden></progress>
                         </article>
-                        <script type="text/javascript" src="js/remember.js"></script>
-                    </div> -->
+                        <script src="js/remember.js"></script>
+                    </div>
+                    -->
                     <div>
                         <article id="clockart">
                             <header hidden>
-                                <a href="#close" aria-label="Close" class="close"></a>
-                                ⏰ Clock
+                                <a href="#close" aria-label="关闭" class="close"></a>
+                                ⏰ 时钟
                             </header>
-                            | <strong id="time-a">Time</strong> |
-                            <strong id="date-a">Date</strong> |
-                            <strong id="weekday-a">Weekday</strong>
+                            | <strong id="time-a">时间</strong> |
+                            <strong id="date-a">日期</strong> |
+                            <strong id="weekday-a">星期</strong>
                             <br>|
-                            <strong id="week-a">Week</strong> |
+                            <strong id="week-a">周次</strong> |
                             <strong id="prog-description"></strong>
                             <progress id="prog" value="25" max="100"></progress>
                         </article>
                         <article id="calart">
                             <header hidden>
-                                <a href="#close" aria-label="Close" class="close"></a>
-                                📅 Events Calendar
+                                <a href="#close" aria-label="关闭" class="close"></a>
+                                📅 事件日历
                             </header>
-                            <ul id="evcal">
-                            </ul>
+                            <ul id="evcal"></ul>
                         </article>
                         <script src="js/event_cal.js"></script>
                         <article id="helpart">
                             <header hidden>
-                                <a href="#close" aria-label="Close" class="close"></a>
-                                📚 Billboard
+                                <a href="#close" aria-label="关闭" class="close"></a>
+                                📚 告示牌
                             </header>
                             <div id="help"></div>
                         </article>
@@ -78,8 +77,9 @@
                     </div>
                 </div>
             </section>
+        </div>
     </main>
-    <script type="text/javascript" src="js/main.js"></script>
+    <script src="js/main.js"></script>
 </body>
 
 </html>

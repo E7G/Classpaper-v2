@@ -440,9 +440,9 @@
                 <div class="form-section-title">
                     <h2>系统设置</h2>
                 </div>
-                <div class="form-group">
+        <div class="form-group">
                     <label for="url">壁纸页面URL</label>
-                    <input type="text" id="url" placeholder="输入页面URL或本地文件路径">
+            <input type="text" id="url" placeholder="输入页面URL或本地文件路径">
                     <div class="help-text">可以是网页地址或本地壁纸文件夹路径</div>
                 </div>
                 <div class="form-group">
@@ -479,6 +479,17 @@
             <div class="form-section">
                 <div class="form-section-title">
                     <h2>课程安排</h2>
+                </div>
+                <div class="form-group">
+                    <label for="schedule-import">导入课程表</label>
+                    <textarea id="schedule-import" class="notice-editor" style="min-height: 100px;"
+                            placeholder="粘贴课程表文本，格式如下：
+星期,1,2,3,4,5,6,7,8,9,10,11,
+周一,升旗,班会,物理,英语,数学,数学,生物,化学,语文,晚修,晚修,
+周二,语文,语文,数学,英语,体育,物理,生物,化学,自习,晚修,晚修,
+..."></textarea>
+                    <div class="help-text">支持CSV格式的课程表文本导入，第一行为表头，之后每行为一天的课程安排</div>
+                    <button class="secondary" onclick="importSchedule()">导入课程表</button>
                 </div>
                 <div class="table-container">
                     <table id="scheduleTable">
@@ -523,8 +534,8 @@
             <div class="form-section">
                 <div class="form-section-title">
                     <h2>告示内容</h2>
-                </div>
-                <div class="form-group">
+        </div>
+        <div class="form-group">
                     <label for="notice-content">告示内容（支持HTML）</label>
                     <textarea id="notice-content" class="notice-editor" 
                             placeholder="在这里输入告示内容，支持HTML标签"
@@ -732,10 +743,11 @@
             updatePreview();
         }
 
-        // 更新预览
+        // 更新预览（优化：支持多行换行显示）
         function updatePreview() {
             const content = document.getElementById('notice-content').value;
-            document.getElementById('notice-preview').innerHTML = content;
+            // 支持多行换行显示
+            document.getElementById('notice-preview').innerHTML = content.replace(/\n/g, '<br>');
         }
 
         // 收集课程表数据
@@ -847,6 +859,62 @@
             });
             
             return schedule;
+        }
+
+        // 导入课程表
+        function importSchedule() {
+            try {
+                const importText = document.getElementById('schedule-import').value.trim();
+                if (!importText) {
+                    showStatus('请输入课程表文本', 'error');
+                    return;
+                }
+
+                // 按行分割
+                const lines = importText.split('\n');
+                if (lines.length < 2) {
+                    showStatus('课程表格式不正确', 'error');
+                    return;
+                }
+
+                // 解析表头
+                const headers = lines[0].split(',').map(h => h.trim()).filter(h => h);
+                if (headers.length < 2) {
+                    showStatus('课程表表头格式不正确', 'error');
+                    return;
+                }
+
+                // 解析课程数据
+                const schedule = [];
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    
+                    const cells = line.split(',').map(c => c.trim());
+                    if (cells.length < 2) continue;
+
+                    schedule.push({
+                        day: cells[0],
+                        classes: cells.slice(1)
+                    });
+                }
+
+                if (schedule.length === 0) {
+                    showStatus('没有找到有效的课程数据', 'error');
+                    return;
+                }
+
+                // 更新CONFIG
+                CONFIG.lessons.headers = headers;
+                CONFIG.lessons.schedule = schedule;
+
+                // 重新初始化课程表
+                initScheduleTable(CONFIG);
+                showStatus('课程表导入成功', 'success');
+            } catch (e) {
+                console.error('导入课程表失败:', e);
+                showStatus('导入课程表失败: ' + e, 'error');
+            }
         }
 
         // 重命名函数以避免冲突
