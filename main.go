@@ -220,21 +220,22 @@ func restartWebpageDisplayProgram() {
 }
 
 func onReady() {
-	// 判断系统是否为夜间模式，选择不同的图标
-	var iconLight, iconDark []byte
-	iconLight = IconDataLight
-	iconDark = IconDataDark
+	// // 判断系统是否为夜间模式，选择不同的图标
+	// var iconLight, iconDark []byte
+	// iconLight = IconDataLight
+	// iconDark = IconDataDark
 
-	// 检测夜间模式
-	isDarkMode := false
-	// Windows下可用注册表检测，macOS可用AppleScript，Linux需根据桌面环境
-	isDarkMode = GetWindowsDarkMode()
+	// // 检测夜间模式
+	// isDarkMode := false
+	// // Windows下可用注册表检测，macOS可用AppleScript，Linux需根据桌面环境
+	// isDarkMode = GetWindowsDarkMode()
 
-	if isDarkMode {
-		systray.SetTemplateIcon(iconDark, iconDark)
-	} else {
-		systray.SetTemplateIcon(iconLight, iconLight)
-	}
+	// if isDarkMode {
+	// 	systray.SetTemplateIcon(iconDark, iconDark)
+	// } else {
+	// 	systray.SetTemplateIcon(iconLight, iconLight)
+	// }
+	systray.SetTemplateIcon(IconData, IconData)
 
 	systray.SetTitle(title)
 	systray.SetTooltip(title)
