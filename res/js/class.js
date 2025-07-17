@@ -79,6 +79,25 @@ function parseTime(timeStr) {
     return now.getTime();
 }
 
+// 查找最近的上一节课和下一节课
+function findNearestClasses(now, schedule) {
+    let prevIdx = -1, nextIdx = -1;
+    let prevTime = -Infinity, nextTime = Infinity;
+    for (let i = 0; i < schedule.length; i++) {
+        const classBegin = parseTime(schedule[i].begin);
+        const classEnd = parseTime(schedule[i].end);
+        if (classEnd <= now && classEnd > prevTime) {
+            prevTime = classEnd;
+            prevIdx = i;
+        }
+        if (classBegin > now && classBegin < nextTime) {
+            nextTime = classBegin;
+            nextIdx = i;
+        }
+    }
+    return { prevIdx, nextIdx };
+}
+
 // 主函数：刷新当前课程显示
 function nowClass() {
     const date = new Date();
@@ -117,10 +136,12 @@ function nowClass() {
     // 获取当前时间对应的课程
     const schedule = CONFIG.lessons.times.schedule;
     const now = date.getTime();
-    let it = 0;
+    let it = -1;
     let colorize = true;
+    let inClassTime = false;
+    let inRestTime = false;
 
-    // 优化遍历顺序，正序遍历更直观
+    // 判断当前是否在课程时间或课间休息
     for (let i = 0; i < schedule.length; i++) {
         const period = schedule[i];
         const classBegin = parseTime(period.begin);
@@ -128,6 +149,7 @@ function nowClass() {
 
         if (now >= classBegin && now <= classEnd) {
             it = i;
+            inClassTime = true;
             // 课程倒计时提示
             const remainingTime = (classEnd - now) / (1000 * 60); // 剩余分钟数
             const regularInterval = CONFIG.notifications.regularInterval;
@@ -149,39 +171,103 @@ function nowClass() {
                 it = i;
                 colorize = false;
                 endingNotified = false;
+                inRestTime = true;
                 break;
             }
         }
     }
 
-    // 重新排列课程
-    const arranged = arrangeClasses(it, today_vec, prev_vec, next_vec);
+    if (inClassTime || inRestTime) {
+        // 课中或课间，正常显示
+        const arranged = arrangeClasses(it, today_vec, prev_vec, next_vec);
 
-    // 批量更新DOM，减少重排
-    for (let i = 0; i < arranged.length; i++) {
-        let content = arranged[i] || "";
-        let opacity = (i === 6) ? "" : "opacity: 0.5;";
-        document.getElementById('c' + i).innerHTML =
-            `<a href="#" role="button" class="contrast" id="c_b${i}" style="${opacity}">${content}</a>`;
-    }
+        for (let i = 0; i < arranged.length; i++) {
+            let content = arranged[i] || "";
+            let opacity = (i === 6) ? "" : "opacity: 0.5;";
+            document.getElementById('c' + i).innerHTML =
+                `<a href="#" role="button" class="contrast" id="c_b${i}" style="${opacity}">${content}</a>`;
+        }
 
-    // 当前课程高亮
-    const c_b6 = document.getElementById('c_b6');
-    c_b6.style.backgroundColor = colorize ? '#93cee97f' : '#3daee940';
-    c_b6.style.fontWeight = colorize ? '600' : '400';
-    c_b6.style.opacity = '1';
+        // 当前课程高亮
+        const c_b6 = document.getElementById('c_b6');
+        c_b6.style.backgroundColor = colorize ? '#93cee97f' : '#3daee940';
+        c_b6.style.fontWeight = colorize ? '600' : '400';
+        c_b6.style.opacity = '1';
 
-    // 之前课程样式
-    for (let i = 0; i < 6; i++) {
-        const el = document.getElementById('c_b' + i);
-        el.style.backgroundColor = '#3daee940';
-        el.style.fontWeight = '400';
-    }
-    // 之后课程样式
-    for (let i = 7; i < 12; i++) {
-        const el = document.getElementById('c_b' + i);
-        el.style.backgroundColor = '';
-        el.style.fontWeight = '400';
+        // 之前课程样式
+        for (let i = 0; i < 6; i++) {
+            const el = document.getElementById('c_b' + i);
+            el.style.backgroundColor = '#3daee940';
+            el.style.fontWeight = '400';
+        }
+        // 之后课程样式
+        for (let i = 7; i < 12; i++) {
+            const el = document.getElementById('c_b' + i);
+            el.style.backgroundColor = '';
+            el.style.fontWeight = '400';
+        }
+    } else {
+        // 不在课程时间，显示“暂时无课/休息”，前后显示最近的上一节课和下一节课
+        const { prevIdx, nextIdx } = findNearestClasses(now, schedule);
+        const classes = today_vec.slice(0, -1);
+
+        let prevClass = prevIdx >= 0 ? classes[prevIdx] : "";
+        let nextClass = nextIdx >= 0 ? classes[nextIdx] : "";
+
+        // 构造显示数组
+        let arranged = new Array(12).fill("");
+
+        // 填充上一节、下一节
+        arranged[5] = prevClass || "无";
+        arranged[6] = "休息";
+        arranged[7] = nextClass || "无";
+
+        // 向前填充上上一节、上上上一节...
+        let p = prevIdx - 1;
+        for (let i = 4; i >= 0; i--) {
+            if (p >= 0) {
+                arranged[i] = classes[p];
+                p--;
+            } else {
+                arranged[i] = "";
+            }
+        }
+        // 向后填充下下一节、下下下一节...
+        let n = nextIdx + 1;
+        for (let i = 8; i < 12; i++) {
+            if (n < classes.length) {
+                arranged[i] = classes[n];
+                n++;
+            } else {
+                arranged[i] = "";
+            }
+        }
+
+        for (let i = 0; i < arranged.length; i++) {
+            let content = arranged[i] || "";
+            let opacity = (i === 6) ? "" : "opacity: 0.5;";
+            document.getElementById('c' + i).innerHTML =
+                `<a href="#" role="button" class="contrast" id="c_b${i}" style="${opacity}">${content}</a>`;
+        }
+
+        // 当前课程高亮
+        const c_b6 = document.getElementById('c_b6');
+        c_b6.style.backgroundColor = '#3daee940';
+        c_b6.style.fontWeight = '600';
+        c_b6.style.opacity = '1';
+
+        // 之前课程样式
+        for (let i = 0; i < 6; i++) {
+            const el = document.getElementById('c_b' + i);
+            el.style.backgroundColor = '#3daee940';
+            el.style.fontWeight = '400';
+        }
+        // 之后课程样式
+        for (let i = 7; i < 12; i++) {
+            const el = document.getElementById('c_b' + i);
+            el.style.backgroundColor = '';
+            el.style.fontWeight = '400';
+        }
     }
 }
 

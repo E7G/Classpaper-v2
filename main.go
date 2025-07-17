@@ -220,12 +220,27 @@ func restartWebpageDisplayProgram() {
 }
 
 func onReady() {
-	systray.SetTemplateIcon(IconData, IconData)
+	// 判断系统是否为夜间模式，选择不同的图标
+	var iconLight, iconDark []byte
+	iconLight = IconDataLight
+	iconDark = IconDataDark
+
+	// 检测夜间模式
+	isDarkMode := false
+	// Windows下可用注册表检测，macOS可用AppleScript，Linux需根据桌面环境
+	isDarkMode = GetWindowsDarkMode()
+
+	if isDarkMode {
+		systray.SetTemplateIcon(iconDark, iconDark)
+	} else {
+		systray.SetTemplateIcon(iconLight, iconLight)
+	}
+
 	systray.SetTitle(title)
 	systray.SetTooltip(title)
 	reloadMenuItem := systray.AddMenuItem("重载网页", "Reload Page")
 	setPenetrationMenuItem := systray.AddMenuItem("设置程序桌面穿透", "Set Window Penetration")
-    restartWebpageMenuItem := systray.AddMenuItem("重启网页显示程序", "Restart Webpage Display")
+	restartWebpageMenuItem := systray.AddMenuItem("重启网页显示程序", "Restart Webpage Display")
 	settingsMenuItem := systray.AddMenuItem("设置", "Open Settings")
 	restartMenuItem := systray.AddMenuItem("重启程序", "Restart Application")
 	quitMenuItem := systray.AddMenuItem("退出程序", "Quit Application")
@@ -240,9 +255,9 @@ func onReady() {
 			case <-setPenetrationMenuItem.ClickedCh:
 				log.Println("[托盘] 手动触发桌面穿透")
 				setWallpaper()
-            case <-restartWebpageMenuItem.ClickedCh:
+			case <-restartWebpageMenuItem.ClickedCh:
 				log.Println("[托盘] 手动重启网页显示程序")
-                restartWebpageDisplayProgram()
+				restartWebpageDisplayProgram()
 			case <-settingsMenuItem.ClickedCh:
 				log.Println("[托盘] 打开设置窗口")
 				openSettings()

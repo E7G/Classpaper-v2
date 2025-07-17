@@ -205,3 +205,28 @@ func SetupWallpaper(windowTitle string) bool {
 	}
 	return false
 }
+
+// GetWindowsDarkMode 检测 Windows 是否为暗色模式
+func GetWindowsDarkMode() bool {
+	regKey, err := syscall.UTF16PtrFromString(`Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize`)
+	if err != nil {
+		return false
+	}
+	var hKey syscall.Handle
+	err = syscall.RegOpenKeyEx(syscall.HKEY_CURRENT_USER, regKey, 0, syscall.KEY_READ, &hKey)
+	if err != nil {
+		return false
+	}
+	defer syscall.RegCloseKey(hKey)
+
+	var typ uint32
+	var data [4]byte
+	var dataLen uint32 = 4
+	valueName, _ := syscall.UTF16PtrFromString("AppsUseLightTheme")
+	err = syscall.RegQueryValueEx(hKey, valueName, nil, &typ, (*byte)(unsafe.Pointer(&data[0])), &dataLen)
+	if err != nil || typ != syscall.REG_DWORD {
+		return false
+	}
+	// 0 表示暗色模式，1 表示亮色模式
+	return data[0] == 0
+}
