@@ -21,7 +21,7 @@ ClassPaper 是一个用 Go 语言开发的桌面壁纸程序，可以将任意�
 2. 安装 Go 1.16 及以上版本
 3. 安装依赖（首次运行会自动 go get，或手动 `go mod tidy`）
 4. 编辑 `config.toml` 文件，配置网页 URL 和浏览器路径
-5. 运行程序：  
+5. 运行程序：
    ```bash
    go run main.go
    ```
@@ -34,12 +34,14 @@ ClassPaper 是一个用 Go 语言开发的桌面壁纸程序，可以将任意�
 配置文件为 `config.toml`，支持两种写法：
 
 **推荐写法：**
+
 ```toml
 url = "http://example.com"         # 要显示的网页URL
 browser_path = ""                  # 浏览器可执行文件路径（可选，留空用默认浏览器）
 ```
 
 **或带区块写法：**
+
 ```toml
 [default]
 url = "http://example.com"
@@ -94,7 +96,7 @@ browser_path = ""
 
 ## 许可证
 
-本项目使用 LGPL 许可证，详见 [LICENSE](LICENSE)。
+本项目使用 MIT 许可证，详见 [LICENSE](LICENSE)。
 
 ---
 
