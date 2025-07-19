@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ClassPaper 设置</title>
     <script src="config/config.js"></script>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <style>
         :root {
             --primary-color: #1a2a6c;
@@ -629,9 +630,9 @@
                 <div class="form-section-title">
                     <h2>系统设置</h2>
                 </div>
-                <div class="form-group">
+        <div class="form-group">
                     <label for="url">壁纸页面URL</label>
-                    <input type="text" id="url" placeholder="输入页面URL或本地文件路径">
+            <input type="text" id="url" placeholder="输入页面URL或本地文件路径">
                     <div class="help-text">可以是网页地址或本地壁纸文件夹路径</div>
                 </div>
                 <div class="form-group">
@@ -752,8 +753,8 @@
             <div class="form-section">
                 <div class="form-section-title">
                     <h2>告示内容</h2>
-                </div>
-                <div class="form-group">
+        </div>
+        <div class="form-group">
                     <label for="notice-content">告示内容（支持HTML）</label>
                     <textarea id="notice-content" class="notice-editor" placeholder="在这里输入告示内容，支持HTML标签"
                         oninput="updatePreview()"></textarea>
@@ -1273,7 +1274,7 @@ const sth = CONFIG.sth;`;
                 if (typeof window.readConfig !== 'function') {
                     throw new Error('readConfig 函数未定义');
                 }
-
+                
                 const config = await window.readConfig();
                 currentConfig = config;
 
@@ -1450,4 +1451,4 @@ const sth = CONFIG.sth;`;
     </script>
 </body>
 
-</html>
+</html> 

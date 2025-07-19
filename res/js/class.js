@@ -15,8 +15,9 @@ let lastNotificationTime = 0;
 let endingNotified = false;
 
 // 播放提示音
-function playNotification(type) {
+function playNotification(type, className) {
     if (!CONFIG.notifications.enabled) return;
+    if (!className || className === '无') return; // 课程为无时不响铃
     if (type === 'regular') {
         regularNotification && regularNotification.play();
     } else if (type === 'ending') {
@@ -158,13 +159,22 @@ function nowClass() {
             inClassTime = true;
             const remainingTime = (classEnd - now) / (1000 * 60);
             const regularInterval = CONFIG.notifications.regularInterval;
+            // 获取当前课程名
+            let className = '';
+            if (displayMode === 'day') {
+                const { today_vec } = getDayVectors();
+                className = today_vec[i] || '';
+            } else {
+                const { today_vec } = getDayVectors();
+                className = today_vec[i] || '';
+            }
             if (remainingTime > CONFIG.notifications.endingTime &&
                 (now - lastNotificationTime) >= regularInterval * 60 * 1000) {
-                playNotification('regular');
+                playNotification('regular', className);
                 lastNotificationTime = now;
             }
             if (remainingTime <= CONFIG.notifications.endingTime && !endingNotified) {
-                playNotification('ending');
+                playNotification('ending', className);
                 endingNotified = true;
             }
             break;
@@ -235,7 +245,7 @@ function nowClass() {
     }
     else if (displayMode === 'day') {
         // 一天进度模式：只显示当天全部课程，前/当前/后课程有进度感
-        const todayClasses = today_vec.slice(0, -1);
+        const todayClasses = today_vec;
         let highlightIdx = -1;
         if (inClassTime) {
             highlightIdx = it;
