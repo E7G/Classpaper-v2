@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"encoding/json"
+	"sync"
 
 	"github.com/getlantern/systray"
 	"github.com/pelletier/go-toml"
@@ -35,6 +36,7 @@ var (
 	lorcaname      string
 	logFile        *os.File
 	t              *time.Ticker
+	windowMu       sync.Mutex // 新增互斥锁保护窗口关闭
 )
 
 const (
@@ -171,12 +173,16 @@ func runLorcaUI() {
 		log.Printf("[Lorca] 创建UI失败: %v", err)
 		// 失败后清理步骤
 		if ui != nil {
-			ui.Close()
+			_ = ui.Close()
 		}
+		windowMu.Lock()
 		mainWindow = nil
+		windowMu.Unlock()
 		return
 	}
+	windowMu.Lock()
 	mainWindow = ui
+	windowMu.Unlock()
 	lorcaname = "classpaper" + generateRandomString(6)
 	ui.Eval("document.title='" + lorcaname + "'")
 	log.Printf("[Lorca] 设置窗口标题: %s", lorcaname)
@@ -219,8 +225,13 @@ func runLorcaUI() {
 
 	setWallpaper()
 	log.Println("[Lorca] 等待窗口关闭...")
+	go func() {
+		<-ui.Done()
+		strictCloseMainWindow()
+		log.Println("[Lorca] mainWindow 已关闭并清理")
+	}()
 	<-ui.Done()
-	mainWindow = nil
+	strictCloseMainWindow()
 	log.Println("[Lorca] 窗口已关闭")
 }
 
@@ -295,10 +306,13 @@ func onReady() {
 }
 
 func openSettings() {
+	windowMu.Lock()
 	if settingsWindow != nil {
+		windowMu.Unlock()
 		log.Println("[设置] 设置窗口已经打开")
 		return
 	}
+	windowMu.Unlock()
 
 	settingsURL, err := getFilePathURL("res/settings.html")
 	if err != nil {
@@ -340,7 +354,9 @@ func openSettings() {
 		document.title = "ClassPaper 设置";
 	`, x, y))
 
+	windowMu.Lock()
 	settingsWindow = ui
+	windowMu.Unlock()
 
 	// 立即绑定函数
 	log.Println("[设置] 开始绑定函数...")
@@ -453,8 +469,8 @@ func openSettings() {
 	// 监听窗口关闭
 	go func() {
 		<-ui.Done()
-		settingsWindow = nil
-		log.Println("[设置] 设置窗口已关闭")
+		strictCloseSettingsWindow()
+		log.Println("[设置] settingsWindow 已关闭并清理")
 	}()
 }
 
@@ -473,14 +489,34 @@ func restartProgram() {
 	}
 }
 
+func strictCloseMainWindow() {
+	windowMu.Lock()
+	defer windowMu.Unlock()
+	if mainWindow != nil {
+		err := mainWindow.Close()
+		if err != nil {
+			log.Printf("[关闭] mainWindow.Close() 失败: %v", err)
+		}
+		mainWindow = nil
+	}
+}
+
+func strictCloseSettingsWindow() {
+	windowMu.Lock()
+	defer windowMu.Unlock()
+	if settingsWindow != nil {
+		err := settingsWindow.Close()
+		if err != nil {
+			log.Printf("[关闭] settingsWindow.Close() 失败: %v", err)
+		}
+		settingsWindow = nil
+	}
+}
+
 func endup() {
 	log.Println("[退出] 执行endup，关闭窗口和资源...")
-	if mainWindow != nil {
-		mainWindow.Close()
-	}
-	if settingsWindow != nil {
-		settingsWindow.Close()
-	}
+	strictCloseMainWindow()
+	strictCloseSettingsWindow()
 	systray.Quit()
 	if logFile != nil {
 		logFile.Sync()
@@ -492,12 +528,8 @@ func endup() {
 
 func onExit() {
 	log.Println("[退出] 程序退出，清理资源...")
-	if mainWindow != nil {
-		mainWindow.Close()
-	}
-	if settingsWindow != nil {
-		settingsWindow.Close()
-	}
+	strictCloseMainWindow()
+	strictCloseSettingsWindow()
 	if logFile != nil {
 		logFile.Sync()
 	}
