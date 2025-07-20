@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"log"
@@ -37,6 +38,10 @@ var (
 	logFile        *os.File
 	t              *time.Ticker
 	windowMu       sync.Mutex // 新增互斥锁保护窗口关闭
+	wallpaperCtx    context.Context
+	wallpaperCancel context.CancelFunc
+	settingsCtx    context.Context
+	settingsCancel context.CancelFunc
 )
 
 const (
@@ -143,28 +148,37 @@ func NormalizeURL(url string) string {
 
 // ====== 桌面壁纸/窗口相关函数区 ======
 func setWallpaper() {
+	if wallpaperCancel != nil {
+		wallpaperCancel() // 先停止上一个goroutine
+	}
+	wallpaperCtx, wallpaperCancel = context.WithCancel(context.Background())
 	ret := SetupWallpaper(lorcaname)
 	log.Printf("[桌面穿透] SetupWallpaper(%s) 返回: %v", lorcaname, ret)
 	t = time.NewTicker(time.Second)
-	go func() {
+	go func(ctx context.Context) {
 		failCount := 0
-		for range t.C {
-			if hwnd := FindWindowByTitle(lorcaname); hwnd != 0 {
-				err := RemoveFromTaskbar(hwnd)
-				if err != nil {
-					failCount++
-					if failCount == 1 || failCount%60 == 0 {
-						log.Printf("[桌面穿透] RemoveFromTaskbar 失败: %v（累计 %d 次）", err, failCount)
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-t.C:
+				if hwnd := FindWindowByTitle(lorcaname); hwnd != 0 {
+					err := RemoveFromTaskbar(hwnd)
+					if err != nil {
+						failCount++
+						if failCount == 1 || failCount%60 == 0 {
+							log.Printf("[桌面穿透] RemoveFromTaskbar 失败: %v（累计 %d 次）", err, failCount)
+						}
+					} else {
+						if failCount > 0 {
+							log.Printf("[桌面穿透] RemoveFromTaskbar 恢复正常")
+						}
+						failCount = 0
 					}
-				} else {
-					if failCount > 0 {
-						log.Printf("[桌面穿透] RemoveFromTaskbar 恢复正常")
-					}
-					failCount = 0
 				}
 			}
 		}
-	}()
+	}(wallpaperCtx)
 }
 
 func runLorcaUI() {
@@ -313,6 +327,11 @@ func openSettings() {
 		return
 	}
 	windowMu.Unlock()
+
+	if settingsCancel != nil {
+		settingsCancel() // 关闭上一个context
+	}
+	settingsCtx, settingsCancel = context.WithCancel(context.Background())
 
 	settingsURL, err := getFilePathURL("res/settings.html")
 	if err != nil {
@@ -467,11 +486,15 @@ func openSettings() {
 	log.Println("[设置] 函数绑定完成")
 
 	// 监听窗口关闭
-	go func() {
-		<-ui.Done()
-		strictCloseSettingsWindow()
-		log.Println("[设置] settingsWindow 已关闭并清理")
-	}()
+	go func(ctx context.Context) {
+		select {
+		case <-ui.Done():
+			strictCloseSettingsWindow()
+			log.Println("[设置] settingsWindow 已关闭并清理")
+		case <-ctx.Done():
+			log.Println("[设置] settingsWindow context 被取消，资源清理")
+		}
+	}(settingsCtx)
 }
 
 func restartProgram() {
@@ -511,18 +534,30 @@ func strictCloseSettingsWindow() {
 		}
 		settingsWindow = nil
 	}
+	if settingsCancel != nil {
+		settingsCancel()
+		settingsCancel = nil
+	}
+	// TODO: 这里可扩展更多设置窗口相关资源的清理（如异步任务、临时文件等）
 }
 
 func endup() {
 	log.Println("[退出] 执行endup，关闭窗口和资源...")
 	strictCloseMainWindow()
 	strictCloseSettingsWindow()
-	systray.Quit()
-	if logFile != nil {
-		logFile.Sync()
+	if wallpaperCancel != nil {
+		wallpaperCancel()
+		wallpaperCancel = nil
 	}
 	if t != nil {
 		t.Stop()
+		t = nil
+	}
+	systray.Quit()
+	if logFile != nil {
+		logFile.Sync()
+		logFile.Close()
+		logFile = nil
 	}
 }
 
@@ -530,23 +565,35 @@ func onExit() {
 	log.Println("[退出] 程序退出，清理资源...")
 	strictCloseMainWindow()
 	strictCloseSettingsWindow()
-	if logFile != nil {
-		logFile.Sync()
+	if wallpaperCancel != nil {
+		wallpaperCancel()
+		wallpaperCancel = nil
 	}
 	if t != nil {
 		t.Stop()
+		t = nil
+	}
+	if logFile != nil {
+		logFile.Sync()
+		logFile.Close()
+		logFile = nil
 	}
 }
 
 // ====== 主程序入口和初始化 ======
 func main() {
-	defer endup()
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("[Panic] %v", r)
+		}
+		endup()
+		lorca.CloseAllUIs() // 兜底释放所有UI资源
+	}()
 	var err error
 	logFile, err = os.Create("app.log")
 	if err != nil {
 		log.Fatalf("[启动] 创建日志文件失败: %v", err)
 	}
-	defer logFile.Close()
 	log.SetOutput(io.MultiWriter(os.Stdout, logFile))
 	config, err := ParseConfig()
 	if err != nil {

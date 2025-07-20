@@ -652,7 +652,7 @@
                 </div>
                 <div style="display:flex;align-items:center;gap:18px;margin-bottom:10px;">
                     <button class="add" onclick="smartGuessTimeTable()">智能推算</button>
-                    <span class="help-text">一键自动生成常见作息时间（如每节课40分钟，课间10分钟，中午休息长等），可手动微调。</span>
+                    <span class="help-text">一键根据已填时间智能补全后续节次时间，可根据实际情况手动微调。</span>
                 </div>
                 <div class="table-container">
                     <table id="timeTable">
@@ -1116,7 +1116,12 @@
                 }
 
                 // 解析表头
-                const headers = lines[0].split(',').map(h => h.trim()).filter(h => h);
+                let headers = lines[0].split(',').map(h => h.trim());
+                // 如果表头最后一个元素为空，则去除
+                if (headers.length > 0 && headers[headers.length - 1] === '') {
+                    headers.pop();
+                }
+                headers = headers.filter(h => h);
                 if (headers.length < 2) {
                     showStatus('课程表表头格式不正确', 'error');
                     return;
@@ -1128,7 +1133,11 @@
                     const line = lines[i].trim();
                     if (!line) continue;
 
-                    const cells = line.split(',').map(c => c.trim());
+                    let cells = line.split(',').map(c => c.trim());
+                    // 如果最后一个元素为空，则去除
+                    if (cells.length > 0 && cells[cells.length - 1] === '') {
+                        cells.pop();
+                    }
                     if (cells.length < 2) continue;
 
                     schedule.push({

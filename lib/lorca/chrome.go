@@ -14,6 +14,8 @@ import (
 	"sync/atomic"
 
 	"golang.org/x/net/websocket"
+	"context"
+	// "time"
 )
 
 type h = map[string]interface{}
@@ -45,6 +47,9 @@ type chrome struct {
 	window   int
 	pending  map[int]chan result
 	bindings map[string]bindingFunc
+	cancel context.CancelFunc
+	ctx    context.Context
+	killed sync.Once
 }
 
 func newChromeWithArgs(chromeBinary string, args ...string) (*chrome, error) {
@@ -54,6 +59,7 @@ func newChromeWithArgs(chromeBinary string, args ...string) (*chrome, error) {
 		pending:  map[int]chan result{},
 		bindings: map[string]bindingFunc{},
 	}
+	c.ctx, c.cancel = context.WithCancel(context.Background())
 
 	// Start chrome process
 	c.cmd = exec.Command(chromeBinary, args...)
@@ -254,52 +260,62 @@ type targetMessage struct {
 
 func (c *chrome) readLoop() {
 	for {
-		m := msg{}
-		if err := websocket.JSON.Receive(c.ws, &m); err != nil {
+		select {
+		case <-c.ctx.Done():
+			log.Println("[Lorca] readLoop收到ctx.Done，退出")
 			return
-		}
-
-		if m.Method == "Target.receivedMessageFromTarget" {
-			params := struct {
-				SessionID string `json:"sessionId"`
-				Message   string `json:"message"`
-			}{}
-			json.Unmarshal(m.Params, &params)
-			if params.SessionID != c.session {
-				continue
+		default:
+			m := msg{}
+			if err := websocket.JSON.Receive(c.ws, &m); err != nil {
+				log.Printf("[Lorca] readLoop ws关闭或异常: %v，自动kill", err)
+				c.kill()
+				return
 			}
-			res := targetMessage{}
-			json.Unmarshal([]byte(params.Message), &res)
 
-			if res.ID == 0 && res.Method == "Runtime.consoleAPICalled" || res.Method == "Runtime.exceptionThrown" {
-				// 优化控制台输出，便于开发者阅读
-				var pretty map[string]interface{}
-				if err := json.Unmarshal([]byte(params.Message), &pretty); err == nil {
-					if method, ok := pretty["method"].(string); ok && method == "Runtime.consoleAPICalled" {
-						if paramsMap, ok := pretty["params"].(map[string]interface{}); ok {
-							msgType := paramsMap["type"]
-							args := paramsMap["args"]
-							stack := ""
-							if st, ok := paramsMap["stackTrace"].(map[string]interface{}); ok {
-								if frames, ok := st["callFrames"].([]interface{}); ok && len(frames) > 0 {
-									if frame, ok := frames[0].(map[string]interface{}); ok {
-										stack = fmt.Sprintf("%s:%v", frame["url"], frame["lineNumber"])
+			if m.Method == "Target.receivedMessageFromTarget" {
+				params := struct {
+					SessionID string `json:"sessionId"`
+					Message   string `json:"message"`
+				}{}
+				json.Unmarshal(m.Params, &params)
+				if params.SessionID != c.session {
+					continue
+				}
+				res := targetMessage{}
+				json.Unmarshal([]byte(params.Message), &res)
+
+				if res.ID == 0 && res.Method == "Runtime.consoleAPICalled" || res.Method == "Runtime.exceptionThrown" {
+					// 优化控制台输出，便于开发者阅读
+					var pretty map[string]interface{}
+					if err := json.Unmarshal([]byte(params.Message), &pretty); err == nil {
+						if method, ok := pretty["method"].(string); ok && method == "Runtime.consoleAPICalled" {
+							if paramsMap, ok := pretty["params"].(map[string]interface{}); ok {
+								msgType := paramsMap["type"]
+								args := paramsMap["args"]
+								stack := ""
+								if st, ok := paramsMap["stackTrace"].(map[string]interface{}); ok {
+									if frames, ok := st["callFrames"].([]interface{}); ok && len(frames) > 0 {
+										if frame, ok := frames[0].(map[string]interface{}); ok {
+											stack = fmt.Sprintf("%s:%v", frame["url"], frame["lineNumber"])
+										}
 									}
 								}
+								// 格式化输出console.log内容
+								log.Printf("[Chrome Console][%v] %v @ %v", msgType, args, stack)
+							} else {
+								log.Println(params.Message)
 							}
-							// 格式化输出console.log内容
-							log.Printf("[Chrome Console][%v] %v @ %v", msgType, args, stack)
-						} else {
-							log.Println(params.Message)
-						}
-					} else if method == "Runtime.exceptionThrown" {
-						if paramsMap, ok := pretty["params"].(map[string]interface{}); ok {
-							if details, ok := paramsMap["exceptionDetails"].(map[string]interface{}); ok {
-								text := details["text"]
-								url := details["url"]
-								line := details["lineNumber"]
-								col := details["columnNumber"]
-								log.Printf("[Chrome Exception] %v @ %v:%v:%v", text, url, line, col)
+						} else if method == "Runtime.exceptionThrown" {
+							if paramsMap, ok := pretty["params"].(map[string]interface{}); ok {
+								if details, ok := paramsMap["exceptionDetails"].(map[string]interface{}); ok {
+									text := details["text"]
+									url := details["url"]
+									line := details["lineNumber"]
+									col := details["columnNumber"]
+									log.Printf("[Chrome Exception] %v @ %v:%v:%v", text, url, line, col)
+								} else {
+									log.Println(params.Message)
+								}
 							} else {
 								log.Println(params.Message)
 							}
@@ -309,76 +325,74 @@ func (c *chrome) readLoop() {
 					} else {
 						log.Println(params.Message)
 					}
-				} else {
-					log.Println(params.Message)
+				} else if res.ID == 0 && res.Method == "Runtime.bindingCalled" {
+					payload := struct {
+						Name string            `json:"name"`
+						Seq  int               `json:"seq"`
+						Args []json.RawMessage `json:"args"`
+					}{}
+					json.Unmarshal([]byte(res.Params.Payload), &payload)
+
+					c.Lock()
+					binding, ok := c.bindings[res.Params.Name]
+					c.Unlock()
+					if ok {
+						jsString := func(v interface{}) string { b, _ := json.Marshal(v); return string(b) }
+						go func() {
+							result, error := "", `""`
+							if r, err := binding(payload.Args); err != nil {
+								error = jsString(err.Error())
+							} else if b, err := json.Marshal(r); err != nil {
+								error = jsString(err.Error())
+							} else {
+								result = string(b)
+							}
+							expr := fmt.Sprintf(`
+								if (%[4]s) {
+									window['%[1]s']['errors'].get(%[2]d)(%[4]s);
+								} else {
+									window['%[1]s']['callbacks'].get(%[2]d)(%[3]s);
+								}
+								window['%[1]s']['callbacks'].delete(%[2]d);
+								window['%[1]s']['errors'].delete(%[2]d);
+								`, payload.Name, payload.Seq, result, error)
+							c.send("Runtime.evaluate", h{"expression": expr, "contextId": res.Params.ID})
+						}()
+					}
+					continue
 				}
-			} else if res.ID == 0 && res.Method == "Runtime.bindingCalled" {
-				payload := struct {
-					Name string            `json:"name"`
-					Seq  int               `json:"seq"`
-					Args []json.RawMessage `json:"args"`
-				}{}
-				json.Unmarshal([]byte(res.Params.Payload), &payload)
 
 				c.Lock()
-				binding, ok := c.bindings[res.Params.Name]
+				resc, ok := c.pending[res.ID]
+				delete(c.pending, res.ID)
 				c.Unlock()
-				if ok {
-					jsString := func(v interface{}) string { b, _ := json.Marshal(v); return string(b) }
-					go func() {
-						result, error := "", `""`
-						if r, err := binding(payload.Args); err != nil {
-							error = jsString(err.Error())
-						} else if b, err := json.Marshal(r); err != nil {
-							error = jsString(err.Error())
-						} else {
-							result = string(b)
-						}
-						expr := fmt.Sprintf(`
-							if (%[4]s) {
-								window['%[1]s']['errors'].get(%[2]d)(%[4]s);
-							} else {
-								window['%[1]s']['callbacks'].get(%[2]d)(%[3]s);
-							}
-							window['%[1]s']['callbacks'].delete(%[2]d);
-							window['%[1]s']['errors'].delete(%[2]d);
-							`, payload.Name, payload.Seq, result, error)
-						c.send("Runtime.evaluate", h{"expression": expr, "contextId": res.Params.ID})
-					}()
+
+				if !ok {
+					continue
 				}
-				continue
-			}
 
-			c.Lock()
-			resc, ok := c.pending[res.ID]
-			delete(c.pending, res.ID)
-			c.Unlock()
-
-			if !ok {
-				continue
-			}
-
-			if res.Error.Message != "" {
-				resc <- result{Err: errors.New(res.Error.Message)}
-			} else if res.Result.Exception.Exception.Value != nil {
-				resc <- result{Err: errors.New(string(res.Result.Exception.Exception.Value))}
-			} else if res.Result.Result.Type == "object" && res.Result.Result.Subtype == "error" {
-				resc <- result{Err: errors.New(res.Result.Result.Description)}
-			} else if res.Result.Result.Type != "" {
-				resc <- result{Value: res.Result.Result.Value}
-			} else {
-				res := targetMessageTemplate{}
-				json.Unmarshal([]byte(params.Message), &res)
-				resc <- result{Value: res.Result}
-			}
-		} else if m.Method == "Target.targetDestroyed" {
-			params := struct {
-				TargetID string `json:"targetId"`
-			}{}
-			json.Unmarshal(m.Params, &params)
-			if params.TargetID == c.target {
-				c.kill()
-				return
+				if res.Error.Message != "" {
+					resc <- result{Err: errors.New(res.Error.Message)}
+				} else if res.Result.Exception.Exception.Value != nil {
+					resc <- result{Err: errors.New(string(res.Result.Exception.Exception.Value))}
+				} else if res.Result.Result.Type == "object" && res.Result.Result.Subtype == "error" {
+					resc <- result{Err: errors.New(res.Result.Result.Description)}
+				} else if res.Result.Result.Type != "" {
+					resc <- result{Value: res.Result.Result.Value}
+				} else {
+					res := targetMessageTemplate{}
+					json.Unmarshal([]byte(params.Message), &res)
+					resc <- result{Value: res.Result}
+				}
+			} else if m.Method == "Target.targetDestroyed" {
+				params := struct {
+					TargetID string `json:"targetId"`
+				}{}
+				json.Unmarshal(m.Params, &params)
+				if params.TargetID == c.target {
+					c.kill()
+					return
+				}
 			}
 		}
 	}
@@ -545,16 +559,33 @@ func (c *chrome) png(x, y, width, height int, bg uint32, scale float32) ([]byte,
 }
 
 func (c *chrome) kill() error {
-	if c.ws != nil {
-		if err := c.ws.Close(); err != nil {
-			return err
+	log.Println("[Lorca] chrome.kill() called")
+	var err error
+	c.killed.Do(func() {
+		c.cancel()
+		if c.ws != nil {
+			err = c.ws.Close()
+			log.Println("[Lorca] ws已关闭")
 		}
-	}
-	// TODO: cancel all pending requests
-	if state := c.cmd.ProcessState; state == nil || !state.Exited() {
-		return c.cmd.Process.Kill()
-	}
-	return nil
+		c.Lock()
+		for id, ch := range c.pending {
+			select {
+			case <-ch:
+				// 已关闭
+			default:
+				close(ch)
+			}
+			delete(c.pending, id)
+		}
+		c.pending = nil
+		c.bindings = nil
+		c.Unlock()
+		if state := c.cmd.ProcessState; state == nil || !state.Exited() {
+			err = c.cmd.Process.Kill()
+			log.Println("[Lorca] chrome进程已Kill")
+		}
+	})
+	return err
 }
 
 func readUntilMatch(r io.ReadCloser, re *regexp.Regexp) ([]string, error) {

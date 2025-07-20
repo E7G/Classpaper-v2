@@ -7,6 +7,10 @@ import (
 	"io/ioutil"
 	"os"
 	"reflect"
+	"sync"
+	"time"
+	"runtime"
+	"log"
 )
 
 // 界面接口允许从Go语言与HTML5界面进行通信。
@@ -24,7 +28,13 @@ type ui struct {
 	chrome *chrome
 	done   chan struct{}
 	tmpDir string
+	closeOnce sync.Once
 }
+
+var (
+	allUIsMu sync.Mutex
+	allUIs   = make(map[*ui]struct{})
+)
 
 var defaultChromeArgs = []string{
 	"--disable-background-networking",
@@ -91,7 +101,15 @@ func New(url, dir,brower string, width, height int, customArgs ...string) (UI, e
 		chrome.cmd.Wait()
 		close(done)
 	}()
-	return &ui{chrome: chrome, done: done, tmpDir: tmpDir}, nil
+	uiObj := &ui{chrome: chrome, done: done, tmpDir: tmpDir}
+	runtime.SetFinalizer(uiObj, func(u *ui) {
+		log.Println("[Lorca] Finalizer自动清理UI资源")
+		u.Close()
+	})
+	allUIsMu.Lock()
+	allUIs[uiObj] = struct{}{}
+	allUIsMu.Unlock()
+	return uiObj, nil
 }
 
 func (u *ui) Done() <-chan struct{} {
@@ -99,15 +117,38 @@ func (u *ui) Done() <-chan struct{} {
 }
 
 func (u *ui) Close() error {
-	// ignore err, as the chrome process might be already dead, when user close the window.
-	u.chrome.kill()
-	<-u.done
-	if u.tmpDir != "" {
-		if err := os.RemoveAll(u.tmpDir); err != nil {
-			return err
+	log.Println("[Lorca] UI.Close() called")
+	var err error
+	u.closeOnce.Do(func() {
+		allUIsMu.Lock()
+		delete(allUIs, u)
+		allUIsMu.Unlock()
+		err = u.chrome.kill()
+		select {
+		case <-u.done:
+			log.Println("[Lorca] UI关闭成功")
+		case <-time.After(5 * time.Second):
+			err = errors.New("UI.Close 超时，底层资源未能及时释放")
 		}
+		if u.tmpDir != "" {
+			if e := os.RemoveAll(u.tmpDir); e != nil && err == nil {
+				err = e
+			}
+		}
+	})
+	return err
+}
+
+func CloseAllUIs() {
+	allUIsMu.Lock()
+	uis := make([]*ui, 0, len(allUIs))
+	for u := range allUIs {
+		uis = append(uis, u)
 	}
-	return nil
+	allUIsMu.Unlock()
+	for _, u := range uis {
+		u.Close()
+	}
 }
 
 func (u *ui) Load(url string) error { return u.chrome.load(url) }

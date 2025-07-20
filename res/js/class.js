@@ -25,50 +25,127 @@ function playNotification(type, className) {
     }
 }
 
-// 获取今天、前一天、后一天的课程数组
+// 获取今天、前一天、后一天的课程数组，并带有详细注释
 function getDayVectors() {
-    const week = new Date().getDay();
-    let offset = week === 0 ? 7 * 12 : week * 12;
-    // 13是因为每天12节课+1个空元素
+    // 获取当前星期几，getDay()返回0-6，0表示周日
+    let week = new Date().getDay();
+    // 如果是周日（0），则将其转换为7，方便后续计算（1=周一，7=周日）
+    week = week === 0 ? 7 : week;
+
+    const dayCount = 7;           // 一周有7天
+    const lessonsPerDay = 12;     // 每天有12节课
+    const total = (dayCount+1) * lessonsPerDay; // 一周总共的课程数
+
+    // 计算今天在课程数组中的起始下标
+    // 例如：周一为12，周二为24，依此类推
+    let offset =  week  * lessonsPerDay;
+    // console.log(`[getDayVectors] week: ${week}, offset: ${offset}`);
+
+    // 取出今天的课程数组
+    // 这里slice的长度为13，是因为每天12节课+1个空元素（可能用于占位或防止越界）
+    let today_vec = source_vec.slice(offset, offset + lessonsPerDay).map(item => item.replace(/\n/g, ""));
+    today_vec.push("");
+    // console.log(`[getDayVectors] today_vec:`, today_vec);
+
+    // 计算前一天的起始下标
+    let prev_offset = offset - lessonsPerDay;
+    // 如果前一天小于0，说明已经到周一的前一天了，需要循环到周日
+    if (prev_offset < 1*lessonsPerDay) prev_offset = total-lessonsPerDay;
+    // console.log(`[getDayVectors] prev_offset: ${prev_offset}`);
+
+    // 计算后一天的起始下标
+    let next_offset = offset + lessonsPerDay;
+    // 如果后一天超出总课程数，说明已经到周日的后一天了，需要循环到周一
+    if (next_offset >= total) next_offset = 1*lessonsPerDay;
+    // console.log(`[getDayVectors] next_offset: ${next_offset}`);
+
+    // 取出前一天的课程数组，并在末尾加一个空元素
+    let prev_vec = source_vec.slice(prev_offset, prev_offset + lessonsPerDay).map(item => item.replace(/\n/g, ""));
+    prev_vec.push("");
+    // 取出后一天的课程数组，并在末尾加一个空元素
+    let next_vec = source_vec.slice(next_offset, next_offset + lessonsPerDay).map(item => item.replace(/\n/g, ""));
+    next_vec.push("");
+
+    // console.log(`[getDayVectors] prev_vec:`, prev_vec);
+    // console.log(`[getDayVectors] next_vec:`, next_vec);
+
+    // 返回今天、前一天、后一天的课程数组
     return {
-        today_vec: source_vec.slice(offset, offset + 13),
-        prev_vec: offset >= 12 ? source_vec.slice(offset - 12, offset + 1) : null,
-        next_vec: offset + 25 < source_vec.length ? source_vec.slice(offset + 13, offset + 25) : null
+        today_vec, // 今天的课程
+        prev_vec,  // 前一天的课程
+        next_vec   // 后一天的课程
     };
 }
 
 // 重新排列课程顺序，当前课程在第7个位置
 function arrangeClasses(currentIndex, today_vec, prev_vec, next_vec) {
+    // showBefore 表示当前课程前面要显示的课程数，这里为6
     const showBefore = 6;
+    // classes 是今天的课程数组，去掉最后一个元素（通常为占位或空元素）
     const classes = today_vec.slice(0, -1);
+    // arranged 用于存放最终排列好的12节课
     const arranged = new Array(12);
 
-    // 前6节
+    // console.log(`[arrangeClasses] currentIndex: ${currentIndex}`);
+    // console.log(`[arrangeClasses] today_vec:`, today_vec);
+    // console.log(`[arrangeClasses] prev_vec:`, prev_vec);
+    // console.log(`[arrangeClasses] next_vec:`, next_vec);
+
+    // 填充前6节课
     for (let i = 0; i < showBefore; i++) {
+        // idx 计算当前要填充的课程在 today_vec 中的下标
         let idx = currentIndex - (showBefore - i);
         if (idx >= 0) {
+            // 如果 idx 合法，直接取今天的课程
             arranged[i] = classes[idx];
+            // console.log(`[arrangeClasses] arranged[${i}] = today_vec[${idx}]`, classes[idx]);
         } else if (prev_vec) {
+            // 如果 idx 不合法，尝试从前一天的课程补齐
             let prevIndex = prev_vec.length - 1 + idx;
-            arranged[i] = prevIndex >= 0 ? prev_vec[prevIndex] : "";
+            if (prevIndex >= 0) {
+                arranged[i] = prev_vec[prevIndex];
+                // console.log(`[arrangeClasses] arranged[${i}] = prev_vec[${prevIndex}]`, prev_vec[prevIndex]);
+            } else {
+                arranged[i] = "";
+                // console.log(`[arrangeClasses] arranged[${i}] = "" (prevIndex < 0)`);
+            }
         } else {
+            // 没有前一天的课程，填空
             arranged[i] = "";
+            // console.log(`[arrangeClasses] arranged[${i}] = "" (no prev_vec)`);
         }
     }
-    // 当前
+
+    // 填充当前课程
     arranged[showBefore] = classes[currentIndex];
-    // 后5节
+    // console.log(`[arrangeClasses] arranged[${showBefore}] = today_vec[${currentIndex}]`, classes[currentIndex]);
+
+    // 填充后5节课
     for (let i = showBefore + 1; i < 12; i++) {
+        // idx 计算当前要填充的课程在 today_vec 中的下标
         let idx = currentIndex + (i - showBefore);
         if (idx < classes.length) {
+            // 如果 idx 合法，直接取今天的课程
             arranged[i] = classes[idx];
+            // console.log(`[arrangeClasses] arranged[${i}] = today_vec[${idx}]`, classes[idx]);
         } else if (next_vec) {
+            // 如果 idx 超出 today_vec，尝试从后一天的课程补齐
             let nextIndex = idx - classes.length;
-            arranged[i] = nextIndex < next_vec.length - 1 ? next_vec[nextIndex] : "";
+            if (nextIndex < next_vec.length - 1) {
+                arranged[i] = next_vec[nextIndex];
+                // console.log(`[arrangeClasses] arranged[${i}] = next_vec[${nextIndex}]`, next_vec[nextIndex]);
+            } else {
+                arranged[i] = "";
+                // console.log(`[arrangeClasses] arranged[${i}] = "" (nextIndex 超界)`);
+            }
         } else {
+            // 没有后一天的课程，填空
             arranged[i] = "";
+            // console.log(`[arrangeClasses] arranged[${i}] = "" (no next_vec)`);
         }
     }
+
+    // console.log(`[arrangeClasses] arranged:`, arranged);
     return arranged;
 }
 
@@ -245,7 +322,7 @@ function nowClass() {
     }
     else if (displayMode === 'day') {
         // 一天进度模式：只显示当天全部课程，前/当前/后课程有进度感
-        const todayClasses = today_vec;
+        const todayClasses = today_vec.slice(0, -1);
         let highlightIdx = -1;
         if (inClassTime) {
             highlightIdx = it;
