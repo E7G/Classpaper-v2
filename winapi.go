@@ -724,6 +724,67 @@ func StartZOrderMonitoring(hShellDefView, hEmbedWnd uintptr, ctx context.Context
 	}()
 }
 
+// GetWindowsVersion 获取Windows版本信息
+func GetWindowsVersion() (major, minor, build int) {
+	version, _, _ := syscall.NewLazyDLL("kernel32.dll").NewProc("GetVersion").Call()
+	major = int(version & 0xFF)
+	minor = int((version >> 8) & 0xFF)
+	build = int((version >> 16) & 0xFFFF)
+	return
+}
+
+// IsWindows10OrLater 检查是否为Windows 10或更高版本
+func IsWindows10OrLater() bool {
+	major, _, build := GetWindowsVersion()
+	// Windows 10的版本号是10.0，build >= 10240
+	return major >= 10 || (major == 6 && build >= 10240)
+}
+
+// LegacySetDesktop 传统桌面设置方案 - 兼容Windows 7/8/8.1
+func LegacySetDesktop(hwnd uintptr) bool {
+	log.Printf("[桌面穿透] 使用传统兼容模式")
+	
+	// Find Progman window
+	progman, _, _ := findWindow.Call(
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr("Progman"))),
+		0,
+	)
+	if progman == 0 {
+		log.Printf("[桌面穿透] 未找到Progman窗口")
+		return false
+	}
+
+	// Send 0x052C message to Progman
+	sendMessageTimeout.Call(
+		progman,
+		0x052C,
+		0,
+		0,
+		SMTO_NORMAL,
+		0x3E8,
+		0,
+	)
+
+	// Enumerate windows to find WorkerW
+	syscall.NewCallback(EnumWindowsProc1)
+	enumWindows.Call(
+		syscall.NewCallback(EnumWindowsProc1),
+		0,
+	)
+
+	// Hide WorkerW
+	if workerw != 0 {
+		showWindow.Call(workerw, SW_HIDE)
+		log.Printf("[桌面穿透] 隐藏WorkerW窗口: 0x%x", workerw)
+	}
+
+	// Set parent
+	setParent.Call(hwnd, progman)
+	log.Printf("[桌面穿透] 设置父窗口为Progman: 0x%x", progman)
+	
+	return true
+}
+
 // SetupAdvancedWallpaper 设置高级壁纸功能 - 整合所有增强功能
 func SetupAdvancedWallpaper(windowTitle string) bool {
 	hwnd := FindWindowByTitle(windowTitle)
@@ -739,32 +800,48 @@ func SetupAdvancedWallpaper(windowTitle string) bool {
 		log.Printf("[桌面穿透] 从任务栏移除失败: %v", err)
 	}
 
-	// 2. 使用高级桌面设置
-	if !AdvancedSetDesktop(hwnd) {
-		log.Printf("[桌面穿透] 高级桌面设置失败")
-		return false
-	}
-
-	// 3. 启动Z序监控（仅在非版本1.2模式下）
-	// 查找ShellDefView用于监控
-	hTopDeskWnd, _, _ := findWindow.Call(
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr("Progman"))),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr("Program Manager"))),
-	)
-	if hTopDeskWnd != 0 {
-		hShellDefView, _, _ := findWindowEx.Call(hTopDeskWnd, 0, 
-			uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr("SHELLDLL_DefView"))), 0)
+	// 2. 根据Windows版本选择设置方案
+	if IsWindows10OrLater() {
+		log.Printf("[桌面穿透] 检测到Windows 10/11，使用高级模式")
 		
-		if hShellDefView != 0 {
-			// 创建监控上下文
-			monitorCtx, _ := context.WithCancel(context.Background())
-			StartZOrderMonitoring(hShellDefView, hwnd, monitorCtx)
-		} else {
-			log.Printf("[桌面穿透] 未找到ShellDefView，跳过Z序监控")
+		// 使用高级桌面设置
+		if !AdvancedSetDesktop(hwnd) {
+			log.Printf("[桌面穿透] 高级桌面设置失败，回退到传统模式")
+			return LegacySetDesktop(hwnd)
 		}
+
+		// 3. 启动Z序监控（仅在高级模式下）
+		// 查找ShellDefView用于监控
+		hTopDeskWnd, _, _ := findWindow.Call(
+			uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr("Progman"))),
+			uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr("Program Manager"))),
+		)
+		if hTopDeskWnd != 0 {
+			hShellDefView, _, _ := findWindowEx.Call(hTopDeskWnd, 0, 
+				uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr("SHELLDLL_DefView"))), 0)
+			
+			if hShellDefView != 0 {
+				// 创建监控上下文
+				monitorCtx, _ := context.WithCancel(context.Background())
+				StartZOrderMonitoring(hShellDefView, hwnd, monitorCtx)
+			} else {
+				log.Printf("[桌面穿透] 未找到ShellDefView，跳过Z序监控")
+			}
+		}
+		
+		log.Printf("[桌面穿透] 高级壁纸设置完成")
+	} else {
+		log.Printf("[桌面穿透] 检测到Windows 7/8/8.1，使用传统兼容模式")
+		
+		// 使用传统桌面设置
+		if !LegacySetDesktop(hwnd) {
+			log.Printf("[桌面穿透] 传统桌面设置失败")
+			return false
+		}
+		
+		log.Printf("[桌面穿透] 传统壁纸设置完成")
 	}
 
-	log.Printf("[桌面穿透] 高级壁纸设置完成")
 	return true
 }
 
