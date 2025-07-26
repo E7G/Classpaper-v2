@@ -152,8 +152,11 @@ func setWallpaper() {
 		wallpaperCancel() // 先停止上一个goroutine
 	}
 	wallpaperCtx, wallpaperCancel = context.WithCancel(context.Background())
-	ret := SetupWallpaper(lorcaname)
-	log.Printf("[桌面穿透] SetupWallpaper(%s) 返回: %v", lorcaname, ret)
+	
+	// 使用增强的桌面设置功能
+	ret := SetupAdvancedWallpaper(lorcaname)
+	log.Printf("[桌面穿透] SetupAdvancedWallpaper(%s) 返回: %v", lorcaname, ret)
+	
 	t = time.NewTicker(time.Second)
 	go func(ctx context.Context) {
 		failCount := 0
