@@ -1,5 +1,28 @@
 ﻿:root {
   --spacing: 5px;
+  
+  /* 配置驱动的CSS变量 - 将通过JavaScript动态设置 */
+  --primary-color: #fcfcfc;
+  --secondary-color: #31363d30;
+  --accent-color: #3daee9;
+  --background-color: #7f8c8d;
+  --text-color: #fcfcfc;
+  --mark-color: black;
+  
+  --backdrop-blur: 12px;
+  --border-radius: 25px;
+  --glass-opacity: 0.3;
+  
+  --base-spacing: 5px;
+  --base-padding: 15px 30px;
+  --base-margin: 20px;
+  
+  --base-font-size: 36px;
+  --large-font-size: 52px;
+  --small-font-size: 24px;
+  
+  --primary-font: -apple-system, "HarmonyOS Sans SC", "Noto Sans CJK SC", MiSans, "MiSans L3", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --serif-font: "Noto Serif CJK SC", serif;
 }
 
 .ul {
@@ -12,15 +35,13 @@
 
 #evcal>li {
   list-style-type: '';
-  color: #fcfcfc;
-  font-size: 52px;
-  /* margin: 0; */
-  /* padding: 0; */
+  color: var(--text-color);
+  font-size: var(--large-font-size);
 }
 
 
 .contrast {
-  font-size: 36px;
+  font-size: var(--base-font-size);
   line-height: 30px;
   height: 30px;
   padding: 10%;
@@ -28,10 +49,10 @@
   height: 100%;
   border: 0;
   font-weight: 450;
-  color: #fcfcfc;
+  color: var(--text-color);
   border-radius: 10px;
   background: transparent;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(var(--backdrop-blur));
 }
 
 
@@ -54,7 +75,7 @@
 #classtable,
 #nav-pro {
   background: transparent;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(var(--backdrop-blur));
 }
 
 article {
@@ -94,22 +115,20 @@ main {
 }
 
 strong {
-  /* font-size: 52px; */
-  color: #fcfcfc;
+  color: var(--text-color);
 }
 
 mark {
-  /* font-size: 52px; */
-  color: black;
+  color: var(--mark-color);
   border-radius: 10px;
 }
 
 article {
-  color: #fcfcfc;
-  font-size: 36px;
-  background: #31363d30;
-  border-radius: 25px;
-  backdrop-filter: blur(12px);
+  color: var(--text-color);
+  font-size: var(--base-font-size);
+  background: var(--secondary-color);
+  border-radius: var(--border-radius);
+  backdrop-filter: blur(var(--backdrop-blur));
 }
 
 /* For Chrome or Safari */
@@ -119,7 +138,7 @@ progress::-webkit-progress-bar {
 }
 
 progress::-webkit-progress-value {
-  background-color: #3daee9 !important;
+  background-color: var(--accent-color) !important;
 }
 
 /* For Firefox */
@@ -129,13 +148,13 @@ progress {
 }
 
 progress::-moz-progress-bar {
-  background-color: #3daee9 !important;
+  background-color: var(--accent-color) !important;
 }
 
 /* For IE10 */
 
 progress {
-  background-color: #3daee9;
+  background-color: var(--accent-color);
 }
 
 #calart {
@@ -153,12 +172,20 @@ hr {
 }
 
 body {
-  font-family: -apple-system, "HarmonyOS Sans SC", "Noto Sans CJK SC", MiSans, "MiSans L3", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: var(--primary-font);
 }
 
-#remember {
-  max-width: 1440px;
-  margin-left: 100px;
+
+/* 课程表表头样式 */
+.table-header {
+  color: var(--text-color);
+  font-size: var(--base-font-size);
+  font-weight: 600;
+  text-align: center;
+  padding: 10px;
+  background: var(--secondary-color);
+  border-radius: 10px;
+  backdrop-filter: blur(var(--backdrop-blur));
 }
 
 /*

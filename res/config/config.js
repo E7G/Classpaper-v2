@@ -1,18 +1,106 @@
 const CONFIG = {
+  // 应用基础配置
+  "app": {
+    "title": "背景课表",
+    "language": "zh",
+    "theme": "dark",
+    "favicon": "favicon.ico"
+  },
+
+  // 界面布局配置
+  "ui": {
+    "layout": {
+      "containerFluid": true,
+      "glassEffect": true,
+      "overflow": "hidden"
+    },
+    "grid": {
+      "enabled": true,
+      "columns": "auto"
+    },
+    "components": {
+      "classTable": {
+        "enabled": true,
+        "id": "classtable",
+        "blurEffect": 12
+      },
+      "progressBar": {
+        "enabled": true,
+        "id": "nav-pro",
+        "hidden": true
+      },
+      "clock": {
+        "enabled": true,
+        "id": "clockart",
+        "showHeader": false,
+        "headerText": "⏰ 时钟",
+        "timeFormat": "zh",
+        "dateFormat": "zh",
+        "weekdayFormat": "long"
+      },
+      "calendar": {
+        "enabled": true,
+        "id": "calart",
+        "showHeader": false,
+        "headerText": "📅 事件日历"
+      },
+      "help": {
+        "enabled": true,
+        "id": "helpart",
+        "showHeader": false,
+        "headerText": "📚 告示牌",
+        "columnCount": 2,
+        "columnGap": "40px"
+      },
+    }
+  },
+
+  // 样式配置
+  "styles": {
+    "fonts": {
+      "primary": "-apple-system, \"HarmonyOS Sans SC\", \"Noto Sans CJK SC\", MiSans, \"MiSans L3\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "serif": "\"Noto Serif CJK SC\", serif"
+    },
+    "colors": {
+      "primary": "#fcfcfc",
+      "secondary": "#31363d30",
+      "accent": "#3daee9",
+      "background": "#7f8c8d",
+      "text": "#fcfcfc",
+      "mark": "black"
+    },
+    "effects": {
+      "backdropBlur": 12,
+      "borderRadius": 25,
+      "glassOpacity": 0.3
+    },
+    "spacing": {
+      "base": "5px",
+      "padding": "15px 30px",
+      "margin": "20px"
+    },
+    "fontSize": {
+      "base": "36px",
+      "large": "52px",
+      "small": "24px"
+    }
+  },
+
+  // 课程表配置
   "lessons": {
     "headers": [
       "星期",
-      "1",
-      "2",
-      "3",
-      "4",
-      "5",
-      "6",
-      "7",
-      "8",
-      "9",
-      "10",
-      "11"
+      "早读",
+      "第1节课",
+      "第2节课", 
+      "第3节课",
+      "第4节课",
+      "第5节课",
+      "第6节课",
+      "第7节课",
+      "第8节课",
+      "晚修1",
+      "晚修2"
     ],
     "displayMode": "scroll",
     "schedule": [
@@ -204,36 +292,254 @@ const CONFIG = {
       ]
     }
   },
-  "weekOffset": {
-    "enabled": true,
-    "offset": 7
+
+  // 时间配置
+  "time": {
+    "weekOffset": {
+      "enabled": true,
+      "offset": 7
+    },
+    "updateInterval": 1000,
+    "progressDescription": "高三剩余",
+    "progressPercentMode": "left"
   },
+
+  // 通知配置
   "notifications": {
     "enabled": true,
     "regularInterval": 5,
-    "endingTime": 5
+    "endingTime": 5,
+    "sounds": {
+      "regular": "audio/regular_notification.mp3",
+      "ending": "audio/ending_notification.mp3"
+    }
   },
+
+  // 事件日历配置
   "events": [
     {
       "name": "高考",
       "date": "2026-06-07T00:00:00"
     },
     {
-      "name": "明天",
+      "name": "明天", 
       "date": "2025-07-18T06:50:00"
     }
   ],
-  "wallpapers": [
-    "wallpaper/bg1.jpg",
-    "wallpaper/bg2.jpg",
-    "wallpaper/kdedark.png",
-    "wallpaper/kdelight.png"
-  ],
-  "wallpaperInterval": 30,
-  "progressDescription": "高三剩余",
-  "progressPercentMode": "left",
-  "sth": "一鸣从此始，相望青云端"
+
+  // 壁纸配置
+  "wallpapers": {
+    "list": [
+      "wallpaper/bg1.jpg",
+      "wallpaper/bg2.jpg", 
+      "wallpaper/kdedark.png",
+      "wallpaper/kdelight.png"
+    ],
+    "interval": 30,
+    "transition": {
+      "duration": 1000,
+      "easing": "cubic-bezier(0.4,0,0.2,1)"
+    }
+  },
+
+  // 告示牌内容
+  "announcement": "一鸣从此始，相望青云端",
+
+  // LLM集成配置
+  "llm": {
+    "enabled": false,
+    "apiEndpoint": "",
+    "apiKey": "",
+    "model": "gpt-3.5-turbo",
+    "features": {
+      "autoAdjustLayout": false,
+      "smartScheduling": false,
+      "contentGeneration": false,
+      "voiceControl": false
+    },
+    "prompts": {
+      "layoutAdjustment": "请根据当前时间和课程安排，调整界面布局以突出重要信息。",
+      "contentGeneration": "请生成适合当前时间段的激励性文案。",
+      "scheduleOptimization": "请分析当前课程安排，提供学习建议。"
+    }
+  }
 };
+
+// LLM集成工具类
+class LLMIntegration {
+  constructor(config) {
+    this.config = config.llm;
+    this.isEnabled = this.config.enabled;
+  }
+
+  async callLLM(prompt, context = {}) {
+    if (!this.isEnabled || !this.config.apiEndpoint) {
+      console.warn('LLM integration is disabled or not configured');
+      return null;
+    }
+
+    try {
+      const response = await fetch(this.config.apiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.config.apiKey}`
+        },
+        body: JSON.stringify({
+          model: this.config.model,
+          messages: [
+            {
+              role: 'system',
+              content: `你是一个智能课表助手。当前配置信息：${JSON.stringify(context)}`
+            },
+            {
+              role: 'user', 
+              content: prompt
+            }
+          ]
+        })
+      });
+
+      const data = await response.json();
+      return data.choices?.[0]?.message?.content || null;
+    } catch (error) {
+      console.error('LLM API call failed:', error);
+      return null;
+    }
+  }
+
+  async adjustLayout() {
+    if (!this.config.features.autoAdjustLayout) return null;
+    
+    const context = {
+      currentTime: new Date().toISOString(),
+      currentConfig: CONFIG
+    };
+    
+    return await this.callLLM(this.config.prompts.layoutAdjustment, context);
+  }
+
+  async generateContent() {
+    if (!this.config.features.contentGeneration) return null;
+    
+    const context = {
+      currentTime: new Date().toISOString(),
+      announcement: CONFIG.announcement
+    };
+    
+    return await this.callLLM(this.config.prompts.contentGeneration, context);
+  }
+
+  async optimizeSchedule() {
+    if (!this.config.features.smartScheduling) return null;
+    
+    const context = {
+      schedule: CONFIG.lessons.schedule,
+      currentTime: new Date().toISOString()
+    };
+    
+    return await this.callLLM(this.config.prompts.scheduleOptimization, context);
+  }
+}
+
+// 配置管理工具类
+class ConfigManager {
+  static updateConfig(path, value) {
+    const keys = path.split('.');
+    let current = CONFIG;
+    
+    for (let i = 0; i < keys.length - 1; i++) {
+      if (!current[keys[i]]) current[keys[i]] = {};
+      current = current[keys[i]];
+    }
+    
+    current[keys[keys.length - 1]] = value;
+    this.notifyConfigChange(path, value);
+  }
+
+  static getConfig(path) {
+    const keys = path.split('.');
+    let current = CONFIG;
+    
+    for (const key of keys) {
+      if (current[key] === undefined) return undefined;
+      current = current[key];
+    }
+    
+    return current;
+  }
+
+  static notifyConfigChange(path, value) {
+    // 触发配置变更事件
+    window.dispatchEvent(new CustomEvent('configChanged', {
+      detail: { path, value, config: CONFIG }
+    }));
+  }
+
+  static exportConfig() {
+    return JSON.stringify(CONFIG, null, 2);
+  }
+
+  static importConfig(configString) {
+    try {
+      const newConfig = JSON.parse(configString);
+      Object.assign(CONFIG, newConfig);
+      this.notifyConfigChange('*', CONFIG);
+      return true;
+    } catch (error) {
+      console.error('Failed to import config:', error);
+      return false;
+    }
+  }
+}
+
+// 主题管理工具类
+class ThemeManager {
+  static applyTheme() {
+    const theme = CONFIG.app.theme;
+    document.documentElement.setAttribute('data-theme', theme);
+    
+    // 应用自定义样式
+    const styles = CONFIG.styles;
+    const root = document.documentElement;
+    
+    root.style.setProperty('--primary-color', styles.colors.primary);
+    root.style.setProperty('--secondary-color', styles.colors.secondary);
+    root.style.setProperty('--accent-color', styles.colors.accent);
+    root.style.setProperty('--background-color', styles.colors.background);
+    root.style.setProperty('--text-color', styles.colors.text);
+    root.style.setProperty('--mark-color', styles.colors.mark);
+    
+    root.style.setProperty('--backdrop-blur', `${styles.effects.backdropBlur}px`);
+    root.style.setProperty('--border-radius', `${styles.effects.borderRadius}px`);
+    root.style.setProperty('--glass-opacity', styles.effects.glassOpacity);
+    
+    root.style.setProperty('--base-spacing', styles.spacing.base);
+    root.style.setProperty('--base-padding', styles.spacing.padding);
+    root.style.setProperty('--base-margin', styles.spacing.margin);
+    
+    root.style.setProperty('--base-font-size', styles.fontSize.base);
+    root.style.setProperty('--large-font-size', styles.fontSize.large);
+    root.style.setProperty('--small-font-size', styles.fontSize.small);
+    
+    root.style.setProperty('--primary-font', styles.fonts.primary);
+    root.style.setProperty('--serif-font', styles.fonts.serif);
+  }
+
+  static switchTheme(newTheme) {
+    ConfigManager.updateConfig('app.theme', newTheme);
+    this.applyTheme();
+  }
+}
+
+// 全局实例
+const llmIntegration = new LLMIntegration(CONFIG);
+
+// 暴露到全局作用域
+window.CONFIG = CONFIG;
+window.ConfigManager = ConfigManager;
+window.ThemeManager = ThemeManager;
+window.LLMIntegration = llmIntegration;
 
 // 为了保持向后兼容，导出原有的变量名
 const lessons = CONFIG.lessons.headers.join(",") + "\n" + 
@@ -242,6 +548,6 @@ const lessons = CONFIG.lessons.headers.join(",") + "\n" +
 const events = "事件,日期,\n" + 
   CONFIG.events.map(event => `${event.name},${event.date},`).join("\n");
 
-const wallpaperlist = CONFIG.wallpapers;
+const wallpaperlist = CONFIG.wallpapers.list;
 
-const sth = CONFIG.sth;
+const sth = CONFIG.announcement;

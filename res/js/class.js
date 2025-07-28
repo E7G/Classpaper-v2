@@ -1,7 +1,22 @@
 ﻿/* 课表优化版 */
 
-const source = lessons;
-const source_vec = source.split(',');
+// 确保CONFIG和lessons已加载
+function initClassTable() {
+    if (typeof CONFIG === 'undefined' || typeof lessons === 'undefined') {
+        console.log('等待CONFIG和lessons加载...');
+        setTimeout(initClassTable, 100);
+        return;
+    }
+    
+    console.log('开始初始化课表');
+    
+    // 启动课表更新
+    nowClass();
+    setInterval(nowClass, 1000);
+}
+
+const source = typeof lessons !== 'undefined' ? lessons : '';
+const source_vec = source ? source.split(',') : [];
 
 const classtable = document.getElementById('classtable');
 
@@ -297,12 +312,14 @@ function nowClass() {
             }
         }
 
-        // 渲染课程表
-        for (let i = 0; i < arranged.length; i++) {
+        // 渲染课程表（跳过表头c0）
+        for (let i = 1; i < arranged.length; i++) {
             let content = arranged[i] || "";
             let opacity = (i === 6) ? "" : "opacity: 0.5;";
-            document.getElementById('c' + i).innerHTML =
-                `<a href="#" role="button" class="contrast" id="c_b${i}" style="${opacity}">${content}</a>`;
+            const element = document.getElementById('c' + i);
+            if (element) {
+                element.innerHTML = `<a href="#" role="button" class="contrast" id="c_b${i}" style="${opacity}">${content}</a>`;
+            }
         }
 
         const c_b6 = document.getElementById('c_b6');
@@ -355,13 +372,18 @@ function nowClass() {
                 // 未上课
                 elStyle = 'background-color:; font-weight:400; opacity:0.5;';
             }
-            document.getElementById('c' + i).innerHTML =
-                `<a href="#" role="button" class="contrast" id="c_b${i}" style="${elStyle}">${content}</a>`;
+            // 跳过表头，从c1开始
+            const elementId = 'c' + (i + 1);
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerHTML = `<a href="#" role="button" class="contrast" id="c_b${i + 1}" style="${elStyle}">${content}</a>`;
+            }
         }
     }
 }
 
-// 首次加载
-nowClass();
-// 每秒刷新
-setInterval(nowClass, 1000);
+// 页面加载完成后初始化课表
+document.addEventListener('DOMContentLoaded', () => {
+    // 延迟一点确保所有脚本都加载完成
+    setTimeout(initClassTable, 100);
+});

@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClassPaper 设置</title>
+    <title id="settings-title">ClassPaper 设置</title>
     <script src="config/config.js"></script>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/x-icon" id="settings-favicon" href="favicon.ico">
     <style>
         :root {
             --primary-color: #1a2a6c;
@@ -50,9 +50,11 @@
             max-width: 1200px;
             margin: 0 auto;
             background: var(--card-bg);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         h1,
@@ -64,8 +66,13 @@
 
         h1 {
             text-align: center;
-            font-size: 2em;
-            margin-bottom: 30px;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
         }
 
         h2 {
@@ -86,21 +93,54 @@
         }
 
         .form-section {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 8px;
+            background: linear-gradient(145deg, var(--card-bg), rgba(255, 255, 255, 0.05));
+            padding: 25px;
+            border-radius: 12px;
             border: 1px solid var(--border-color);
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 12px 12px 0 0;
+        }
+
+        .form-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
         }
 
         .form-section-title {
             display: flex;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .form-section-title i {
-            margin-right: 10px;
+            margin-right: 12px;
+            color: var(--primary-color);
+            font-size: 1.2em;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-section-title h3 {
+            margin: 0;
+            font-weight: 600;
             color: var(--primary-color);
         }
 
@@ -115,37 +155,161 @@
             display: flex;
             align-items: center;
             cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
         }
 
-        .checkbox-label input[type="checkbox"] {
-            margin-right: 8px;
+        .checkbox-label:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .checkbox-label input[type="checkbox"],
+        .checkbox-label input[type="radio"] {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .checkbox-label input[type="checkbox"]:checked,
+        .checkbox-label input[type="radio"]:checked {
+            transform: scale(1.1);
         }
 
         input[type="text"],
         input[type="number"],
         input[type="date"],
         input[type="time"],
-        input[type="datetime-local"] {
+        input[type="datetime-local"],
+        input[type="password"],
+        input[type="color"],
+        select,
+        textarea {
             width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
             font-size: 14px;
-            background: var(--card-bg);
+            background: rgba(255, 255, 255, 0.05);
             color: var(--text-color);
-            transition: border-color 0.3s, box-shadow 0.3s;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            backdrop-filter: blur(5px);
         }
 
-        input:focus {
+        input:focus,
+        select:focus,
+        textarea:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2), 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        input[type="color"] {
+            height: 40px;
+            padding: 2px;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 12px;
+            margin-bottom: 8px;
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), #2c4fb8);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary-color), #3a7bc8);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color), #c82333);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-message {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         .help-text {
-            font-size: 0.9em;
+            font-size: 0.85em;
             color: var(--secondary-color);
-            margin-top: 5px;
+            margin-top: 6px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            border-left: 3px solid var(--primary-color);
+            font-style: italic;
         }
 
         .button-group {
@@ -204,32 +368,64 @@
 
         .tab-buttons {
             display: flex;
-            gap: 2px;
+            flex-wrap: wrap;
+            gap: 8px;
             margin-bottom: 30px;
-            background: var(--border-color);
-            padding: 4px;
-            border-radius: 8px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            padding: 8px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .tab-button {
             flex: 1;
-            padding: 12px 24px;
+            min-width: 120px;
+            padding: 14px 20px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            background-color: transparent;
+            background: transparent;
             color: var(--text-color);
             font-weight: 500;
-            transition: all 0.3s;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 8px;
+        }
+
+        .tab-button span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .tab-button.active::before {
+            opacity: 1;
         }
 
         .tab-button.active {
-            background-color: var(--primary-color);
             color: white;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(26, 42, 108, 0.3);
         }
 
         .tab-button:hover:not(.active) {
-            background-color: var(--hover-color);
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .tab-content {
@@ -401,6 +597,247 @@
             padding: 6px 16px;
             font-size: 13px;
             cursor: pointer;
+        }
+
+        /* 配置预览样式优化 */
+        .config-preview-container {
+            position: relative;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            background: linear-gradient(145deg, var(--card-bg), rgba(255, 255, 255, 0.02));
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .config-preview-container:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .config-preview-container #config-preview {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            padding: 20px;
+            resize: vertical;
+            min-height: 300px;
+            max-height: 600px;
+            color: var(--text-color);
+            white-space: pre;
+            overflow-wrap: break-word;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border-color) transparent;
+        }
+
+        .config-preview-container #config-preview::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .config-preview-container #config-preview::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .config-preview-container #config-preview::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        .config-preview-container #config-preview::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
+
+        .config-preview-container #config-preview:focus {
+            outline: none;
+            box-shadow: inset 0 0 0 2px var(--primary-color);
+        }
+
+        .preview-controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .preview-controls .btn {
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            background: linear-gradient(145deg, var(--card-bg), rgba(255, 255, 255, 0.05));
+            color: var(--text-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .preview-controls .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .preview-controls .btn:hover::before {
+            left: 100%;
+        }
+
+        .preview-controls .btn:hover {
+            background: linear-gradient(145deg, var(--hover-color), rgba(255, 255, 255, 0.1));
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .preview-controls .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .config-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: linear-gradient(145deg, var(--hover-color), rgba(255, 255, 255, 0.03));
+            border-top: 1px solid var(--border-color);
+            font-size: 11px;
+            color: var(--secondary-color);
+            backdrop-filter: blur(10px);
+        }
+
+        .config-stats span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .config-stats span:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+        }
+
+        .config-stats span::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* 配置预览加载状态 */
+        .config-preview-loading {
+            position: relative;
+        }
+
+        .config-preview-loading::after {
+            content: '正在更新配置预览...';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--card-bg);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--text-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        /* 配置验证状态指示器 */
+        .config-validation {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 5;
+        }
+
+        .config-validation.valid {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .config-validation.invalid {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .config-validation.warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        /* JSON语法高亮样式 */
+        .json-key {
+            color: #0451a5;
+            font-weight: 500;
+        }
+
+        .json-string {
+            color: #a31515;
+        }
+
+        .json-number {
+            color: #098658;
+        }
+
+        .json-boolean {
+            color: #0000ff;
+        }
+
+        .json-null {
+            color: #795e26;
+        }
+
+        /* 深色主题下的JSON语法高亮 */
+        @media (prefers-color-scheme: dark) {
+            .json-key {
+                color: #9cdcfe;
+            }
+            
+            .json-string {
+                color: #ce9178;
+            }
+            
+            .json-number {
+                color: #b5cea8;
+            }
+            
+            .json-boolean {
+                color: #569cd6;
+            }
+            
+            .json-null {
+                color: #569cd6;
+            }
+        }
             transition: background 0.2s;
         }
 
@@ -538,22 +975,92 @@
 
 <body>
     <div class="container">
-        <h1>ClassPaper 设置</h1>
+        <h1 id="main-title">ClassPaper 设置</h1>
 
-        <div class="tab-container">
-            <div class="tab-buttons">
-                <button class="tab-button active" onclick="switchTab('basic')">基本设置</button>
-                <button class="tab-button" onclick="switchTab('schedule')">课程表</button>
-                <button class="tab-button" onclick="switchTab('events')">事件</button>
-                <button class="tab-button" onclick="switchTab('wallpapers')">壁纸</button>
-                <button class="tab-button" onclick="switchTab('notice')">告示牌</button>
+        <!-- 配置管理区域 -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <i>⚙️</i>
+                <h3>配置管理</h3>
+            </div>
+            <div class="form-group">
+                <button type="button" id="export-config" class="btn btn-secondary">导出配置</button>
+                <button type="button" id="import-config" class="btn btn-secondary">导入配置</button>
+                <button type="button" id="reset-config" class="btn btn-danger">重置配置</button>
+                <input type="file" id="config-file" accept=".json" style="display: none;">
+            </div>
+            <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <label for="config-preview">配置预览：</label>
+                    <div class="preview-controls">
+                        <button type="button" id="copy-config" class="btn btn-sm" title="复制配置">📋 复制</button>
+                        <button type="button" id="format-config" class="btn btn-sm" title="格式化配置">🎨 格式化</button>
+                        <button type="button" id="collapse-config" class="btn btn-sm" title="折叠/展开">📁 折叠</button>
+                    </div>
+                </div>
+                <div class="config-preview-container">
+                    <div class="config-validation" id="config-validation">验证中</div>
+                    <textarea id="config-preview" rows="8" placeholder="配置预览..." readonly></textarea>
+                    <div class="config-stats">
+                        <span id="config-size">📊 大小: 0 字符</span>
+                        <span id="config-sections">⚙️ 配置项: 0</span>
+                        <span id="last-updated">🕒 最后更新: --</span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div id="basic" class="tab-content active">
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="switchTab('app')"><span>🎯 应用设置</span></button>
+                <button class="tab-button" onclick="switchTab('ui')"><span>🎨 界面配置</span></button>
+                <button class="tab-button" onclick="switchTab('schedule')"><span>📚 课程表</span></button>
+                <button class="tab-button" onclick="switchTab('events')"><span>📅 事件</span></button>
+                <button class="tab-button" onclick="switchTab('wallpapers')"><span>🖼️ 壁纸</span></button>
+                <button class="tab-button" onclick="switchTab('notice')"><span>📝 告示牌</span></button>
+                <button class="tab-button" onclick="switchTab('llm')"><span>🤖 LLM集成</span></button>
+            </div>
+        </div>
+
+        <div id="app" class="tab-content active">
             <div class="form-section">
                 <div class="form-section-title">
-                    <h2>进度条设置</h2>
+                    <i>🎯</i>
+                    <h3>应用基础配置</h3>
+                </div>
+                
+                <div class="form-group">
+                    <label for="app-title">应用标题：</label>
+                    <input type="text" id="app-title" placeholder="背景课表">
+                </div>
+                
+                <div class="form-group">
+                    <label for="app-language">语言：</label>
+                    <select id="app-language">
+                        <option value="zh">中文</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="app-theme">主题：</label>
+                    <select id="app-theme">
+                        <option value="dark">深色主题</option>
+                        <option value="light">浅色主题</option>
+                        <option value="auto">跟随系统</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="app-favicon">图标路径：</label>
+                    <input type="text" id="app-favicon" placeholder="favicon.ico">
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i>⏰</i>
+                    <h3>时间配置</h3>
                 </div>
                 <div class="form-group">
                     <label for="progress-description">进度条自定义描述</label>
@@ -573,15 +1080,90 @@
                 <div class="form-group">
                     <label>百分比显示方式</label>
                     <label class="checkbox-label" style="margin-right: 18px;">
-                        <input type="radio" name="progress-percent-mode" id="progress-percent-left" value="left"
-                            checked>
+                        <input type="radio" name="progress-percent-mode" id="progress-percent-left" value="left" checked>
                         显示剩余百分比
                     </label>
                     <label class="checkbox-label">
                         <input type="radio" name="progress-percent-mode" id="progress-percent-passed" value="passed">
                         显示已过百分比
                     </label>
-                    <div class="help-text">可切换进度条下方显示“剩余”或“已过”百分比。</div>
+                    <div class="help-text">可切换进度条下方显示"剩余"或"已过"百分比。</div>
+                </div>
+                <div class="form-group">
+                    <label for="time-update-interval">时间更新间隔（毫秒）</label>
+                    <input type="number" id="time-update-interval" min="100" max="5000" placeholder="1000">
+                    <div class="help-text">设置时间显示的更新频率，默认1000毫秒（1秒）</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 界面配置标签页 -->
+        <div id="ui" class="tab-content">
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i>🎨</i>
+                    <h3>组件显示控制</h3>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="ui-classtable-enabled" checked>
+                        显示课程表
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="ui-clock-enabled" checked>
+                        显示时钟组件
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="ui-calendar-enabled" checked>
+                        显示事件日历
+                    </label>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="ui-help-enabled" checked>
+                        显示告示牌
+                    </label>
+                </div>
+                
+            </div>
+            
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i>🎭</i>
+                    <h3>样式配置</h3>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ui-backdrop-blur">毛玻璃模糊度（像素）</label>
+                    <input type="number" id="ui-backdrop-blur" min="0" max="50" placeholder="12">
+                </div>
+                
+                <div class="form-group">
+                    <label for="ui-border-radius">圆角大小（像素）</label>
+                    <input type="number" id="ui-border-radius" min="0" max="50" placeholder="25">
+                </div>
+                
+                <div class="form-group">
+                    <label for="ui-font-size">基础字体大小</label>
+                    <input type="text" id="ui-font-size" placeholder="36px">
+                </div>
+                
+                <div class="form-group">
+                    <label for="ui-primary-color">主要颜色</label>
+                    <input type="color" id="ui-primary-color" value="#fcfcfc">
+                </div>
+                
+                <div class="form-group">
+                    <label for="ui-accent-color">强调颜色</label>
+                    <input type="color" id="ui-accent-color" value="#3daee9">
                 </div>
             </div>
 
@@ -752,16 +1334,114 @@
         <div id="notice" class="tab-content">
             <div class="form-section">
                 <div class="form-section-title">
-                    <h2>告示内容</h2>
-        </div>
-        <div class="form-group">
-                    <label for="notice-content">告示内容（支持HTML）</label>
-                    <textarea id="notice-content" class="notice-editor" placeholder="在这里输入告示内容，支持HTML标签"
-                        oninput="updatePreview()"></textarea>
+                    <i>📝</i>
+                    <h3>告示牌内容</h3>
                 </div>
-                <div class="preview-box">
-                    <h3>预览</h3>
-                    <div id="notice-preview"></div>
+                <div class="form-group">
+                    <label for="announcement-content">告示内容（支持HTML）</label>
+                    <textarea id="announcement-content" class="notice-editor" placeholder="在这里输入告示内容，支持HTML标签"
+                        oninput="updatePreview()"></textarea>
+                    <div class="help-text">支持HTML标签，可以使用&lt;br&gt;换行、&lt;strong&gt;加粗等</div>
+                </div>
+                <div class="form-group">
+                    <label>实时预览</label>
+                    <div id="notice-preview" style="padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--hover-color); min-height: 60px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="llm" class="tab-content">
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i>🤖</i>
+                    <h3>LLM基础配置</h3>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="llm-enabled">
+                        启用LLM集成
+                    </label>
+                    <div class="help-text">开启后可使用AI功能来智能调整界面和生成内容</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="llm-api-endpoint">API端点</label>
+                    <input type="text" id="llm-api-endpoint" placeholder="https://api.openai.com/v1/chat/completions">
+                    <div class="help-text">LLM服务的API地址</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="llm-api-key">API密钥</label>
+                    <input type="password" id="llm-api-key" placeholder="sk-...">
+                    <div class="help-text">您的LLM服务API密钥</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="llm-model">模型</label>
+                    <input type="text" id="llm-model" placeholder="gpt-3.5-turbo">
+                    <div class="help-text">使用的LLM模型名称</div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i>✨</i>
+                    <h3>功能特性</h3>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="llm-auto-adjust-layout">
+                        自动调整布局
+                    </label>
+                    <div class="help-text">根据当前时间和课程安排智能调整界面布局</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="llm-smart-scheduling">
+                        智能课程建议
+                    </label>
+                    <div class="help-text">分析课程安排并提供学习建议</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="llm-content-generation">
+                        内容生成
+                    </label>
+                    <div class="help-text">生成适合当前时间段的激励性文案</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="llm-voice-control">
+                        语音控制（预留）
+                    </label>
+                    <div class="help-text">通过语音控制界面功能（功能开发中）</div>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <div class="form-section-title">
+                    <i>💬</i>
+                    <h3>提示词配置</h3>
+                </div>
+                
+                <div class="form-group">
+                    <label for="llm-layout-prompt">布局调整提示词</label>
+                    <textarea id="llm-layout-prompt" rows="3" placeholder="请根据当前时间和课程安排，调整界面布局以突出重要信息。"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="llm-content-prompt">内容生成提示词</label>
+                    <textarea id="llm-content-prompt" rows="3" placeholder="请生成适合当前时间段的激励性文案。"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="llm-schedule-prompt">课程优化提示词</label>
+                    <textarea id="llm-schedule-prompt" rows="3" placeholder="请分析当前课程安排，提供学习建议。"></textarea>
                 </div>
             </div>
         </div>
@@ -790,20 +1470,31 @@
     <script>
         let currentConfig = null;
 
-        function switchTab(tabId) {
+        // 标签页切换功能
+        function switchTab(tabName) {
             // 隐藏所有标签页内容
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.remove('active');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
             });
-            // 取消所有标签按钮的激活状态
-            document.querySelectorAll('.tab-button').forEach(button => {
+            
+            // 移除所有标签按钮的激活状态
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
                 button.classList.remove('active');
             });
-
+            
             // 显示选中的标签页内容
-            document.getElementById(tabId).classList.add('active');
+            const selectedTab = document.getElementById(tabName);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+            
             // 激活对应的标签按钮
-            document.querySelector(`.tab-button[onclick="switchTab('${tabId}')"]`).classList.add('active');
+            const selectedButton = document.querySelector(`[onclick="switchTab('${tabName}')"]`);
+            if (selectedButton) {
+                selectedButton.classList.add('active');
+            }
         }
 
         // 检查函数是否已绑定
@@ -977,58 +1668,111 @@
 
         // 初始化告示内容
         function initNotice(sth) {
-            document.getElementById('notice-content').value = sth || '';
-            updatePreview();
+            try {
+                const element = document.getElementById('announcement-content');
+                if (element) {
+                    element.value = sth || '';
+                    if (typeof updatePreview === 'function') {
+                        updatePreview();
+                    }
+                }
+            } catch (error) {
+                console.error('初始化告示内容失败:', error);
+            }
         }
 
         // 更新预览（优化：支持多行换行显示）
         function updatePreview() {
-            const content = document.getElementById('notice-content').value;
+            const element = document.getElementById('announcement-content');
+            const content = element ? element.value : '';
             // 支持多行换行显示
             document.getElementById('notice-preview').innerHTML = content.replace(/\n/g, '<br>');
         }
 
         // 收集课程表数据
         function getScheduleData() {
-            const table = document.getElementById('scheduleTable');
-            const rows = table.querySelectorAll('tbody tr');
-            const schedule = [];
+            try {
+                const table = document.getElementById('scheduleTable');
+                if (!table) return CONFIG.lessons?.schedule || [];
+                
+                const rows = table.querySelectorAll('tbody tr');
+                const schedule = [];
 
-            rows.forEach(row => {
-                const inputs = row.querySelectorAll('input');
-                const classes = Array.from(inputs).map(input => input.value);
-                schedule.push({
-                    day: row.cells[0].textContent,
-                    classes: classes
+                rows.forEach(row => {
+                    const inputs = row.querySelectorAll('input');
+                    const classes = Array.from(inputs).map(input => input.value || '');
+                    schedule.push({
+                        day: row.cells[0].textContent,
+                        classes: classes
+                    });
                 });
-            });
 
-            return schedule;
+                return schedule;
+            } catch (error) {
+                console.error('获取课程表数据失败:', error);
+                return CONFIG.lessons?.schedule || [];
+            }
         }
 
         // 收集事件数据
         function getEventData() {
-            const container = document.getElementById('eventList');
-            const events = [];
-            Array.from(container.children).forEach(item => {
-                const inputs = item.querySelectorAll('input');
-                events.push({
-                    name: inputs[0].value,
-                    date: inputs[1].value + ':00'
+            try {
+                const container = document.getElementById('eventList');
+                if (!container) return CONFIG.events || [];
+                
+                const events = [];
+                Array.from(container.children).forEach(item => {
+                    const inputs = item.querySelectorAll('input');
+                    if (inputs.length >= 2) {
+                        const name = inputs[0].value || '';
+                        const date = inputs[1].value || '';
+                        if (name && date) {
+                            events.push({
+                                name: name,
+                                date: date.includes(':00') ? date : date + ':00'
+                            });
+                        }
+                    }
                 });
-            });
-            return events;
+                return events;
+            } catch (error) {
+                console.error('获取事件数据失败:', error);
+                return CONFIG.events || [];
+            }
         }
 
         // 收集壁纸数据
         function getWallpaperData() {
-            const container = document.getElementById('wallpaperList');
-            return Array.from(container.children).map(item => item.querySelector('input').value);
+            try {
+                const container = document.getElementById('wallpaperList');
+                if (!container) return CONFIG.wallpapers?.list || [];
+                
+                return Array.from(container.children)
+                    .map(item => {
+                        const input = item.querySelector('input');
+                        return input ? input.value || '' : '';
+                    })
+                    .filter(path => path.trim() !== '');
+            } catch (error) {
+                console.error('获取壁纸数据失败:', error);
+                return CONFIG.wallpapers?.list || [];
+            }
         }
 
         // 获取告示内容
         function getNoticeData() {
-            return document.getElementById('notice-content').value;
+            try {
+                const element = document.getElementById('announcement-content');
+                // 检查元素是否存在且有value属性
+                if (element && typeof element.value === 'string') {
+                    return element.value;
+                } else {
+                    return CONFIG?.announcement || '';
+                }
+            } catch (error) {
+                console.error('获取告示内容失败:', error);
+                return CONFIG?.announcement || '';
+            }
         }
 
         // 添加时间段
@@ -1078,25 +1822,39 @@
 
         // 获取时间表数据
         function getTimeData() {
-            const tbody = document.getElementById('timeTable').querySelector('tbody');
-            const schedule = [];
+            try {
+                const tbody = document.getElementById('timeTable')?.querySelector('tbody');
+                if (!tbody) return CONFIG.lessons?.times?.schedule || [];
+                
+                const schedule = [];
 
-            Array.from(tbody.children).forEach(row => {
-                const period = parseInt(row.cells[0].textContent);
-                const begin = row.querySelector('.time-begin').value;
-                const end = row.querySelector('.time-end').value;
-                const restBegin = row.querySelector('.rest-begin').value;
-                const restEnd = row.querySelector('.rest-end').value;
+                Array.from(tbody.children).forEach(row => {
+                    const period = parseInt(row.cells[0].textContent) || 0;
+                    const beginInput = row.querySelector('.time-begin');
+                    const endInput = row.querySelector('.time-end');
+                    const restBeginInput = row.querySelector('.rest-begin');
+                    const restEndInput = row.querySelector('.rest-end');
+                    
+                    const begin = beginInput ? beginInput.value || '' : '';
+                    const end = endInput ? endInput.value || '' : '';
+                    const restBegin = restBeginInput ? restBeginInput.value || '' : '';
+                    const restEnd = restEndInput ? restEndInput.value || '' : '';
 
-                schedule.push({
-                    period: period,
-                    begin: begin,
-                    end: end,
-                    rest: restBegin && restEnd ? `${restBegin}-${restEnd}` : null
+                    if (begin && end) {
+                        schedule.push({
+                            period: period,
+                            begin: begin,
+                            end: end,
+                            rest: restBegin && restEnd ? `${restBegin}-${restEnd}` : null
+                        });
+                    }
                 });
-            });
 
-            return schedule;
+                return schedule;
+            } catch (error) {
+                console.error('获取时间表数据失败:', error);
+                return CONFIG.lessons?.times?.schedule || [];
+            }
         }
 
         // 导入课程表
@@ -1182,53 +1940,103 @@
 
                 // 更新CONFIG对象
                 CONFIG.lessons.schedule = getScheduleData();
+
+                // 保存应用配置
+                CONFIG.app = {
+                    title: document.getElementById('app-title').value || CONFIG.app.title,
+                    language: document.getElementById('app-language').value || CONFIG.app.language,
+                    theme: document.getElementById('app-theme').value || CONFIG.app.theme,
+                    favicon: document.getElementById('app-favicon').value || CONFIG.app.favicon
+                };
+
+                // 保存UI配置
+                CONFIG.ui = CONFIG.ui || {};
+                CONFIG.ui.components = CONFIG.ui.components || {};
+                CONFIG.ui.components.classTable = { enabled: document.getElementById('ui-classtable-enabled').checked };
+                CONFIG.ui.components.clock = { enabled: document.getElementById('ui-clock-enabled').checked };
+                CONFIG.ui.components.calendar = { enabled: document.getElementById('ui-calendar-enabled').checked };
+                CONFIG.ui.components.help = { enabled: document.getElementById('ui-help-enabled').checked };
+                
+                // 保存样式配置到styles对象
+                CONFIG.styles = CONFIG.styles || {};
+                CONFIG.styles.effects = CONFIG.styles.effects || {};
+                CONFIG.styles.colors = CONFIG.styles.colors || {};
+                CONFIG.styles.fontSize = CONFIG.styles.fontSize || {};
+                
+                CONFIG.styles.effects.backdropBlur = parseInt(document.getElementById('ui-backdrop-blur').value) || 12;
+                CONFIG.styles.effects.borderRadius = parseInt(document.getElementById('ui-border-radius').value) || 25;
+                CONFIG.styles.fontSize.base = document.getElementById('ui-font-size').value || '36px';
+                CONFIG.styles.colors.primary = document.getElementById('ui-primary-color').value || '#fcfcfc';
+                CONFIG.styles.colors.accent = document.getElementById('ui-accent-color').value || '#3daee9';
+
+                // 保存时间配置
+                CONFIG.time = CONFIG.time || {};
+                CONFIG.time.progressDescription = document.getElementById('progress-description').value.trim();
+                CONFIG.time.progressPercentMode = document.getElementById('progress-percent-left').checked ? 'left' : 'passed';
+                CONFIG.time.updateInterval = parseInt(document.getElementById('time-update-interval').value) || 1000;
+                CONFIG.time.weekOffset = {
+                    enabled: document.getElementById('week-offset-enabled').checked,
+                    offset: parseInt(document.getElementById('week-offset').value) || 7
+                };
+
+                // 保存LLM配置
+                CONFIG.llm = {
+                    enabled: document.getElementById('llm-enabled').checked,
+                    apiEndpoint: document.getElementById('llm-api-endpoint').value,
+                    apiKey: document.getElementById('llm-api-key').value,
+                    model: document.getElementById('llm-model').value,
+                    features: {
+                        autoAdjustLayout: document.getElementById('llm-auto-adjust-layout').checked,
+                        smartScheduling: document.getElementById('llm-smart-scheduling').checked,
+                        contentGeneration: document.getElementById('llm-content-generation').checked,
+                        voiceControl: document.getElementById('llm-voice-control').checked
+                    },
+                    prompts: {
+                        layoutAdjustment: document.getElementById('llm-layout-prompt').value,
+                        contentGeneration: document.getElementById('llm-content-prompt').value,
+                        scheduleOptimization: document.getElementById('llm-schedule-prompt').value
+                    }
+                };
+
+                // 保存提示音设置
+                CONFIG.notifications = CONFIG.notifications || {};
+                CONFIG.notifications.enabled = document.getElementById('notifications-enabled').checked;
+                CONFIG.notifications.regularInterval = parseInt(document.getElementById('regular-interval').value) || 5;
+                CONFIG.notifications.endingTime = parseInt(document.getElementById('ending-time').value) || 5;
+
+                // 保存事件和壁纸
+                CONFIG.events = getEventData();
+                CONFIG.wallpapers = CONFIG.wallpapers || {};
+                CONFIG.wallpapers.list = getWallpaperData();
+                CONFIG.wallpapers.interval = parseInt(document.getElementById('wallpaper-interval').value) || 30;
+                
+                // 保存告示内容
+                CONFIG.announcement = getNoticeData();
+
+                // 保存课程表时间配置
+                CONFIG.lessons.times = CONFIG.lessons.times || {};
                 CONFIG.lessons.times.schedule = getTimeData();
                 CONFIG.lessons.times.semester = {
                     begin: document.getElementById('semester-begin').value,
                     end: document.getElementById('semester-end').value
                 };
 
-                // 保存提示音设置
-                CONFIG.notifications = {
-                    enabled: document.getElementById('notifications-enabled').checked,
-                    regularInterval: parseInt(document.getElementById('regular-interval').value) || 5,
-                    endingTime: parseInt(document.getElementById('ending-time').value) || 5
-                };
-
-                // 保存周数设置
-                CONFIG.weekOffset = {
-                    enabled: document.getElementById('week-offset-enabled').checked,
-                    offset: parseInt(document.getElementById('week-offset').value) || 7
-                };
-                CONFIG.events = getEventData();
-                CONFIG.wallpapers = getWallpaperData();
-                CONFIG.sth = getNoticeData();
-
                 // 保存课表显示模式
                 CONFIG.lessons.displayMode = document.getElementById('display-mode-scroll').checked ? 'scroll' : 'day';
-
-                // 保存壁纸切换间隔
-                CONFIG.wallpaperInterval = parseInt(document.getElementById('wallpaper-interval').value) || 30;
-
-                // 保存进度条描述
-                CONFIG.progressDescription = document.getElementById('progress-description').value.trim();
-
-                // 保存百分比显示方式
-                CONFIG.progressPercentMode = document.getElementById('progress-percent-left').checked ? 'left' : 'passed';
 
                 // 保存config.js
                 const configContent = `const CONFIG = ${JSON.stringify(CONFIG, null, 2)};
 
 // 为了保持向后兼容，导出原有的变量名
-const lessons = CONFIG.lessons.headers.join(",") + "\\n" + 
-  CONFIG.lessons.schedule.map(day => " ," + day.day + "," + day.classes.join(",")).join("\\n") + "\\n";
+const lessons = CONFIG.lessons.headers ? CONFIG.lessons.headers.join(",") + "\\n" + 
+  CONFIG.lessons.schedule.map(day => " ," + day.day + "," + day.classes.join(",")).join("\\n") + "\\n" : "";
 
 const events = "事件,日期,\\n" + 
   CONFIG.events.map(event => \`\${event.name},\${event.date},\`).join("\\n");
 
-const wallpaperlist = CONFIG.wallpapers;
+const wallpaperlist = CONFIG.wallpapers?.list || [];
 
-const sth = CONFIG.sth;`;
+const sth = CONFIG.announcement || "";`;
 
                 try {
                     if (typeof window.writeFile !== 'function') {
@@ -1253,6 +2061,7 @@ const sth = CONFIG.sth;`;
                     if (typeof window.saveConfig !== 'function') {
                         throw new Error('saveConfig 函数未定义');
                     }
+                    // saveConfig 期望接收JSON字符串参数
                     await window.saveConfig(JSON.stringify(basicConfig));
 
                     // 重新加载配置并刷新主窗口
@@ -1284,54 +2093,255 @@ const sth = CONFIG.sth;`;
                     throw new Error('readConfig 函数未定义');
                 }
                 
+                // readConfig 不需要参数
                 const config = await window.readConfig();
                 currentConfig = config;
 
                 if (config && config.Default) {
-                    document.getElementById('url').value = config.Default.URL || '';
-                    document.getElementById('browser').value = config.Default.BrowserPath || '';
+                    const urlEl = document.getElementById('url');
+                    const browserEl = document.getElementById('browser');
+                    
+                    if (urlEl) urlEl.value = config.Default.URL || '';
+                    if (browserEl) browserEl.value = config.Default.BrowserPath || '';
 
                     if (typeof CONFIG !== 'undefined') {
                         // 设置学期时间
-                        document.getElementById('semester-begin').value = CONFIG.lessons.times.semester.begin;
-                        document.getElementById('semester-end').value = CONFIG.lessons.times.semester.end;
+                        if (CONFIG.lessons?.times?.semester) {
+                            const semesterBeginEl = document.getElementById('semester-begin');
+                            const semesterEndEl = document.getElementById('semester-end');
+                            
+                            if (semesterBeginEl) semesterBeginEl.value = CONFIG.lessons.times.semester.begin || '';
+                            if (semesterEndEl) semesterEndEl.value = CONFIG.lessons.times.semester.end || '';
+                        }
 
                         // 加载提示音设置
-                        document.getElementById('notifications-enabled').checked = CONFIG.notifications.enabled;
-                        document.getElementById('regular-interval').value = CONFIG.notifications.regularInterval;
-                        document.getElementById('ending-time').value = CONFIG.notifications.endingTime;
+                        if (CONFIG?.notifications) {
+                            const notifEnabledEl = document.getElementById('notifications-enabled');
+                            const regularIntervalEl = document.getElementById('regular-interval');
+                            const endingTimeEl = document.getElementById('ending-time');
+                            
+                            if (notifEnabledEl) notifEnabledEl.checked = CONFIG.notifications.enabled ?? false;
+                            if (regularIntervalEl) regularIntervalEl.value = CONFIG.notifications.regularInterval || 5;
+                            if (endingTimeEl) endingTimeEl.value = CONFIG.notifications.endingTime || 5;
+                        } else {
+                            // 设置默认值
+                            const notifEnabledEl = document.getElementById('notifications-enabled');
+                            const regularIntervalEl = document.getElementById('regular-interval');
+                            const endingTimeEl = document.getElementById('ending-time');
+                            
+                            if (notifEnabledEl) notifEnabledEl.checked = false;
+                            if (regularIntervalEl) regularIntervalEl.value = 5;
+                            if (endingTimeEl) endingTimeEl.value = 5;
+                        }
 
                         // 加载周数设置
-                        document.getElementById('week-offset-enabled').checked = CONFIG.weekOffset.enabled;
-                        document.getElementById('week-offset').value = CONFIG.weekOffset.offset;
+                        if (CONFIG?.time?.weekOffset) {
+                            const weekOffsetEnabledEl = document.getElementById('week-offset-enabled');
+                            const weekOffsetEl = document.getElementById('week-offset');
+                            
+                            if (weekOffsetEnabledEl) weekOffsetEnabledEl.checked = CONFIG.time.weekOffset.enabled ?? false;
+                            if (weekOffsetEl) weekOffsetEl.value = CONFIG.time.weekOffset.offset || 7;
+                        } else {
+                            // 设置默认值
+                            const weekOffsetEnabledEl = document.getElementById('week-offset-enabled');
+                            const weekOffsetEl = document.getElementById('week-offset');
+                            
+                            if (weekOffsetEnabledEl) weekOffsetEnabledEl.checked = false;
+                            if (weekOffsetEl) weekOffsetEl.value = 7;
+                        }
 
-                        initTimeTable(CONFIG);
-                        initScheduleTable(CONFIG);
-                        initEventList(CONFIG.events);
-                        initWallpaperList(CONFIG.wallpapers);
-                        initNotice(CONFIG.sth);
+                        // 加载UI配置
+                        if (CONFIG?.ui?.components) {
+                            const classtableEl = document.getElementById('ui-classtable-enabled');
+                            const clockEl = document.getElementById('ui-clock-enabled');
+                            const calendarEl = document.getElementById('ui-calendar-enabled');
+                            const helpEl = document.getElementById('ui-help-enabled');
+                            
+                            if (classtableEl) classtableEl.checked = CONFIG.ui.components.classTable?.enabled ?? true;
+                            if (clockEl) clockEl.checked = CONFIG.ui.components.clock?.enabled ?? true;
+                            if (calendarEl) calendarEl.checked = CONFIG.ui.components.calendar?.enabled ?? true;
+                            if (helpEl) helpEl.checked = CONFIG.ui.components.help?.enabled ?? true;
+                        } else {
+                            // 设置默认值
+                            const classtableEl = document.getElementById('ui-classtable-enabled');
+                            const clockEl = document.getElementById('ui-clock-enabled');
+                            const calendarEl = document.getElementById('ui-calendar-enabled');
+                            const helpEl = document.getElementById('ui-help-enabled');
+                            
+                            if (classtableEl) classtableEl.checked = true;
+                            if (clockEl) clockEl.checked = true;
+                            if (calendarEl) calendarEl.checked = true;
+                            if (helpEl) helpEl.checked = true;
+                        }
+                        
+                        // 加载样式配置（从styles对象）
+                        if (CONFIG?.styles) {
+                            const blurEl = document.getElementById('ui-backdrop-blur');
+                            const radiusEl = document.getElementById('ui-border-radius');
+                            const fontEl = document.getElementById('ui-font-size');
+                            const primaryEl = document.getElementById('ui-primary-color');
+                            const accentEl = document.getElementById('ui-accent-color');
+                            
+                            if (blurEl) blurEl.value = CONFIG.styles.effects?.backdropBlur || 12;
+                            if (radiusEl) radiusEl.value = CONFIG.styles.effects?.borderRadius || 25;
+                            if (fontEl) fontEl.value = CONFIG.styles.fontSize?.base || '36px';
+                            if (primaryEl) primaryEl.value = CONFIG.styles.colors?.primary || '#fcfcfc';
+                            if (accentEl) accentEl.value = CONFIG.styles.colors?.accent || '#3daee9';
+                        } else {
+                            // 设置默认值
+                            const blurEl = document.getElementById('ui-backdrop-blur');
+                            const radiusEl = document.getElementById('ui-border-radius');
+                            const fontEl = document.getElementById('ui-font-size');
+                            const primaryEl = document.getElementById('ui-primary-color');
+                            const accentEl = document.getElementById('ui-accent-color');
+                            
+                            if (blurEl) blurEl.value = 12;
+                            if (radiusEl) radiusEl.value = 25;
+                            if (fontEl) fontEl.value = '36px';
+                            if (primaryEl) primaryEl.value = '#fcfcfc';
+                            if (accentEl) accentEl.value = '#3daee9';
+                        }
+
+                        // 加载LLM配置
+                        if (CONFIG?.llm) {
+                            const llmEnabledEl = document.getElementById('llm-enabled');
+                            const apiEndpointEl = document.getElementById('llm-api-endpoint');
+                            const apiKeyEl = document.getElementById('llm-api-key');
+                            const modelEl = document.getElementById('llm-model');
+                            
+                            if (llmEnabledEl) llmEnabledEl.checked = CONFIG.llm.enabled ?? false;
+                            if (apiEndpointEl) apiEndpointEl.value = CONFIG.llm.apiEndpoint || '';
+                            if (apiKeyEl) apiKeyEl.value = CONFIG.llm.apiKey || '';
+                            if (modelEl) modelEl.value = CONFIG.llm.model || '';
+                            
+                            if (CONFIG.llm.features) {
+                                const autoLayoutEl = document.getElementById('llm-auto-adjust-layout');
+                                const smartScheduleEl = document.getElementById('llm-smart-scheduling');
+                                const contentGenEl = document.getElementById('llm-content-generation');
+                                const voiceControlEl = document.getElementById('llm-voice-control');
+                                
+                                if (autoLayoutEl) autoLayoutEl.checked = CONFIG.llm.features.autoAdjustLayout ?? false;
+                                if (smartScheduleEl) smartScheduleEl.checked = CONFIG.llm.features.smartScheduling ?? false;
+                                if (contentGenEl) contentGenEl.checked = CONFIG.llm.features.contentGeneration ?? false;
+                                if (voiceControlEl) voiceControlEl.checked = CONFIG.llm.features.voiceControl ?? false;
+                            }
+                            
+                            if (CONFIG.llm.prompts) {
+                                const layoutPromptEl = document.getElementById('llm-layout-prompt');
+                                const contentPromptEl = document.getElementById('llm-content-prompt');
+                                const schedulePromptEl = document.getElementById('llm-schedule-prompt');
+                                
+                                if (layoutPromptEl) layoutPromptEl.value = CONFIG.llm.prompts.layoutAdjustment || '';
+                                if (contentPromptEl) contentPromptEl.value = CONFIG.llm.prompts.contentGeneration || '';
+                                if (schedulePromptEl) schedulePromptEl.value = CONFIG.llm.prompts.scheduleOptimization || '';
+                            }
+                        } else {
+                            // 设置默认值
+                            const llmEnabledEl = document.getElementById('llm-enabled');
+                            const apiEndpointEl = document.getElementById('llm-api-endpoint');
+                            const apiKeyEl = document.getElementById('llm-api-key');
+                            const modelEl = document.getElementById('llm-model');
+                            
+                            if (llmEnabledEl) llmEnabledEl.checked = false;
+                            if (apiEndpointEl) apiEndpointEl.value = '';
+                            if (apiKeyEl) apiKeyEl.value = '';
+                            if (modelEl) modelEl.value = 'gpt-3.5-turbo';
+                            
+                            const autoLayoutEl = document.getElementById('llm-auto-adjust-layout');
+                            const smartScheduleEl = document.getElementById('llm-smart-scheduling');
+                            const contentGenEl = document.getElementById('llm-content-generation');
+                            const voiceControlEl = document.getElementById('llm-voice-control');
+                            
+                            if (autoLayoutEl) autoLayoutEl.checked = false;
+                            if (smartScheduleEl) smartScheduleEl.checked = false;
+                            if (contentGenEl) contentGenEl.checked = false;
+                            if (voiceControlEl) voiceControlEl.checked = false;
+                            
+                            const layoutPromptEl = document.getElementById('llm-layout-prompt');
+                            const contentPromptEl = document.getElementById('llm-content-prompt');
+                            const schedulePromptEl = document.getElementById('llm-schedule-prompt');
+                            
+                            if (layoutPromptEl) layoutPromptEl.value = '';
+                            if (contentPromptEl) contentPromptEl.value = '';
+                            if (schedulePromptEl) schedulePromptEl.value = '';
+                        }
+
+                        // 安全初始化各个组件
+                        if (CONFIG) {
+                            initTimeTable(CONFIG);
+                            initScheduleTable(CONFIG);
+                            initEventList(CONFIG?.events || []);
+                            initWallpaperList(CONFIG?.wallpapers?.list || []);
+                            initNotice(CONFIG?.announcement || '');
+                        }
+
+                        // 加载应用配置
+                        if (CONFIG?.app) {
+                            const appTitleEl = document.getElementById('app-title');
+                            const appLanguageEl = document.getElementById('app-language');
+                            const appThemeEl = document.getElementById('app-theme');
+                            const appFaviconEl = document.getElementById('app-favicon');
+                            
+                            if (appTitleEl) appTitleEl.value = CONFIG.app.title || '';
+                            if (appLanguageEl) appLanguageEl.value = CONFIG.app.language || 'zh';
+                            if (appThemeEl) appThemeEl.value = CONFIG.app.theme || 'dark';
+                            if (appFaviconEl) appFaviconEl.value = CONFIG.app.favicon || 'favicon.ico';
+                        } else {
+                            // 设置默认值
+                            const appTitleEl = document.getElementById('app-title');
+                            const appLanguageEl = document.getElementById('app-language');
+                            const appThemeEl = document.getElementById('app-theme');
+                            const appFaviconEl = document.getElementById('app-favicon');
+                            
+                            if (appTitleEl) appTitleEl.value = '背景课表';
+                            if (appLanguageEl) appLanguageEl.value = 'zh';
+                            if (appThemeEl) appThemeEl.value = 'dark';
+                            if (appFaviconEl) appFaviconEl.value = 'favicon.ico';
+                        }
 
                         // 加载课表显示模式
-                        if (CONFIG.lessons.displayMode === 'day') {
-                            document.getElementById('display-mode-day').checked = true;
+                        const displayModeDayEl = document.getElementById('display-mode-day');
+                        const displayModeScrollEl = document.getElementById('display-mode-scroll');
+                        
+                        if (CONFIG.lessons?.displayMode === 'day') {
+                            if (displayModeDayEl) displayModeDayEl.checked = true;
                         } else {
-                            document.getElementById('display-mode-scroll').checked = true;
+                            if (displayModeScrollEl) displayModeScrollEl.checked = true;
                         }
 
                         // 加载壁纸切换间隔
-                        document.getElementById('wallpaper-interval').value = CONFIG.wallpaperInterval || 30;
+                        const wallpaperIntervalEl = document.getElementById('wallpaper-interval');
+                        if (wallpaperIntervalEl) wallpaperIntervalEl.value = CONFIG?.wallpapers?.interval || 30;
+
+                        // 加载时间更新间隔
+                        const timeUpdateEl = document.getElementById('time-update-interval');
+                        if (timeUpdateEl) timeUpdateEl.value = CONFIG?.time?.updateInterval || 1000;
 
                         // 加载进度条描述
-                        document.getElementById('progress-description').value = CONFIG.progressDescription || '';
+                        const progressDescEl = document.getElementById('progress-description');
+                        if (progressDescEl) progressDescEl.value = CONFIG?.time?.progressDescription || '';
 
                         // 加载百分比显示方式
-                        if (CONFIG.progressPercentMode === 'left') {
-                            document.getElementById('progress-percent-left').checked = true;
+                        const progressLeftEl = document.getElementById('progress-percent-left');
+                        const progressPassedEl = document.getElementById('progress-percent-passed');
+                        
+                        if (CONFIG?.time?.progressPercentMode === 'left') {
+                            if (progressLeftEl) progressLeftEl.checked = true;
                         } else {
-                            document.getElementById('progress-percent-passed').checked = true;
+                            if (progressPassedEl) progressPassedEl.checked = true;
                         }
                     } else {
-                        showStatus('配置加载失败：CONFIG未定义', 'error');
+                        console.warn('CONFIG未定义，使用默认配置');
+                        // 即使CONFIG未定义，也要设置默认值
+                        const appTitleEl = document.getElementById('app-title');
+                        const appLanguageEl = document.getElementById('app-language');
+                        const appThemeEl = document.getElementById('app-theme');
+                        
+                        if (appTitleEl) appTitleEl.value = '背景课表';
+                        if (appLanguageEl) appLanguageEl.value = 'zh';
+                        if (appThemeEl) appThemeEl.value = 'dark';
+                        
+                        showStatus('配置加载失败：CONFIG未定义，已设置默认值', 'error');
                     }
 
                     showStatus('配置已加载', 'success');
@@ -1455,8 +2465,1230 @@ const sth = CONFIG.sth;`;
             }
         }
 
-        // 页面加载时读取配置
-        document.addEventListener('DOMContentLoaded', handleReset);
+        
+
+        // 配置预览相关功能
+        let isConfigCollapsed = false;
+        let originalConfigText = '';
+
+        // 更新配置预览
+        function updateConfigPreview() {
+            try {
+                const preview = document.getElementById('config-preview');
+                const container = document.querySelector('.config-preview-container');
+                if (!preview) return;
+
+                // 显示加载状态
+                container.classList.add('config-preview-loading');
+
+                // 收集当前配置
+                const currentConfig = {
+                    app: {
+                        title: document.getElementById('app-title')?.value || CONFIG.app.title,
+                        language: document.getElementById('app-language')?.value || CONFIG.app.language,
+                        theme: document.getElementById('app-theme')?.value || CONFIG.app.theme,
+                        favicon: document.getElementById('app-favicon')?.value || CONFIG.app.favicon
+                    },
+                    ui: {
+                        components: {
+                            classTable: { enabled: document.getElementById('ui-classtable-enabled')?.checked ?? true },
+                            clock: { enabled: document.getElementById('ui-clock-enabled')?.checked ?? true },
+                            calendar: { enabled: document.getElementById('ui-calendar-enabled')?.checked ?? true },
+                            help: { enabled: document.getElementById('ui-help-enabled')?.checked ?? true }
+                        },
+                        style: {
+                            backdropBlur: document.getElementById('ui-backdrop-blur')?.value || (CONFIG.styles?.effects?.backdropBlur || 12),
+                            borderRadius: document.getElementById('ui-border-radius')?.value || (CONFIG.styles?.effects?.borderRadius || 25),
+                            fontSize: document.getElementById('ui-font-size')?.value || (CONFIG.styles?.fontSize?.base || '36px'),
+                            primaryColor: document.getElementById('ui-primary-color')?.value || (CONFIG.styles?.colors?.primary || '#fcfcfc'),
+                            accentColor: document.getElementById('ui-accent-color')?.value || (CONFIG.styles?.colors?.accent || '#3daee9')
+                        }
+                    },
+                    time: {
+                        progressDescription: document.getElementById('progress-description')?.value || CONFIG.time.progressDescription,
+                        progressPercentMode: document.querySelector('input[name="progress-percent-mode"]:checked')?.value || CONFIG.time.progressPercentMode,
+                        updateInterval: parseInt(document.getElementById('time-update-interval')?.value) || CONFIG.time.updateInterval,
+                        weekOffset: {
+                            enabled: document.getElementById('week-offset-enabled')?.checked ?? CONFIG.time.weekOffset.enabled,
+                            offset: parseInt(document.getElementById('week-offset')?.value) || CONFIG.time.weekOffset.offset
+                        }
+                    },
+                    lessons: {
+                        times: {
+                            semester: {
+                                begin: document.getElementById('semester-begin')?.value || CONFIG.lessons.times.semester.begin,
+                                end: document.getElementById('semester-end')?.value || CONFIG.lessons.times.semester.end
+                            },
+                            schedule: getTimeData()
+                        },
+                        schedule: getScheduleData(),
+                        displayMode: document.querySelector('input[name="display-mode"]:checked')?.value || CONFIG.lessons.displayMode
+                    },
+                    notifications: {
+                        enabled: document.getElementById('notifications-enabled')?.checked ?? CONFIG.notifications.enabled,
+                        regularInterval: parseInt(document.getElementById('regular-interval')?.value) || CONFIG.notifications.regularInterval,
+                        endingTime: parseInt(document.getElementById('ending-time')?.value) || CONFIG.notifications.endingTime
+                    },
+                    events: getEventData(),
+                    wallpapers: {
+                        list: getWallpaperData(),
+                        interval: parseInt(document.getElementById('wallpaper-interval')?.value) || CONFIG.wallpapers.interval
+                    },
+                    announcement: getNoticeData(),
+                    llm: {
+                        enabled: document.getElementById('llm-enabled')?.checked ?? false,
+                        apiEndpoint: document.getElementById('llm-api-endpoint')?.value || '',
+                        apiKey: document.getElementById('llm-api-key')?.value || '',
+                        model: document.getElementById('llm-model')?.value || '',
+                        features: {
+                            autoAdjustLayout: document.getElementById('llm-auto-adjust-layout')?.checked ?? false,
+                            smartScheduling: document.getElementById('llm-smart-scheduling')?.checked ?? false,
+                            contentGeneration: document.getElementById('llm-content-generation')?.checked ?? false,
+                            voiceControl: document.getElementById('llm-voice-control')?.checked ?? false
+                        },
+                        prompts: {
+                            layoutAdjustment: document.getElementById('llm-layout-prompt')?.value || '',
+                            contentGeneration: document.getElementById('llm-content-prompt')?.value || '',
+                            scheduleOptimization: document.getElementById('llm-schedule-prompt')?.value || ''
+                        }
+                    }
+                };
+
+                // 格式化JSON
+                const jsonText = JSON.stringify(currentConfig, null, 2);
+                originalConfigText = jsonText;
+                
+                // 应用语法高亮
+                preview.innerHTML = highlightJSON(isConfigCollapsed ? collapseJSON(jsonText) : jsonText);
+                
+                // 更新统计信息
+                updateConfigStats(jsonText, currentConfig);
+                
+                // 移除加载状态
+                setTimeout(() => {
+                    const containerEl = document.querySelector('.config-preview-container');
+                    if (containerEl) {
+                        containerEl.classList.remove('config-preview-loading');
+                    }
+                }, 300);
+                
+            } catch (error) {
+                console.error('更新配置预览失败:', error);
+                const preview = document.getElementById('config-preview');
+                if (preview) {
+                    preview.textContent = '配置预览更新失败: ' + error.message;
+                }
+                const containerEl = document.querySelector('.config-preview-container');
+                if (containerEl) {
+                    containerEl.classList.remove('config-preview-loading');
+                }
+            }
+        }
+
+        // JSON语法高亮
+        function highlightJSON(jsonText) {
+            return jsonText
+                .replace(/("[\w\-_]+")(\s*:)/g, '<span class="json-key">$1</span>$2')
+                .replace(/:\s*(".*?")/g, ': <span class="json-string">$1</span>')
+                .replace(/:\s*(\d+\.?\d*)/g, ': <span class="json-number">$1</span>')
+                .replace(/:\s*(true|false)/g, ': <span class="json-boolean">$1</span>')
+                .replace(/:\s*(null)/g, ': <span class="json-null">$1</span>');
+        }
+
+        // 折叠JSON
+        function collapseJSON(jsonText) {
+            const lines = jsonText.split('\n');
+            const collapsed = [];
+            let depth = 0;
+            let inCollapse = false;
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                const trimmed = line.trim();
+                
+                if (trimmed.includes('{') || trimmed.includes('[')) {
+                    depth++;
+                    if (depth > 2) {
+                        if (!inCollapse) {
+                            collapsed.push(line.replace(/\{.*/, '{ ... }').replace(/\[.*/, '[ ... ]'));
+                            inCollapse = true;
+                        }
+                        continue;
+                    }
+                }
+                
+                if (trimmed.includes('}') || trimmed.includes(']')) {
+                    depth--;
+                    if (inCollapse && depth <= 2) {
+                        inCollapse = false;
+                        continue;
+                    }
+                }
+                
+                if (!inCollapse) {
+                    collapsed.push(line);
+                }
+            }
+            
+            return collapsed.join('\n');
+        }
+
+        // 验证配置
+        function validateConfig(config) {
+            const issues = [];
+            const warnings = [];
+            
+            try {
+                // 检查必需的配置项
+                if (!config.app?.title) warnings.push('应用标题未设置');
+                if (!config.lessons?.schedule?.length) issues.push('课程表为空');
+                if (!config.lessons?.times?.schedule?.length) issues.push('时间表为空');
+                if (!config.wallpapers?.list?.length) warnings.push('壁纸列表为空');
+                
+                // 检查时间格式
+                if (config.lessons?.times?.semester) {
+                    const { begin, end } = config.lessons.times.semester;
+                    if (begin && end && new Date(begin) >= new Date(end)) {
+                        issues.push('学期开始时间不能晚于结束时间');
+                    }
+                }
+                
+                // 检查壁纸路径
+                if (config.wallpapers?.list) {
+                    const invalidPaths = config.wallpapers.list.filter(path => !path || path.trim() === '');
+                    if (invalidPaths.length > 0) {
+                        warnings.push(`发现 ${invalidPaths.length} 个空的壁纸路径`);
+                    }
+                }
+                
+                // 检查事件日期
+                if (config.events?.length) {
+                    const invalidEvents = config.events.filter(event => !event.name || !event.date);
+                    if (invalidEvents.length > 0) {
+                        warnings.push(`发现 ${invalidEvents.length} 个不完整的事件`);
+                    }
+                }
+                
+                return { issues, warnings };
+            } catch (error) {
+                return { issues: ['配置验证失败: ' + error.message], warnings: [] };
+            }
+        }
+
+        // 更新配置验证状态
+        function updateValidationStatus(config) {
+            const validation = validateConfig(config);
+            const indicator = document.getElementById('config-validation');
+            
+            if (!indicator) return;
+            
+            if (validation.issues.length > 0) {
+                indicator.className = 'config-validation invalid';
+                indicator.textContent = '❌ 有错误';
+                indicator.title = '错误: ' + validation.issues.join('; ');
+            } else if (validation.warnings.length > 0) {
+                indicator.className = 'config-validation warning';
+                indicator.textContent = '⚠️ 有警告';
+                indicator.title = '警告: ' + validation.warnings.join('; ');
+            } else {
+                indicator.className = 'config-validation valid';
+                indicator.textContent = '✅ 正常';
+                indicator.title = '配置验证通过';
+            }
+        }
+
+        // 更新配置统计
+        function updateConfigStats(jsonText, config) {
+            try {
+                // 计算文件大小
+                const sizeKB = (jsonText.length / 1024).toFixed(2);
+                const sizeText = jsonText.length > 1024 ? `${sizeKB} KB` : `${jsonText.length} 字符`;
+                document.getElementById('config-size').textContent = `📊 大小: ${sizeText}`;
+                
+                // 计算配置项数量
+                const sections = Object.keys(config).length;
+                let totalItems = 0;
+                
+                // 递归计算所有配置项
+                function countItems(obj) {
+                    let count = 0;
+                    for (const key in obj) {
+                        if (obj.hasOwnProperty(key)) {
+                            count++;
+                            if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
+                                count += countItems(obj[key]);
+                            }
+                        }
+                    }
+                    return count;
+                }
+                
+                totalItems = countItems(config);
+                document.getElementById('config-sections').textContent = `⚙️ 配置项: ${sections} 大类 / ${totalItems} 项`;
+                
+                // 更新时间
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString('zh-CN', { 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit' 
+                });
+                document.getElementById('last-updated').textContent = `🕒 最后更新: ${timeStr}`;
+                
+                // 更新验证状态
+                updateValidationStatus(config);
+                
+            } catch (error) {
+                console.error('更新配置统计失败:', error);
+            }
+        }
+
+        // 复制配置
+        function copyConfig() {
+            try {
+                const text = originalConfigText || document.getElementById('config-preview').textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    showStatus('配置已复制到剪贴板', 'success');
+                }).catch(() => {
+                    // 降级方案
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    showStatus('配置已复制到剪贴板', 'success');
+                });
+            } catch (error) {
+                showStatus('复制失败: ' + error.message, 'error');
+            }
+        }
+
+        // 格式化配置
+        function formatConfig() {
+            try {
+                updateConfigPreview();
+                showStatus('配置已格式化', 'success');
+            } catch (error) {
+                showStatus('格式化失败: ' + error.message, 'error');
+            }
+        }
+
+        // 折叠/展开配置
+        function toggleCollapseConfig() {
+            isConfigCollapsed = !isConfigCollapsed;
+            const button = document.getElementById('collapse-config');
+            button.textContent = isConfigCollapsed ? '📂 展开' : '📁 折叠';
+            updateConfigPreview();
+            showStatus(isConfigCollapsed ? '配置已折叠' : '配置已展开', 'success');
+        }
+
+        // 绑定事件
+        function bindConfigPreviewEvents() {
+            document.getElementById('copy-config')?.addEventListener('click', copyConfig);
+            document.getElementById('format-config')?.addEventListener('click', formatConfig);
+            document.getElementById('collapse-config')?.addEventListener('click', toggleCollapseConfig);
+            
+            // 监听表单变化，实时更新预览
+            const form = document.querySelector('.container');
+            if (form) {
+                form.addEventListener('input', debounce(updateConfigPreview, 500));
+                form.addEventListener('change', debounce(updateConfigPreview, 500));
+            }
+        }
+
+        // 防抖函数
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // 导出配置功能
+        function exportConfig() {
+            try {
+                const configData = {
+                    app: {
+                        title: document.getElementById('app-title')?.value || CONFIG.app.title,
+                        language: document.getElementById('app-language')?.value || CONFIG.app.language,
+                        theme: document.getElementById('app-theme')?.value || CONFIG.app.theme,
+                        favicon: document.getElementById('app-favicon')?.value || CONFIG.app.favicon
+                    },
+                    ui: CONFIG.ui,
+                    time: CONFIG.time,
+                    lessons: {
+                        times: {
+                            semester: {
+                                begin: document.getElementById('semester-begin')?.value || CONFIG.lessons.times.semester.begin,
+                                end: document.getElementById('semester-end')?.value || CONFIG.lessons.times.semester.end
+                            },
+                            schedule: getTimeData()
+                        },
+                        schedule: getScheduleData(),
+                        displayMode: document.querySelector('input[name="display-mode"]:checked')?.value || CONFIG.lessons.displayMode
+                    },
+                    notifications: CONFIG.notifications,
+                    events: getEventData(),
+                    wallpapers: {
+                        list: getWallpaperData(),
+                        interval: parseInt(document.getElementById('wallpaper-interval')?.value) || CONFIG.wallpapers.interval
+                    },
+                    announcement: getNoticeData()
+                };
+
+                const dataStr = JSON.stringify(configData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `classpaper-config-${new Date().toISOString().slice(0, 10)}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                showStatus('配置已导出', 'success');
+            } catch (error) {
+                showStatus('导出失败: ' + error.message, 'error');
+            }
+        }
+
+        // 导入配置功能
+        function importConfig() {
+            const fileInput = document.getElementById('config-file');
+            fileInput.click();
+        }
+
+        // 重置配置功能
+        function resetConfig() {
+            showResetDialog();
+        }
+
+        // 绑定配置管理事件
+        function bindConfigManagementEvents() {
+            document.getElementById('export-config')?.addEventListener('click', exportConfig);
+            document.getElementById('import-config')?.addEventListener('click', importConfig);
+            document.getElementById('reset-config')?.addEventListener('click', resetConfig);
+            
+            // 文件选择事件
+            const fileInput = document.getElementById('config-file');
+            if (fileInput) {
+                fileInput.addEventListener('change', function(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            try {
+                                const importedConfig = JSON.parse(e.target.result);
+                                loadImportedConfig(importedConfig);
+                                showStatus('配置导入成功', 'success');
+                            } catch (error) {
+                                showStatus('配置文件格式错误: ' + error.message, 'error');
+                            }
+                        };
+                        reader.readAsText(file);
+                    }
+                });
+            }
+        }
+
+        // 加载导入的配置
+        function loadImportedConfig(config) {
+            try {
+                // 应用配置
+                if (config.app) {
+                    const appTitleEl = document.getElementById('app-title');
+                    const appLanguageEl = document.getElementById('app-language');
+                    const appThemeEl = document.getElementById('app-theme');
+                    const appFaviconEl = document.getElementById('app-favicon');
+                    
+                    if (appTitleEl && config.app.title) appTitleEl.value = config.app.title;
+                    if (appLanguageEl && config.app.language) appLanguageEl.value = config.app.language;
+                    if (appThemeEl && config.app.theme) appThemeEl.value = config.app.theme;
+                    if (appFaviconEl && config.app.favicon) appFaviconEl.value = config.app.favicon;
+                }
+
+                // 时间配置
+                if (config.time) {
+                    const progressDescEl = document.getElementById('progress-description');
+                    const timeUpdateEl = document.getElementById('time-update-interval');
+                    const weekOffsetEnabledEl = document.getElementById('week-offset-enabled');
+                    const weekOffsetEl = document.getElementById('week-offset');
+                    const progressLeftEl = document.getElementById('progress-percent-left');
+                    const progressPassedEl = document.getElementById('progress-percent-passed');
+                    
+                    if (progressDescEl && config.time.progressDescription) progressDescEl.value = config.time.progressDescription;
+                    if (timeUpdateEl && config.time.updateInterval) timeUpdateEl.value = config.time.updateInterval;
+                    if (config.time.weekOffset) {
+                        if (weekOffsetEnabledEl) weekOffsetEnabledEl.checked = config.time.weekOffset.enabled;
+                        if (weekOffsetEl) weekOffsetEl.value = config.time.weekOffset.offset;
+                    }
+                    if (config.time.progressPercentMode) {
+                        if (config.time.progressPercentMode === 'left') {
+                            if (progressLeftEl) progressLeftEl.checked = true;
+                        } else {
+                            if (progressPassedEl) progressPassedEl.checked = true;
+                        }
+                    }
+                }
+
+                // 学期时间
+                if (config.lessons?.times?.semester) {
+                    if (config.lessons.times.semester.begin) document.getElementById('semester-begin').value = config.lessons.times.semester.begin;
+                    if (config.lessons.times.semester.end) document.getElementById('semester-end').value = config.lessons.times.semester.end;
+                }
+
+                // 通知设置
+                if (config.notifications) {
+                    const notifEnabledEl = document.getElementById('notifications-enabled');
+                    const regularIntervalEl = document.getElementById('regular-interval');
+                    const endingTimeEl = document.getElementById('ending-time');
+                    
+                    if (notifEnabledEl) notifEnabledEl.checked = config.notifications.enabled || false;
+                    if (regularIntervalEl && config.notifications.regularInterval) regularIntervalEl.value = config.notifications.regularInterval;
+                    if (endingTimeEl && config.notifications.endingTime) endingTimeEl.value = config.notifications.endingTime;
+                }
+
+                // 壁纸设置
+                if (config.wallpapers) {
+                    const wallpaperIntervalEl = document.getElementById('wallpaper-interval');
+                    if (wallpaperIntervalEl && config.wallpapers.interval) wallpaperIntervalEl.value = config.wallpapers.interval;
+                    if (config.wallpapers.list) initWallpaperList(config.wallpapers.list);
+                }
+
+                // 事件列表
+                if (config.events) {
+                    initEventList(config.events);
+                }
+
+                // 告示内容
+                if (config.announcement) {
+                    const announcementEl = document.getElementById('announcement-content');
+                    if (announcementEl) {
+                        announcementEl.value = config.announcement;
+                        if (typeof updatePreview === 'function') {
+                            updatePreview();
+                        }
+                    }
+                }
+
+                // 课程表
+                if (config.lessons?.schedule) {
+                    // 更新全局CONFIG
+                    CONFIG.lessons.schedule = config.lessons.schedule;
+                    initScheduleTable(CONFIG);
+                }
+
+                // 时间表
+                if (config.lessons?.times?.schedule) {
+                    CONFIG.lessons.times.schedule = config.lessons.times.schedule;
+                    initTimeTable(CONFIG);
+                }
+
+                // 显示模式
+                if (config.lessons?.displayMode) {
+                    const displayModeDayEl = document.getElementById('display-mode-day');
+                    const displayModeScrollEl = document.getElementById('display-mode-scroll');
+                    
+                    if (config.lessons.displayMode === 'day') {
+                        if (displayModeDayEl) displayModeDayEl.checked = true;
+                    } else {
+                        if (displayModeScrollEl) displayModeScrollEl.checked = true;
+                    }
+                }
+
+                // 更新配置预览
+                updateConfigPreview();
+            } catch (error) {
+                console.error('加载导入配置失败:', error);
+                showStatus('加载配置失败: ' + error.message, 'error');
+            }
+        }
+
+        // 页面加载时读取配置并初始化
+        document.addEventListener('DOMContentLoaded', async () => {
+            await handleReset();
+            
+            // 绑定配置管理事件
+            bindConfigManagementEvents();
+            
+            // 绑定配置预览事件
+            bindConfigPreviewEvents();
+            
+            // 初始化配置预览
+            setTimeout(updateConfigPreview, 1000);
+        });
+
+function switchTab(tabId) {
+    // 隐藏所有标签页内容
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    // 取消所有标签按钮的激活状态
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+    });
+
+    // 显示选中的标签页内容
+    document.getElementById(tabId).classList.add('active');
+    // 激活对应的标签按钮
+    document.querySelector(`.tab-button[onclick="switchTab('${tabId}')"]`).classList.add('active');
+}
+
+// 检查函数是否已绑定
+function waitForBinding(funcName) {
+    return new Promise((resolve) => {
+        const check = () => {
+            if (typeof window[funcName] === 'function') {
+                resolve();
+            } else {
+                setTimeout(check, 100);
+            }
+        };
+        check();
+    });
+}
+
+// 扫描壁纸文件夹
+async function scanWallpapers() {
+    try {
+        await waitForBinding('scanWallpaperDir');
+
+        if (typeof window.scanWallpaperDir !== 'function') {
+            throw new Error('scanWallpaperDir 函数未定义');
+        }
+
+        const wallpapers = await window.scanWallpaperDir();
+        if (Array.isArray(wallpapers)) {
+            // 获取现有壁纸列表
+            const container = document.getElementById('wallpaperList');
+            const existingItems = Array.from(container.children);
+
+            // 规范化路径（移除前导./，统一分隔符，确保相对于index.html）
+            const normalizePath = (path) => {
+                // 移除前导./和res/
+                return path.replace(/^\.\//, '')
+                    .replace(/^res\//, '')
+                    .replace(/\\/g, '/');
+            };
+
+            const existingPaths = new Set(
+                existingItems.map(item =>
+                    normalizePath(item.querySelector('input').value)
+                )
+            );
+
+            // 只添加不存在的壁纸
+            let addedCount = 0;
+            wallpapers.forEach(wallpaper => {
+                const normalizedPath = normalizePath(wallpaper);
+                if (!existingPaths.has(normalizedPath)) {
+                    container.innerHTML += `
+                        <div class="wallpaper-item">
+                            <input type="text" placeholder="壁纸路径" value="${wallpaper}">
+                            <button class="delete" onclick="deleteWallpaper(${container.children.length})">删除</button>
+                        </div>
+                    `;
+                    addedCount++;
+                }
+            });
+
+            if (addedCount > 0) {
+                showStatus(`已添加 ${addedCount} 个新壁纸`, 'success');
+            } else {
+                showStatus('没有发现新的壁纸', 'success');
+            }
+        } else {
+            throw new Error('无效的壁纸列表数据');
+        }
+    } catch (e) {
+        console.error('扫描壁纸文件夹失败:', e);
+        showStatus('扫描壁纸文件夹失败: ' + e, 'error');
+    }
+}
+
+// 初始化课程表
+function initScheduleTable(config) {
+    const table = document.getElementById('scheduleTable');
+    const thead = table.querySelector('thead tr');
+    const tbody = table.querySelector('tbody');
+
+    // 清空现有内容
+    thead.innerHTML = '<th>星期/节次</th>';
+    tbody.innerHTML = '';
+
+    // 添加表头
+    config.lessons.headers.slice(1).forEach(header => {
+        thead.innerHTML += `<th>${header}</th>`;
+    });
+
+    // 添加表格内容
+    config.lessons.schedule.forEach(day => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${day.day}</td>`;
+        day.classes.forEach(lesson => {
+            row.innerHTML += `<td><input type="text" value="${lesson}" style="width: 50px;"></td>`;
+        });
+        tbody.appendChild(row);
+    });
+}
+
+// 初始化事件列表
+function initEventList(events) {
+    const container = document.getElementById('eventList');
+    container.innerHTML = '';
+    events.forEach((event, index) => {
+        container.innerHTML += `
+            <div class="event-item">
+                <input type="text" placeholder="事件名称" value="${event.name}">
+                <input type="datetime-local" value="${event.date.split('T')[0]}T${event.date.split('T')[1].split('.')[0]}">
+                <button class="delete" onclick="deleteEvent(${index})">删除</button>
+            </div>
+        `;
+    });
+}
+
+// 初始化壁纸列表
+function initWallpaperList(wallpapers) {
+    const container = document.getElementById('wallpaperList');
+    container.innerHTML = '';
+    wallpapers.forEach((wallpaper, index) => {
+        // 支持本地相对路径缩略图
+        let thumbSrc = wallpaper;
+        if (!/^https?:\/\//.test(wallpaper) && !/^data:/.test(wallpaper)) {
+            thumbSrc = wallpaper.replace(/^\.\//, '').replace(/^res\//, '');
+        }
+        container.innerHTML += `
+            <div class="wallpaper-item">
+                <img class="wallpaper-thumb" src="${thumbSrc}" alt="预览" onerror="this.src='icon/icon.png'">
+                <input type="text" placeholder="壁纸路径" value="${wallpaper}">
+                <button class="delete" onclick="deleteWallpaper(${index})">删除</button>
+            </div>
+        `;
+    });
+}
+
+// 添加事件
+function addEvent() {
+    const container = document.getElementById('eventList');
+    const now = new Date().toISOString().slice(0, 16);
+    container.innerHTML += `
+        <div class="event-item">
+            <input type="text" placeholder="事件名称">
+            <input type="datetime-local" value="${now}">
+            <button class="delete" onclick="deleteEvent(${container.children.length})">删除</button>
+        </div>
+    `;
+}
+
+// 删除事件
+function deleteEvent(index) {
+    const container = document.getElementById('eventList');
+    container.children[index].remove();
+}
+
+// 添加壁纸
+function addWallpaper() {
+    const container = document.getElementById('wallpaperList');
+    container.innerHTML += `
+        <div class="wallpaper-item">
+            <input type="text" placeholder="相对于index.html的壁纸路径，例如：wallpaper/bg.jpg">
+            <button class="delete" onclick="deleteWallpaper(${container.children.length})">删除</button>
+        </div>
+    `;
+}
+
+// 删除壁纸
+function deleteWallpaper(index) {
+    const container = document.getElementById('wallpaperList');
+    container.children[index].remove();
+}
+
+// 初始化告示内容
+function initNotice(sth) {
+    document.getElementById('notice-content').value = sth || '';
+    updatePreview();
+}
+
+// 更新预览（优化：支持多行换行显示）
+function updatePreview() {
+    const content = document.getElementById('notice-content').value;
+    // 支持多行换行显示
+    document.getElementById('notice-preview').innerHTML = content.replace(/\n/g, '<br>');
+}
+
+// 收集课程表数据
+function getScheduleData() {
+    const table = document.getElementById('scheduleTable');
+    const rows = table.querySelectorAll('tbody tr');
+    const schedule = [];
+
+    rows.forEach(row => {
+        const inputs = row.querySelectorAll('input');
+        const classes = Array.from(inputs).map(input => input.value);
+        schedule.push({
+            day: row.cells[0].textContent,
+            classes: classes
+        });
+    });
+
+    return schedule;
+}
+
+// 收集事件数据
+function getEventData() {
+    const container = document.getElementById('eventList');
+    const events = [];
+    Array.from(container.children).forEach(item => {
+        const inputs = item.querySelectorAll('input');
+        events.push({
+            name: inputs[0].value,
+            date: inputs[1].value + ':00'
+        });
+    });
+    return events;
+}
+
+// 收集壁纸数据
+function getWallpaperData() {
+    const container = document.getElementById('wallpaperList');
+    return Array.from(container.children).map(item => item.querySelector('input').value);
+}
+
+// 获取告示内容
+function getNoticeData() {
+    return document.getElementById('notice-content').value;
+}
+
+// 添加时间段
+function addTimeSlot() {
+    const tbody = document.getElementById('timeTable').querySelector('tbody');
+    const newRow = document.createElement('tr');
+    const period = tbody.children.length + 1;
+    newRow.innerHTML = `
+        <td>${period}</td>
+        <td><input type="time" class="time-begin"></td>
+        <td><input type="time" class="time-end"></td>
+        <td><input type="time" class="rest-begin"> - <input type="time" class="rest-end"></td>
+        <td><button class="delete" onclick="deleteTimeSlot(this)">删除</button></td>
+    `;
+    tbody.appendChild(newRow);
+}
+
+// 删除时间段
+function deleteTimeSlot(button) {
+    const row = button.closest('tr');
+    row.remove();
+    // 重新编号
+    const tbody = document.getElementById('timeTable').querySelector('tbody');
+    Array.from(tbody.children).forEach((row, index) => {
+        row.cells[0].textContent = index + 1;
+    });
+}
+
+// 初始化时间表
+function initTimeTable(config) {
+    const tbody = document.getElementById('timeTable').querySelector('tbody');
+    tbody.innerHTML = '';
+
+    config.lessons.times.schedule.forEach(slot => {
+        const row = document.createElement('tr');
+        const [restBegin, restEnd] = slot.rest ? slot.rest.split('-') : ['', ''];
+        row.innerHTML = `
+            <td>${slot.period}</td>
+            <td><input type="time" class="time-begin" value="${slot.begin}"></td>
+            <td><input type="time" class="time-end" value="${slot.end}"></td>
+            <td><input type="time" class="rest-begin" value="${restBegin}"> - <input type="time" class="rest-end" value="${restEnd}"></td>
+            <td><button class="delete" onclick="deleteTimeSlot(this)">删除</button></td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+// 获取时间表数据
+function getTimeData() {
+    const tbody = document.getElementById('timeTable').querySelector('tbody');
+    const schedule = [];
+
+    Array.from(tbody.children).forEach(row => {
+        const period = parseInt(row.cells[0].textContent);
+        const begin = row.querySelector('.time-begin').value;
+        const end = row.querySelector('.time-end').value;
+        const restBegin = row.querySelector('.rest-begin').value;
+        const restEnd = row.querySelector('.rest-end').value;
+
+        schedule.push({
+            period: period,
+            begin: begin,
+            end: end,
+            rest: restBegin && restEnd ? `${restBegin}-${restEnd}` : null
+        });
+    });
+
+    return schedule;
+}
+
+// 导入课程表
+function importSchedule() {
+    try {
+        const importText = document.getElementById('schedule-import').value.trim();
+        if (!importText) {
+            showStatus('请输入课程表文本', 'error');
+            return;
+        }
+
+        // 按行分割
+        const lines = importText.split('\n');
+        if (lines.length < 2) {
+            showStatus('课程表格式不正确', 'error');
+            return;
+        }
+
+        // 解析表头
+        let headers = lines[0].split(',').map(h => h.trim());
+        // 如果表头最后一个元素为空，则去除
+        if (headers.length > 0 && headers[headers.length - 1] === '') {
+            headers.pop();
+        }
+        headers = headers.filter(h => h);
+        if (headers.length < 2) {
+            showStatus('课程表表头格式不正确', 'error');
+            return;
+        }
+
+        // 解析课程数据
+        const schedule = [];
+        for (let i = 1; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
+
+            let cells = line.split(',').map(c => c.trim());
+            // 如果最后一个元素为空，则去除
+            if (cells.length > 0 && cells[cells.length - 1] === '') {
+                cells.pop();
+            }
+            if (cells.length < 2) continue;
+
+            schedule.push({
+                day: cells[0],
+                classes: cells.slice(1)
+            });
+        }
+
+        if (schedule.length === 0) {
+            showStatus('没有找到有效的课程数据', 'error');
+            return;
+        }
+
+        // 更新CONFIG
+        CONFIG.lessons.headers = headers;
+        CONFIG.lessons.schedule = schedule;
+
+        // 重新初始化课程表
+        initScheduleTable(CONFIG);
+        showStatus('课程表导入成功', 'success');
+    } catch (e) {
+        console.error('导入课程表失败:', e);
+        showStatus('导入课程表失败: ' + e, 'error');
+    }
+}
+
+// 重命名函数以避免冲突
+async function handleSave() {
+    try {
+        // 等待所有必要的函数绑定
+        await Promise.all([
+            waitForBinding('saveConfig'),
+            waitForBinding('writeFile'),
+            waitForBinding('reloadMainWindow')
+        ]);
+
+        // 确保CONFIG已经加载
+        if (typeof CONFIG === 'undefined') {
+            showStatus('保存失败：CONFIG未定义', 'error');
+            return;
+        }
+
+        // 更新CONFIG对象
+        CONFIG.lessons.schedule = getScheduleData();
+        CONFIG.lessons.times.schedule = getTimeData();
+        CONFIG.lessons.times.semester = {
+            begin: document.getElementById('semester-begin').value,
+            end: document.getElementById('semester-end').value
+        };
+
+        // 保存提示音设置
+        CONFIG.notifications = {
+            enabled: document.getElementById('notifications-enabled').checked,
+            regularInterval: parseInt(document.getElementById('regular-interval').value) || 5,
+            endingTime: parseInt(document.getElementById('ending-time').value) || 5
+        };
+
+        // 保存周数设置
+        CONFIG.weekOffset = {
+            enabled: document.getElementById('week-offset-enabled').checked,
+            offset: parseInt(document.getElementById('week-offset').value) || 7
+        };
+        CONFIG.events = getEventData();
+        CONFIG.wallpapers = getWallpaperData();
+        CONFIG.sth = getNoticeData();
+
+        // 保存课表显示模式
+        CONFIG.lessons.displayMode = document.getElementById('display-mode-scroll').checked ? 'scroll' : 'day';
+
+        // 保存壁纸切换间隔
+        CONFIG.wallpaperInterval = parseInt(document.getElementById('wallpaper-interval').value) || 30;
+
+        // 保存进度条描述
+        CONFIG.progressDescription = document.getElementById('progress-description').value.trim();
+
+        // 保存百分比显示方式
+        CONFIG.progressPercentMode = document.getElementById('progress-percent-left').checked ? 'left' : 'passed';
+
+        // 保存config.js
+        const configContent = `const CONFIG = ${JSON.stringify(CONFIG, null, 2)};
+
+// 为了保持向后兼容，导出原有的变量名
+const lessons = CONFIG.lessons.headers.join(",") + "\\n" + 
+CONFIG.lessons.schedule.map(day => " ," + day.day + "," + day.classes.join(",")).join("\\n") + "\\n";
+
+const events = "事件,日期,\\n" + 
+CONFIG.events.map(event => \`\${event.name},\${event.date},\`).join("\\n");
+
+const wallpaperlist = CONFIG.wallpapers;
+
+const sth = CONFIG.sth;`;
+
+        try {
+            if (typeof window.writeFile !== 'function') {
+                throw new Error('writeFile 函数未定义');
+            }
+            await window.writeFile('res/config/config.js', configContent);
+        } catch (e) {
+            console.error('保存config.js失败:', e);
+            showStatus('保存config.js失败: ' + e, 'error');
+            return;
+        }
+
+        // 保存config.toml
+        const basicConfig = {
+            Default: {
+                URL: document.getElementById('url').value.trim(),
+                BrowserPath: document.getElementById('browser').value.trim()
+            }
+        };
+
+        try {
+            if (typeof window.saveConfig !== 'function') {
+                throw new Error('saveConfig 函数未定义');
+            }
+            await window.saveConfig(JSON.stringify(basicConfig));
+
+            // 重新加载配置并刷新主窗口
+            await handleReset();
+
+            // 刷新主窗口
+            if (typeof window.reloadMainWindow === 'function') {
+                await window.reloadMainWindow();
+                showStatus('配置已保存并刷新主窗口', 'success');
+            } else {
+                showStatus('配置已保存（主窗口刷新失败）', 'success');
+            }
+        } catch (e) {
+            console.error('保存config.toml失败:', e);
+            showStatus('保存config.toml失败: ' + e, 'error');
+        }
+    } catch (e) {
+        console.error('保存配置失败:', e);
+        showStatus('保存配置失败: ' + e, 'error');
+    }
+}
+
+// 重命名函数以避免冲突
+async function handleReset() {
+    try {
+        await waitForBinding('readConfig');
+
+        if (typeof window.readConfig !== 'function') {
+            throw new Error('readConfig 函数未定义');
+        }
+        
+        const config = await window.readConfig();
+        currentConfig = config;
+
+        if (config && config.Default) {
+            document.getElementById('url').value = config.Default.URL || '';
+            document.getElementById('browser').value = config.Default.BrowserPath || '';
+
+            if (typeof CONFIG !== 'undefined') {
+                // 设置学期时间
+                document.getElementById('semester-begin').value = CONFIG.lessons.times.semester.begin;
+                document.getElementById('semester-end').value = CONFIG.lessons.times.semester.end;
+
+                // 加载提示音设置
+                document.getElementById('notifications-enabled').checked = CONFIG.notifications.enabled;
+                document.getElementById('regular-interval').value = CONFIG.notifications.regularInterval;
+                document.getElementById('ending-time').value = CONFIG.notifications.endingTime;
+
+                // 加载周数设置
+                document.getElementById('week-offset-enabled').checked = CONFIG.weekOffset.enabled;
+                document.getElementById('week-offset').value = CONFIG.weekOffset.offset;
+
+                initTimeTable(CONFIG);
+                initScheduleTable(CONFIG);
+                initEventList(CONFIG.events);
+                initWallpaperList(CONFIG.wallpapers);
+                initNotice(CONFIG.sth);
+
+                // 加载课表显示模式
+                if (CONFIG.lessons.displayMode === 'day') {
+                    document.getElementById('display-mode-day').checked = true;
+                } else {
+                    document.getElementById('display-mode-scroll').checked = true;
+                }
+
+                // 加载壁纸切换间隔
+                document.getElementById('wallpaper-interval').value = CONFIG.wallpaperInterval || 30;
+
+                // 加载进度条描述
+                document.getElementById('progress-description').value = CONFIG.progressDescription || '';
+
+                // 加载百分比显示方式
+                if (CONFIG.progressPercentMode === 'left') {
+                    document.getElementById('progress-percent-left').checked = true;
+                } else {
+                    document.getElementById('progress-percent-passed').checked = true;
+                }
+            } else {
+                showStatus('配置加载失败：CONFIG未定义', 'error');
+            }
+
+            showStatus('配置已加载', 'success');
+        } else {
+            showStatus('配置格式不正确', 'error');
+        }
+    } catch (e) {
+        console.error('加载配置失败:', e);
+        showStatus('加载配置失败: ' + e, 'error');
+    }
+}
+
+function confirmReset() {
+    if (window.confirm('确定要重置并重新加载所有设置吗？未保存的更改将丢失。')) {
+        handleReset();
+    }
+}
+
+// 显示状态信息
+function showStatus(message, type) {
+    const status = document.getElementById('status');
+    status.textContent = message;
+    status.className = 'status ' + type;
+    status.style.display = 'block'; // 修复：每次调用都先显示
+    setTimeout(() => {
+        status.style.display = 'none';
+    }, 3000);
+}
+
+function showResetDialog() {
+    document.getElementById('reset-dialog').style.display = 'flex';
+}
+function closeResetDialog() {
+    document.getElementById('reset-dialog').style.display = 'none';
+}
+function doReset() {
+    closeResetDialog();
+    handleReset();
+}
+
+function smartGuessTimeTable() {
+    const tbody = document.getElementById('timeTable').querySelector('tbody');
+    const rows = Array.from(tbody.children);
+    // 找到最后一个已完整填写的节次
+    let lastIdx = -1;
+    let lastEnd = '';
+    let lastRest = '';
+    for (let i = 0; i < rows.length; i++) {
+        const begin = rows[i].querySelector('.time-begin').value;
+        const end = rows[i].querySelector('.time-end').value;
+        const restBegin = rows[i].querySelector('.rest-begin').value;
+        const restEnd = rows[i].querySelector('.rest-end').value;
+        if (begin && end && restBegin && restEnd) {
+            lastIdx = i;
+            lastEnd = end;
+            lastRest = restEnd;
+        }
+    }
+    if (lastIdx === -1 || lastIdx === rows.length - 1) {
+        showStatus('请先手动填写前几节课的时间（至少一节），再使用智能推算。', 'error');
+        return;
+    }
+    // 计算课时、休息时长
+    function timeStrToMin(t) {
+        const [h, m] = t.split(':').map(Number);
+        return h * 60 + m;
+    }
+    function minToTimeStr(m) {
+        const h = Math.floor(m / 60).toString().padStart(2, '0');
+        const mm = (m % 60).toString().padStart(2, '0');
+        return `${h}:${mm}`;
+    }
+    const prevBegin = rows[lastIdx].querySelector('.time-begin').value;
+    const prevEnd = rows[lastIdx].querySelector('.time-end').value;
+    const prevRestBegin = rows[lastIdx].querySelector('.rest-begin').value;
+    const prevRestEnd = rows[lastIdx].querySelector('.rest-end').value;
+    const classLen = timeStrToMin(prevEnd) - timeStrToMin(prevBegin);
+    let restLen = timeStrToMin(prevRestEnd) - timeStrToMin(prevEnd);
+    if (restLen <= 0) restLen = 10; // 默认10分钟
+    // 补全后续节次
+    let curTime = timeStrToMin(prevRestEnd);
+    for (let i = lastIdx + 1; i < rows.length; i++) {
+        // 上课时间
+        const begin = minToTimeStr(curTime);
+        // 下课时间
+        const end = minToTimeStr(curTime + classLen);
+        // 休息时间
+        let nextRestLen = restLen;
+        // 若上一节休息大于30分钟，推断为午休/晚休，后续休息恢复为10分钟
+        if (restLen >= 30) nextRestLen = 10;
+        const restBegin = end;
+        const restEnd = minToTimeStr(timeStrToMin(end) + nextRestLen);
+        // 填入表格
+        rows[i].querySelector('.time-begin').value = begin;
+        rows[i].querySelector('.time-end').value = end;
+        rows[i].querySelector('.rest-begin').value = restBegin;
+        rows[i].querySelector('.rest-end').value = restEnd;
+        // 更新推算基准
+        curTime = timeStrToMin(restEnd);
+        restLen = nextRestLen;
+    }
+    showStatus('已根据已填时间智能补全后续节次，请根据实际情况微调。', 'success');
+}
+
+
+async function openInBrowser() {
+    const url = document.getElementById('url').value.trim();
+    if (!url) {
+        showStatus('请先输入有效的URL', 'error');
+        return;
+    }
+
+    try {
+        await waitForBinding('openURLInBrowser');
+        const result = await window.openURLInBrowser(url);
+        showStatus(result ? '已在浏览器中打开页面' : '打开浏览器失败',
+            result ? 'success' : 'error');
+    } catch (e) {
+        console.error('打开浏览器失败:', e);
+        showStatus('打开浏览器失败: ' + e.message, 'error');
+    }
+}
     </script>
 </body>
 

@@ -6,50 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/pico.css">
     <link rel="stylesheet" href="css/custom.css">
-    <title>背景课表</title>
+    <title id="app-title">背景课表</title>
     <script src="config/config.js"></script>
     <!-- 音频通知 -->
-    <audio id="regularNotification" src="audio/regular_notification.mp3" preload="auto"></audio>
-    <audio id="endingNotification" src="audio/ending_notification.mp3" preload="auto"></audio>
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <audio id="regularNotification" preload="auto"></audio>
+    <audio id="endingNotification" preload="auto"></audio>
+    <link rel="icon" type="image/x-icon" id="app-favicon" href="favicon.ico">
 </head>
 
 <body id="body-html" style="overflow:hidden;">
 
-    <main class="container-fluid">
+    <main class="container-fluid" id="main-container">
         <div id="glass">
+            <!-- 课程表组件 -->
             <div class="grid" id="classtable">
-                <div id="c0">星期</div>
-                <div id="c1">早读</div>
-                <div id="c2">第1节课</div>
-                <div id="c3">第2节课</div>
-                <div id="c4">第3节课</div>
-                <div id="c5">第4节课</div>
-                <div id="c6">第5节课</div>
-                <div id="c7">第6节课</div>
-                <div id="c8">第7节课</div>
-                <div id="c9">第8节课</div>
-                <div id="c10">晚修1</div>
-                <div id="c11">晚修2</div>
+                <!-- 课程表头部将通过JavaScript动态生成 -->
             </div>
+            
+            <!-- 进度条组件 -->
             <progress id="nav-pro" value="25" max="100" hidden></progress>
+            
             <script src="js/class.js"></script>
+            
             <section>
                 <div class="grid">
-                    <!-- 记忆功能可选启用
-                    <div class="emtry">
-                        <article id="remember">
-                            <div id="remember-txt"></div>
-                            <progress id="rem-pro" max="60" hidden></progress>
-                        </article>
-                        <script src="js/remember.js"></script>
-                    </div>
-                    -->
+                    
                     <div>
+                        <!-- 时钟组件 -->
                         <article id="clockart">
-                            <header hidden>
+                            <header id="clock-header" hidden>
                                 <a href="#close" aria-label="关闭" class="close"></a>
-                                ⏰ 时钟
+                                <span id="clock-header-text">⏰ 时钟</span>
                             </header>
                             | <strong id="time-a">时间</strong> |
                             <strong id="date-a">日期</strong> |
@@ -59,18 +46,22 @@
                             <strong id="prog-description"></strong>
                             <progress id="prog" value="25" max="100"></progress>
                         </article>
+                        
+                        <!-- 事件日历组件 -->
                         <article id="calart">
-                            <header hidden>
+                            <header id="calendar-header" hidden>
                                 <a href="#close" aria-label="关闭" class="close"></a>
-                                📅 事件日历
+                                <span id="calendar-header-text">📅 事件日历</span>
                             </header>
                             <ul id="evcal"></ul>
                         </article>
                         <script src="js/event_cal.js"></script>
+                        
+                        <!-- 告示牌组件 -->
                         <article id="helpart">
-                            <header hidden>
+                            <header id="help-header" hidden>
                                 <a href="#close" aria-label="关闭" class="close"></a>
-                                📚 告示牌
+                                <span id="help-header-text">📚 告示牌</span>
                             </header>
                             <div id="help"></div>
                         </article>
@@ -80,6 +71,15 @@
             </section>
         </div>
     </main>
+    
+    <!-- LLM集成接口 -->
+    <div id="llm-interface" style="display: none;">
+        <button id="llm-adjust-layout">智能调整布局</button>
+        <button id="llm-generate-content">生成内容</button>
+        <button id="llm-optimize-schedule">优化课程安排</button>
+    </div>
+    
+    <script src="js/ui-manager.js"></script>
     <script src="js/main.js"></script>
 </body>
 

@@ -4,11 +4,20 @@ const HEIGHT = window.screen.height || 1080;
 // 获取body元素
 const body = document.body;
 
+// 初始化主题
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.ThemeManager) {
+    ThemeManager.applyTheme();
+  }
+});
+
 // 优化壁纸显示，提升加载与切换体验
 function changeWallpaper() {
+  // 从配置中获取壁纸列表
+  const wallpaperList = CONFIG.wallpapers.list;
   // 随机选择壁纸
-  const wallpaperIndex = Math.floor(Math.random() * wallpaperlist.length);
-  const wallpaper = wallpaperlist[wallpaperIndex];
+  const wallpaperIndex = Math.floor(Math.random() * wallpaperList.length);
+  const wallpaper = wallpaperList[wallpaperIndex];
 
   // 预加载壁纸图片，确保切换时已加载完成
   const img = new window.Image();
@@ -29,7 +38,7 @@ function changeWallpaper() {
       backgroundPosition: 'center center',
       backgroundSize: 'cover',
       opacity: 0,
-      transition: 'opacity 1s cubic-bezier(0.4,0,0.2,1)'
+      transition: `opacity ${CONFIG.wallpapers.transition.duration}ms ${CONFIG.wallpapers.transition.easing}`
     });
 
     // 插入到body最底层
@@ -64,7 +73,7 @@ function changeWallpaper() {
 let wallpaperTimer = null;
 function startWallpaperTimer() {
   if (wallpaperTimer) clearInterval(wallpaperTimer);
-  let interval = (CONFIG.wallpaperInterval || 30) * 1000;
+  let interval = (CONFIG.wallpapers.interval || 30) * 1000;
   wallpaperTimer = setInterval(changeWallpaper, interval);
 }
 
@@ -76,7 +85,7 @@ startWallpaperTimer();
 window.reloadWallpaperTimer = startWallpaperTimer;
 
 // 定时更新时间
-setInterval(setTime, 1000);
+setInterval(setTime, CONFIG.time.updateInterval || 1000);
 
 // 计算本年的周数
 function getYearWeek(date) {
@@ -101,19 +110,25 @@ function setTime() {
   const percentageLeft = 100 - msPassed / msOverall * 100;
   const week = getYearWeek(date);
   // 使用配置中的周数偏移
-  const week_term = CONFIG.weekOffset.enabled ? week - CONFIG.weekOffset.offset : week;
-  document.getElementById("time-a").textContent = date.toLocaleTimeString('zh');
-  document.getElementById("date-a").textContent = date.toLocaleDateString('zh');
-  document.getElementById("weekday-a").textContent = date.toLocaleDateString('zh', { weekday: 'long' });
+  const week_term = CONFIG.time.weekOffset.enabled ? week - CONFIG.time.weekOffset.offset : week;
+  
+  // 使用配置中的时间格式
+  const timeFormat = CONFIG.ui.components.clock.timeFormat || 'zh';
+  const dateFormat = CONFIG.ui.components.clock.dateFormat || 'zh';
+  const weekdayFormat = CONFIG.ui.components.clock.weekdayFormat || 'long';
+  
+  document.getElementById("time-a").textContent = date.toLocaleTimeString(timeFormat);
+  document.getElementById("date-a").textContent = date.toLocaleDateString(dateFormat);
+  document.getElementById("weekday-a").textContent = date.toLocaleDateString(dateFormat, { weekday: weekdayFormat });
   document.getElementById("week-a").textContent = '第 ' + week_term + ' 周';
   const prog = document.getElementById('prog');
   prog.max = msOverall;
   prog.value = msPassed;
   let percentText = '';
-  if ((CONFIG.progressPercentMode || 'left') === 'left') {
-    percentText = (CONFIG.progressDescription || '高三剩余') + ' ' + (100 - msPassed / msOverall * 100).toFixed(4) + '%';
+  if ((CONFIG.time.progressPercentMode || 'left') === 'left') {
+    percentText = (CONFIG.time.progressDescription || '高三剩余') + ' ' + (100 - msPassed / msOverall * 100).toFixed(4) + '%';
   } else {
-    percentText = (CONFIG.progressDescription || '高三已过') + ' ' + (msPassed / msOverall * 100).toFixed(4) + '%';
+    percentText = (CONFIG.time.progressDescription || '高三已过') + ' ' + (msPassed / msOverall * 100).toFixed(4) + '%';
   }
   document.getElementById('prog-description').textContent = percentText;
 }
