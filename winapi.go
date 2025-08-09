@@ -10,41 +10,41 @@ import (
 )
 
 var (
-	user32                    = syscall.NewLazyDLL("user32.dll")
-	findWindow                = user32.NewProc("FindWindowW")
-	findWindowEx              = user32.NewProc("FindWindowExW")
-	sendMessageTimeout        = user32.NewProc("SendMessageTimeoutW")
-	enumWindows               = user32.NewProc("EnumWindows")
-	getWindowText             = user32.NewProc("GetWindowTextW")
-	getClassName              = user32.NewProc("GetClassNameW")
-	getWindowThreadProcessId  = user32.NewProc("GetWindowThreadProcessId")
-	setParent                 = user32.NewProc("SetParent")
-	showWindow                = user32.NewProc("ShowWindow")
-	getSystemMetrics          = user32.NewProc("GetSystemMetrics")
-	setWindowLongPtr          = user32.NewProc("SetWindowLongPtrW")
-	getWindowLongPtr          = user32.NewProc("GetWindowLongPtrW")
-	setWindowPos              = user32.NewProc("SetWindowPos")
-	getWindow                 = user32.NewProc("GetWindow")
-	moveWindow                = user32.NewProc("MoveWindow")
-	setWindowPlacement        = user32.NewProc("SetWindowPlacement")
-	getWindowRect             = user32.NewProc("GetWindowRect")
-	adjustWindowRect          = user32.NewProc("AdjustWindowRect")
+	user32                     = syscall.NewLazyDLL("user32.dll")
+	findWindow                 = user32.NewProc("FindWindowW")
+	findWindowEx               = user32.NewProc("FindWindowExW")
+	sendMessageTimeout         = user32.NewProc("SendMessageTimeoutW")
+	enumWindows                = user32.NewProc("EnumWindows")
+	getWindowText              = user32.NewProc("GetWindowTextW")
+	getClassName               = user32.NewProc("GetClassNameW")
+	getWindowThreadProcessId   = user32.NewProc("GetWindowThreadProcessId")
+	setParent                  = user32.NewProc("SetParent")
+	showWindow                 = user32.NewProc("ShowWindow")
+	getSystemMetrics           = user32.NewProc("GetSystemMetrics")
+	setWindowLongPtr           = user32.NewProc("SetWindowLongPtrW")
+	getWindowLongPtr           = user32.NewProc("GetWindowLongPtrW")
+	setWindowPos               = user32.NewProc("SetWindowPos")
+	getWindow                  = user32.NewProc("GetWindow")
+	moveWindow                 = user32.NewProc("MoveWindow")
+	setWindowPlacement         = user32.NewProc("SetWindowPlacement")
+	getWindowRect              = user32.NewProc("GetWindowRect")
+	adjustWindowRect           = user32.NewProc("AdjustWindowRect")
 	setLayeredWindowAttributes = user32.NewProc("SetLayeredWindowAttributes")
 
-	kernel32                  = syscall.NewLazyDLL("kernel32.dll")
-	openProcess               = kernel32.NewProc("OpenProcess")
-	getModuleBaseName         = kernel32.NewProc("GetModuleBaseNameW")
-	closeHandle               = kernel32.NewProc("CloseHandle")
+	kernel32          = syscall.NewLazyDLL("kernel32.dll")
+	openProcess       = kernel32.NewProc("OpenProcess")
+	getModuleBaseName = kernel32.NewProc("GetModuleBaseNameW")
+	closeHandle       = kernel32.NewProc("CloseHandle")
 
-	psapi                     = syscall.NewLazyDLL("psapi.dll")
-	getModuleBaseNameW        = psapi.NewProc("GetModuleBaseNameW")
+	psapi              = syscall.NewLazyDLL("psapi.dll")
+	getModuleBaseNameW = psapi.NewProc("GetModuleBaseNameW")
 
-	dwmapi                    = syscall.NewLazyDLL("dwmapi.dll")
+	dwmapi                       = syscall.NewLazyDLL("dwmapi.dll")
 	dwmExtendFrameIntoClientArea = dwmapi.NewProc("DwmExtendFrameIntoClientArea")
 	dwmEnableBlurBehindWindow    = dwmapi.NewProc("DwmEnableBlurBehindWindow")
 
-	gdi32                     = syscall.NewLazyDLL("gdi32.dll")
-	createRectRgn             = gdi32.NewProc("CreateRectRgn")
+	gdi32         = syscall.NewLazyDLL("gdi32.dll")
+	createRectRgn = gdi32.NewProc("CreateRectRgn")
 
 	ole32            = syscall.NewLazyDLL("ole32.dll")
 	coInitialize     = ole32.NewProc("CoInitialize")
@@ -66,66 +66,66 @@ const (
 	SM_CYSCREEN = 1
 
 	// Window long pointer indices
-	GWL_STYLE   = ^uintptr(16 - 1)  // -16 as uintptr
-	GWL_EXSTYLE = ^uintptr(20 - 1)  // -20 as uintptr
+	GWL_STYLE   = ^uintptr(16 - 1) // -16 as uintptr
+	GWL_EXSTYLE = ^uintptr(20 - 1) // -20 as uintptr
 
 	// Window styles
-	WS_OVERLAPPED  = 0x00000000
-	WS_POPUP       = 0x80000000
-	WS_CHILD       = 0x40000000
-	WS_MINIMIZE    = 0x20000000
-	WS_VISIBLE     = 0x10000000
-	WS_DISABLED    = 0x08000000
+	WS_OVERLAPPED   = 0x00000000
+	WS_POPUP        = 0x80000000
+	WS_CHILD        = 0x40000000
+	WS_MINIMIZE     = 0x20000000
+	WS_VISIBLE      = 0x10000000
+	WS_DISABLED     = 0x08000000
 	WS_CLIPSIBLINGS = 0x04000000
 	WS_CLIPCHILDREN = 0x02000000
-	WS_MAXIMIZE    = 0x01000000
-	WS_CAPTION     = 0x00C00000
-	WS_BORDER      = 0x00800000
-	WS_DLGFRAME    = 0x00400000
-	WS_VSCROLL     = 0x00200000
-	WS_HSCROLL     = 0x00100000
-	WS_SYSMENU     = 0x00080000
-	WS_THICKFRAME  = 0x00040000
-	WS_GROUP       = 0x00020000
-	WS_TABSTOP     = 0x00010000
-	WS_MINIMIZEBOX = 0x00020000
-	WS_MAXIMIZEBOX = 0x00010000
+	WS_MAXIMIZE     = 0x01000000
+	WS_CAPTION      = 0x00C00000
+	WS_BORDER       = 0x00800000
+	WS_DLGFRAME     = 0x00400000
+	WS_VSCROLL      = 0x00200000
+	WS_HSCROLL      = 0x00100000
+	WS_SYSMENU      = 0x00080000
+	WS_THICKFRAME   = 0x00040000
+	WS_GROUP        = 0x00020000
+	WS_TABSTOP      = 0x00010000
+	WS_MINIMIZEBOX  = 0x00020000
+	WS_MAXIMIZEBOX  = 0x00010000
 
 	// Extended window styles
-	WS_EX_DLGMODALFRAME = 0x00000001
+	WS_EX_DLGMODALFRAME  = 0x00000001
 	WS_EX_NOPARENTNOTIFY = 0x00000004
-	WS_EX_TOPMOST       = 0x00000008
-	WS_EX_ACCEPTFILES   = 0x00000010
-	WS_EX_TRANSPARENT   = 0x00000020
-	WS_EX_MDICHILD      = 0x00000040
-	WS_EX_TOOLWINDOW    = 0x00000080
-	WS_EX_WINDOWEDGE    = 0x00000100
-	WS_EX_CLIENTEDGE    = 0x00000200
-	WS_EX_CONTEXTHELP   = 0x00000400
-	WS_EX_RIGHT         = 0x00001000
-	WS_EX_LEFT          = 0x00000000
-	WS_EX_RTLREADING    = 0x00002000
-	WS_EX_LTRREADING    = 0x00000000
-	WS_EX_LEFTSCROLLBAR = 0x00004000
+	WS_EX_TOPMOST        = 0x00000008
+	WS_EX_ACCEPTFILES    = 0x00000010
+	WS_EX_TRANSPARENT    = 0x00000020
+	WS_EX_MDICHILD       = 0x00000040
+	WS_EX_TOOLWINDOW     = 0x00000080
+	WS_EX_WINDOWEDGE     = 0x00000100
+	WS_EX_CLIENTEDGE     = 0x00000200
+	WS_EX_CONTEXTHELP    = 0x00000400
+	WS_EX_RIGHT          = 0x00001000
+	WS_EX_LEFT           = 0x00000000
+	WS_EX_RTLREADING     = 0x00002000
+	WS_EX_LTRREADING     = 0x00000000
+	WS_EX_LEFTSCROLLBAR  = 0x00004000
 	WS_EX_RIGHTSCROLLBAR = 0x00000000
-	WS_EX_CONTROLPARENT = 0x00010000
-	WS_EX_STATICEDGE    = 0x00020000
-	WS_EX_APPWINDOW     = 0x00040000
-	WS_EX_LAYERED       = 0x00080000
+	WS_EX_CONTROLPARENT  = 0x00010000
+	WS_EX_STATICEDGE     = 0x00020000
+	WS_EX_APPWINDOW      = 0x00040000
+	WS_EX_LAYERED        = 0x00080000
 
 	// SetWindowPos flags
-	SWP_NOSIZE      = 0x0001
-	SWP_NOMOVE      = 0x0002
-	SWP_NOZORDER    = 0x0004
-	SWP_NOREDRAW    = 0x0008
-	SWP_NOACTIVATE  = 0x0010
-	SWP_FRAMECHANGED = 0x0020
-	SWP_SHOWWINDOW  = 0x0040
-	SWP_HIDEWINDOW  = 0x0080
-	SWP_NOCOPYBITS  = 0x0100
-	SWP_NOOWNERZORDER = 0x0200
+	SWP_NOSIZE         = 0x0001
+	SWP_NOMOVE         = 0x0002
+	SWP_NOZORDER       = 0x0004
+	SWP_NOREDRAW       = 0x0008
+	SWP_NOACTIVATE     = 0x0010
+	SWP_FRAMECHANGED   = 0x0020
+	SWP_SHOWWINDOW     = 0x0040
+	SWP_HIDEWINDOW     = 0x0080
+	SWP_NOCOPYBITS     = 0x0100
+	SWP_NOOWNERZORDER  = 0x0200
 	SWP_NOSENDCHANGING = 0x0400
-	SWP_DRAWFRAME   = SWP_FRAMECHANGED
+	SWP_DRAWFRAME      = SWP_FRAMECHANGED
 
 	// SetWindowPos Z-order
 	HWND_TOP       = 0
@@ -143,20 +143,20 @@ const (
 
 	// Process access rights
 	PROCESS_QUERY_INFORMATION = 0x0400
-	PROCESS_VM_READ          = 0x0010
+	PROCESS_VM_READ           = 0x0010
 
 	// LayeredWindow attributes
 	LWA_COLORKEY = 0x00000001
 	LWA_ALPHA    = 0x00000002
 
 	// DWM Blur Behind flags
-	DWM_BB_ENABLE     = 0x00000001
-	DWM_BB_BLURREGION = 0x00000002
+	DWM_BB_ENABLE                = 0x00000001
+	DWM_BB_BLURREGION            = 0x00000002
 	DWM_BB_TRANSITIONONMAXIMIZED = 0x00000004
 
 	// Window placement flags
-	WPF_SETMINPOSITION = 0x0001
-	WPF_RESTORETOMAXIMIZED = 0x0002
+	WPF_SETMINPOSITION       = 0x0001
+	WPF_RESTORETOMAXIMIZED   = 0x0002
 	WPF_ASYNCWINDOWPLACEMENT = 0x0004
 
 	// Desktop messages (from test.cpp)
@@ -207,21 +207,44 @@ var (
 
 // GetScreenWidth 获取屏幕宽度
 func GetScreenWidth() int {
+	if getSystemMetrics.Find() != nil {
+		log.Printf("[警告] 无法找到GetSystemMetrics过程")
+		return 0
+	}
 	ret, _, _ := getSystemMetrics.Call(uintptr(SM_CXSCREEN))
+	if ret == 0 {
+		log.Printf("[警告] 获取屏幕宽度失败")
+		return 0
+	}
 	return int(ret)
 }
 
 // GetScreenHeight 获取屏幕高度
 func GetScreenHeight() int {
+	if getSystemMetrics.Find() != nil {
+		log.Printf("[警告] 无法找到GetSystemMetrics过程")
+		return 0
+	}
 	ret, _, _ := getSystemMetrics.Call(uintptr(SM_CYSCREEN))
+	if ret == 0 {
+		log.Printf("[警告] 获取屏幕高度失败")
+		return 0
+	}
 	return int(ret)
 }
 
 // CLSIDFromString 将 CLSID 字符串转换为 GUID 结构
 func CLSIDFromString(str string) (*syscall.GUID, error) {
+	if str == "" {
+		return nil, fmt.Errorf("CLSID字符串不能为空")
+	}
+	clsidProc := syscall.NewLazyDLL("ole32.dll").NewProc("CLSIDFromString")
+	if clsidProc.Find() != nil {
+		return nil, fmt.Errorf("无法找到CLSIDFromString过程")
+	}
 	var guid syscall.GUID
 	str16 := syscall.StringToUTF16Ptr(str)
-	ret, _, _ := syscall.NewLazyDLL("ole32.dll").NewProc("CLSIDFromString").Call(
+	ret, _, _ := clsidProc.Call(
 		uintptr(unsafe.Pointer(str16)),
 		uintptr(unsafe.Pointer(&guid)))
 	if ret != 0 {
@@ -232,6 +255,13 @@ func CLSIDFromString(str string) (*syscall.GUID, error) {
 
 // EnumWindowsProc1 是 EnumWindows 的回调函数
 func EnumWindowsProc1(hwnd uintptr, lparam uintptr) uintptr {
+	if hwnd == 0 {
+		return 1 // 继续枚举
+	}
+	if findWindowEx.Find() != nil {
+		log.Printf("[桌面穿透] 无法找到FindWindowEx过程")
+		return 1 // 继续枚举
+	}
 	defview, _, _ := findWindowEx.Call(
 		hwnd,
 		0,
@@ -252,6 +282,12 @@ func EnumWindowsProc1(hwnd uintptr, lparam uintptr) uintptr {
 // RaiseDesktop 提升桌面 - 基于test.cpp的实现，适用于Win10/11
 func RaiseDesktop(hProgmanWnd uintptr) bool {
 	if hProgmanWnd == 0 {
+		log.Printf("[桌面穿透] 无效的Progman窗口句柄")
+		return false
+	}
+
+	if sendMessageTimeout.Find() != nil {
+		log.Printf("[桌面穿透] 无法找到SendMessageTimeout过程")
 		return false
 	}
 
@@ -265,10 +301,10 @@ func RaiseDesktop(hProgmanWnd uintptr) bool {
 	}
 
 	// Prepare to generate wallpaper window
-	sendMessageTimeout.Call(hProgmanWnd, WM_DESKTOP_RAISE, 0xD, 0, SMTO_NORMAL, 1000, uintptr(unsafe.Pointer(&res1)))
-	sendMessageTimeout.Call(hProgmanWnd, WM_DESKTOP_RAISE, 0xD, 1, SMTO_NORMAL, 1000, uintptr(unsafe.Pointer(&res2)))
+	_, _, _ = sendMessageTimeout.Call(hProgmanWnd, WM_DESKTOP_RAISE, 0xD, 0, SMTO_NORMAL, 1000, uintptr(unsafe.Pointer(&res1)))
+	_, _, _ = sendMessageTimeout.Call(hProgmanWnd, WM_DESKTOP_RAISE, 0xD, 1, SMTO_NORMAL, 1000, uintptr(unsafe.Pointer(&res2)))
 	// "Animate desktop", which will make sure the wallpaper window is there
-	sendMessageTimeout.Call(hProgmanWnd, WM_DESKTOP_RAISE, 0, 0, SMTO_NORMAL, 1000, uintptr(unsafe.Pointer(&res3)))
+	_, _, _ = sendMessageTimeout.Call(hProgmanWnd, WM_DESKTOP_RAISE, 0, 0, SMTO_NORMAL, 1000, uintptr(unsafe.Pointer(&res3)))
 
 	success := res1 == 0 && res2 == 0 && res3 == 0
 	log.Printf("[桌面穿透] RaiseDesktop 结果: res1=%d, res2=%d, res3=%d, success=%v", res1, res2, res3, success)
@@ -277,9 +313,21 @@ func RaiseDesktop(hProgmanWnd uintptr) bool {
 
 // IsExplorerWorker 检查窗口是否为Explorer的WorkerW窗口
 func IsExplorerWorker(hwnd uintptr) bool {
+	if hwnd == 0 {
+		return false
+	}
+
+	// 检查所需的过程是否存在
+	if getClassName.Find() != nil || getWindowThreadProcessId.Find() != nil ||
+		openProcess.Find() != nil || closeHandle.Find() != nil || getModuleBaseNameW.Find() != nil {
+		log.Printf("[桌面穿透] 无法找到所需的过程")
+		return false
+	}
+
 	var className [256]uint16
 	ret, _, _ := getClassName.Call(hwnd, uintptr(unsafe.Pointer(&className[0])), 256)
 	if ret == 0 {
+		log.Printf("[桌面穿透] 获取窗口类名失败")
 		return false
 	}
 
@@ -289,13 +337,15 @@ func IsExplorerWorker(hwnd uintptr) bool {
 	}
 
 	var pid uint32
-	getWindowThreadProcessId.Call(hwnd, uintptr(unsafe.Pointer(&pid)))
+	_, _, _ = getWindowThreadProcessId.Call(hwnd, uintptr(unsafe.Pointer(&pid)))
 	if pid == 0 {
+		log.Printf("[桌面穿透] 获取窗口进程ID失败")
 		return false
 	}
 
 	hProc, _, _ := openProcess.Call(PROCESS_QUERY_INFORMATION|PROCESS_VM_READ, 0, uintptr(pid))
 	if hProc == 0 {
+		log.Printf("[桌面穿透] 打开进程失败")
 		return false
 	}
 	defer closeHandle.Call(hProc)
@@ -303,6 +353,7 @@ func IsExplorerWorker(hwnd uintptr) bool {
 	var exeName [260]uint16 // MAX_PATH
 	ret, _, _ = getModuleBaseNameW.Call(hProc, 0, uintptr(unsafe.Pointer(&exeName[0])), 260)
 	if ret == 0 {
+		log.Printf("[桌面穿透] 获取模块名失败")
 		return false
 	}
 
@@ -317,13 +368,20 @@ func IsExplorerWorker(hwnd uintptr) bool {
 		}
 	}
 
-	return len(exeNameLower) > 0 && (exeNameLower == "explorer.exe" || 
+	return len(exeNameLower) > 0 && (exeNameLower == "explorer.exe" ||
 		(len(exeNameLower) >= 12 && exeNameLower[len(exeNameLower)-12:] == "explorer.exe"))
 }
 
 // ConfigureWindowForDesktop 配置窗口样式以适合桌面嵌入
 func ConfigureWindowForDesktop(hEmbedWnd uintptr) bool {
 	if hEmbedWnd == 0 {
+		log.Printf("[桌面穿透] 无效的窗口句柄")
+		return false
+	}
+
+	// 检查所需的过程是否存在
+	if getWindowLongPtr.Find() != nil || setWindowLongPtr.Find() != nil {
+		log.Printf("[桌面穿透] 无法找到所需的过程")
 		return false
 	}
 
@@ -365,8 +423,8 @@ func ConfigureWindowForDesktop(hEmbedWnd uintptr) bool {
 	}
 
 	// 应用新样式
-	setWindowLongPtr.Call(hEmbedWnd, GWL_STYLE, styleTw)
-	setWindowLongPtr.Call(hEmbedWnd, GWL_EXSTYLE, exstyleTw)
+	_, _, _ = setWindowLongPtr.Call(hEmbedWnd, GWL_STYLE, styleTw)
+	_, _, _ = setWindowLongPtr.Call(hEmbedWnd, GWL_EXSTYLE, exstyleTw)
 
 	log.Printf("[桌面穿透] 新样式: style=0x%x, exstyle=0x%x", styleTw, exstyleTw)
 	return true
@@ -375,11 +433,20 @@ func ConfigureWindowForDesktop(hEmbedWnd uintptr) bool {
 // SetupDesktopTransparency 设置桌面透明效果
 func SetupDesktopTransparency(hEmbedWnd uintptr) bool {
 	if hEmbedWnd == 0 {
+		log.Printf("[桌面穿透] 无效的窗口句柄")
+		return false
+	}
+
+	// 检查所需的过程是否存在
+	if setParent.Find() != nil || dwmExtendFrameIntoClientArea.Find() != nil ||
+		createRectRgn.Find() != nil || dwmEnableBlurBehindWindow.Find() != nil ||
+		setLayeredWindowAttributes.Find() != nil {
+		log.Printf("[桌面穿透] 无法找到所需的过程")
 		return false
 	}
 
 	// 设置为顶级窗口
-	setParent.Call(hEmbedWnd, 0)
+	_, _, _ = setParent.Call(hEmbedWnd, 0)
 
 	// DWM扩展框架到客户区域实现透明
 	margins := MARGINS{0, 0, -1, -1}
@@ -404,6 +471,15 @@ func SetupDesktopTransparency(hEmbedWnd uintptr) bool {
 // SetDesktopFullscreen 设置窗口为全屏桌面大小
 func SetDesktopFullscreen(hEmbedWnd uintptr) bool {
 	if hEmbedWnd == 0 {
+		log.Printf("[桌面穿透] 无效的窗口句柄")
+		return false
+	}
+
+	// 检查所需的过程是否存在
+	if getSystemMetrics.Find() != nil || getWindowLongPtr.Find() != nil ||
+		adjustWindowRect.Find() != nil || moveWindow.Find() != nil ||
+		setWindowPlacement.Find() != nil {
+		log.Printf("[桌面穿透] 无法找到所需的过程")
 		return false
 	}
 
@@ -418,9 +494,9 @@ func SetDesktopFullscreen(hEmbedWnd uintptr) bool {
 
 	// 获取当前窗口样式用于调整窗口矩形
 	styleTw, _, _ := getWindowLongPtr.Call(hEmbedWnd, GWL_STYLE)
-	
+
 	rcFullScreen := RECT{0, 0, int32(rcx), int32(rcy)}
-	adjustWindowRect.Call(uintptr(unsafe.Pointer(&rcFullScreen)), styleTw, 0)
+	_, _, _ = adjustWindowRect.Call(uintptr(unsafe.Pointer(&rcFullScreen)), styleTw, 0)
 
 	rcfx := uint32(rcFullScreen.Right - rcFullScreen.Left)
 	rcfy := uint32(rcFullScreen.Bottom - rcFullScreen.Top)
@@ -474,7 +550,7 @@ func AdvancedSetDesktop(hEmbedWnd uintptr) bool {
 
 	// 4. 查找SHELLDLL_DefView
 	var hShellDefView uintptr
-	hShellDefView, _, _ = findWindowEx.Call(hTopDeskWnd, 0, 
+	hShellDefView, _, _ = findWindowEx.Call(hTopDeskWnd, 0,
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr("SHELLDLL_DefView"))), 0)
 
 	var hWorker2 uintptr
@@ -534,14 +610,14 @@ func AdvancedSetDesktop(hEmbedWnd uintptr) bool {
 	} else {
 		parentWnd = hTopDeskWnd
 	}
-	setParent.Call(hEmbedWnd, parentWnd)
+	_, _, _ = setParent.Call(hEmbedWnd, parentWnd)
 
 	// 9. 调整窗口Z序
-	setWindowPos.Call(hEmbedWnd, HWND_TOP, 0, 0, 0, 0,
+	_, _, _ = setWindowPos.Call(hEmbedWnd, HWND_TOP, 0, 0, 0, 0,
 		SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE|SWP_DRAWFRAME)
-	setWindowPos.Call(hShellDefView, HWND_TOP, 0, 0, 0, 0,
+	_, _, _ = setWindowPos.Call(hShellDefView, HWND_TOP, 0, 0, 0, 0,
 		SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE)
-	setWindowPos.Call(hWorker, HWND_BOTTOM, 0, 0, 0, 0,
+	_, _, _ = setWindowPos.Call(hWorker, HWND_BOTTOM, 0, 0, 0, 0,
 		SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE|SWP_DRAWFRAME)
 
 	// 10. 设置全屏
@@ -550,11 +626,11 @@ func AdvancedSetDesktop(hEmbedWnd uintptr) bool {
 	}
 
 	// 11. 显示窗口
-	showWindow.Call(hTopDeskWnd, SW_SHOW)
-	showWindow.Call(hEmbedWnd, SW_SHOW)
-	showWindow.Call(hWorker, SW_SHOW)
+	_, _, _ = showWindow.Call(hTopDeskWnd, SW_SHOW)
+	_, _, _ = showWindow.Call(hEmbedWnd, SW_SHOW)
+	_, _, _ = showWindow.Call(hWorker, SW_SHOW)
 
-	log.Printf("[桌面穿透] 高级桌面设置完成: Parent=0x%x, ShellDefView=0x%x, Worker=0x%x, Version1.2=%v", 
+	log.Printf("[桌面穿透] 高级桌面设置完成: Parent=0x%x, ShellDefView=0x%x, Worker=0x%x, Version1.2=%v",
 		parentWnd, hShellDefView, hWorker, bIsVersion1_2)
 
 	return true
@@ -562,14 +638,21 @@ func AdvancedSetDesktop(hEmbedWnd uintptr) bool {
 
 // SetDesktop 将窗口设置为桌面壁纸 - 保持向后兼容
 func SetDesktop(hwnd uintptr) {
+	if hwnd == 0 {
+		log.Printf("[桌面穿透] 无效的窗口句柄")
+		return
+	}
 	// 使用新的高级设置方法
 	AdvancedSetDesktop(hwnd)
 }
 
 // EnumWindowsProc2 是查找窗口的回调函数
 func EnumWindowsProc2(hwnd, lparam uintptr) uintptr {
+	if hwnd == 0 {
+		return 1 // 继续枚举
+	}
 	var title [256]uint16
-	getWindowText.Call(
+	_, _, _ = getWindowText.Call(
 		hwnd,
 		uintptr(unsafe.Pointer(&title[0])),
 		256,
@@ -587,8 +670,11 @@ func EnumWindowsProc2(hwnd, lparam uintptr) uintptr {
 
 // RemoveFromTaskbar 从任务栏移除窗口
 func RemoveFromTaskbar(hwnd uintptr) error {
+	if hwnd == 0 {
+		return fmt.Errorf("无效的窗口句柄")
+	}
 	// 初始化 COM
-	coInitialize.Call(0)
+	_, _, _ = coInitialize.Call(0)
 
 	// 获取 TaskbarList CLSID
 	clsid, err := CLSIDFromString(CLSID_TaskbarList)
@@ -628,19 +714,23 @@ func RemoveFromTaskbar(hwnd uintptr) error {
 	}
 
 	// 调用 HrInit
-	syscall.Syscall((*pTaskbar).vtbl.HrInit, 1, uintptr(unsafe.Pointer(*pTaskbar)), 0, 0)
+	_, _, _ = syscall.Syscall((*pTaskbar).vtbl.HrInit, 1, uintptr(unsafe.Pointer(*pTaskbar)), 0, 0)
 
 	// 调用 DeleteTab
-	syscall.Syscall((*pTaskbar).vtbl.DeleteTab, 2, uintptr(unsafe.Pointer(*pTaskbar)), hwnd, 0)
+	_, _, _ = syscall.Syscall((*pTaskbar).vtbl.DeleteTab, 2, uintptr(unsafe.Pointer(*pTaskbar)), hwnd, 0)
 
 	return nil
 }
 
 // FindWindowByTitle 通过标题查找窗口
 func FindWindowByTitle(title string) uintptr {
+	if title == "" {
+		log.Printf("[桌面穿透] 窗口标题不能为空")
+		return 0
+	}
 	target = 0
 	searchTitle = title
-	enumWindows.Call(
+	_, _, _ = enumWindows.Call(
 		syscall.NewCallback(EnumWindowsProc2),
 		0,
 	)
@@ -650,6 +740,7 @@ func FindWindowByTitle(title string) uintptr {
 // EnsureEmbedWindowBelow 确保嵌入窗口在ShellDefView下方 - 基于test.cpp实现
 func EnsureEmbedWindowBelow(hShellDefView, hEmbedWnd uintptr) (bool, uintptr) {
 	if hShellDefView == 0 || hEmbedWnd == 0 {
+		log.Printf("[Z序监控] 无效的窗口句柄")
 		return false, 0
 	}
 
@@ -660,7 +751,7 @@ func EnsureEmbedWindowBelow(hShellDefView, hEmbedWnd uintptr) (bool, uintptr) {
 	}
 
 	// 修复Z序：将嵌入窗口移动到ShellDefView下方
-	setWindowPos.Call(hEmbedWnd, hShellDefView, 0, 0, 0, 0,
+	_, _, _ = setWindowPos.Call(hEmbedWnd, hShellDefView, 0, 0, 0, 0,
 		SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE)
 
 	if IsExplorerWorker(prev) {
@@ -678,7 +769,7 @@ func StartZOrderMonitoring(hShellDefView, hEmbedWnd uintptr, ctx context.Context
 	}
 
 	log.Printf("[Z序监控] 开始监控嵌入窗口和ShellDefView之间的Z序...")
-	
+
 	const maxConsecutiveFixes = 5
 	consecutiveFixCount := 0
 	var lastConflictHwnd uintptr
@@ -727,6 +818,10 @@ func StartZOrderMonitoring(hShellDefView, hEmbedWnd uintptr, ctx context.Context
 // GetWindowsVersion 获取Windows版本信息
 func GetWindowsVersion() (major, minor, build int) {
 	version, _, _ := syscall.NewLazyDLL("kernel32.dll").NewProc("GetVersion").Call()
+	if version == 0 {
+		log.Printf("[桌面穿透] 获取Windows版本信息失败")
+		return 0, 0, 0
+	}
 	major = int(version & 0xFF)
 	minor = int((version >> 8) & 0xFF)
 	build = int((version >> 16) & 0xFFFF)
@@ -737,13 +832,21 @@ func GetWindowsVersion() (major, minor, build int) {
 func IsWindows10OrLater() bool {
 	major, _, build := GetWindowsVersion()
 	// Windows 10的版本号是10.0，build >= 10240
+	if major == 0 && build == 0 {
+		log.Printf("[桌面穿透] 无法确定Windows版本，假设为较新版本")
+		return true
+	}
 	return major >= 10 || (major == 6 && build >= 10240)
 }
 
 // LegacySetDesktop 传统桌面设置方案 - 兼容Windows 7/8/8.1
 func LegacySetDesktop(hwnd uintptr) bool {
+	if hwnd == 0 {
+		log.Printf("[桌面穿透] 无效的窗口句柄")
+		return false
+	}
 	log.Printf("[桌面穿透] 使用传统兼容模式")
-	
+
 	// Find Progman window
 	progman, _, _ := findWindow.Call(
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr("Progman"))),
@@ -755,7 +858,7 @@ func LegacySetDesktop(hwnd uintptr) bool {
 	}
 
 	// Send 0x052C message to Progman
-	sendMessageTimeout.Call(
+	_, _, _ = sendMessageTimeout.Call(
 		progman,
 		0x052C,
 		0,
@@ -767,26 +870,30 @@ func LegacySetDesktop(hwnd uintptr) bool {
 
 	// Enumerate windows to find WorkerW
 	syscall.NewCallback(EnumWindowsProc1)
-	enumWindows.Call(
+	_, _, _ = enumWindows.Call(
 		syscall.NewCallback(EnumWindowsProc1),
 		0,
 	)
 
 	// Hide WorkerW
 	if workerw != 0 {
-		showWindow.Call(workerw, SW_HIDE)
+		_, _, _ = showWindow.Call(workerw, SW_HIDE)
 		log.Printf("[桌面穿透] 隐藏WorkerW窗口: 0x%x", workerw)
 	}
 
 	// Set parent
-	setParent.Call(hwnd, progman)
+	_, _, _ = setParent.Call(hwnd, progman)
 	log.Printf("[桌面穿透] 设置父窗口为Progman: 0x%x", progman)
-	
+
 	return true
 }
 
 // SetupAdvancedWallpaper 设置高级壁纸功能 - 整合所有增强功能
 func SetupAdvancedWallpaper(windowTitle string) bool {
+	if windowTitle == "" {
+		log.Printf("[桌面穿透] 窗口标题不能为空")
+		return false
+	}
 	hwnd := FindWindowByTitle(windowTitle)
 	if hwnd == 0 {
 		log.Printf("[桌面穿透] 未找到窗口: %s", windowTitle)
@@ -803,7 +910,7 @@ func SetupAdvancedWallpaper(windowTitle string) bool {
 	// 2. 根据Windows版本选择设置方案
 	if IsWindows10OrLater() {
 		log.Printf("[桌面穿透] 检测到Windows 10/11，使用高级模式")
-		
+
 		// 使用高级桌面设置
 		if !AdvancedSetDesktop(hwnd) {
 			log.Printf("[桌面穿透] 高级桌面设置失败，回退到传统模式")
@@ -817,9 +924,9 @@ func SetupAdvancedWallpaper(windowTitle string) bool {
 			uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr("Program Manager"))),
 		)
 		if hTopDeskWnd != 0 {
-			hShellDefView, _, _ := findWindowEx.Call(hTopDeskWnd, 0, 
+			hShellDefView, _, _ := findWindowEx.Call(hTopDeskWnd, 0,
 				uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr("SHELLDLL_DefView"))), 0)
-			
+
 			if hShellDefView != 0 {
 				// 创建监控上下文
 				monitorCtx, _ := context.WithCancel(context.Background())
@@ -828,17 +935,17 @@ func SetupAdvancedWallpaper(windowTitle string) bool {
 				log.Printf("[桌面穿透] 未找到ShellDefView，跳过Z序监控")
 			}
 		}
-		
+
 		log.Printf("[桌面穿透] 高级壁纸设置完成")
 	} else {
 		log.Printf("[桌面穿透] 检测到Windows 7/8/8.1，使用传统兼容模式")
-		
+
 		// 使用传统桌面设置
 		if !LegacySetDesktop(hwnd) {
 			log.Printf("[桌面穿透] 传统桌面设置失败")
 			return false
 		}
-		
+
 		log.Printf("[桌面穿透] 传统壁纸设置完成")
 	}
 
@@ -847,6 +954,10 @@ func SetupAdvancedWallpaper(windowTitle string) bool {
 
 // SetupWallpaper 设置壁纸 - 保持向后兼容
 func SetupWallpaper(windowTitle string) bool {
+	if windowTitle == "" {
+		log.Printf("[桌面穿透] 窗口标题不能为空")
+		return false
+	}
 	return SetupAdvancedWallpaper(windowTitle)
 }
 
@@ -854,11 +965,13 @@ func SetupWallpaper(windowTitle string) bool {
 func GetWindowsDarkMode() bool {
 	regKey, err := syscall.UTF16PtrFromString(`Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize`)
 	if err != nil {
+		log.Printf("[桌面穿透] 构造注册表键路径失败: %v", err)
 		return false
 	}
 	var hKey syscall.Handle
 	err = syscall.RegOpenKeyEx(syscall.HKEY_CURRENT_USER, regKey, 0, syscall.KEY_READ, &hKey)
 	if err != nil {
+		log.Printf("[桌面穿透] 打开注册表键失败: %v", err)
 		return false
 	}
 	defer syscall.RegCloseKey(hKey)
@@ -869,6 +982,7 @@ func GetWindowsDarkMode() bool {
 	valueName, _ := syscall.UTF16PtrFromString("AppsUseLightTheme")
 	err = syscall.RegQueryValueEx(hKey, valueName, nil, &typ, (*byte)(unsafe.Pointer(&data[0])), &dataLen)
 	if err != nil || typ != syscall.REG_DWORD {
+		log.Printf("[桌面穿透] 读取注册表值失败: %v, type=%d", err, typ)
 		return false
 	}
 	// 0 表示暗色模式，1 表示亮色模式
@@ -881,7 +995,31 @@ func SetDPIAware() bool {
 		DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = ^uintptr(3)
 	)
 
+	// 首先尝试使用 SetProcessDpiAwarenessContext (Windows 10版本 1703及以上)
 	proc := user32.NewProc("SetProcessDpiAwarenessContext")
-	ret, _, _ := proc.Call(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)
-	return ret != 0
+	if proc.Find() == nil { // 安全检查过程是否存在
+		ret, _, _ := proc.Call(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)
+		if ret != 0 {
+			log.Printf("[桌面穿透] 使用SetProcessDpiAwarenessContext设置DPI感知成功")
+			return true
+		}
+		// 如果调用失败，继续尝试其他方法
+		log.Printf("[桌面穿透] SetProcessDpiAwarenessContext调用失败，尝试回退方案")
+	}
+
+	// 回退到 SetProcessDPIAware (Windows Vista及以上)
+	legacyProc := user32.NewProc("SetProcessDPIAware")
+	if legacyProc.Find() == nil { // 安全检查过程是否存在
+		ret, _, _ := legacyProc.Call()
+		if ret != 0 {
+			log.Printf("[桌面穿透] 使用SetProcessDPIAware设置DPI感知成功")
+			return true
+		}
+		log.Printf("[桌面穿透] SetProcessDPIAware调用失败")
+	} else {
+		log.Printf("[桌面穿透] 无法找到SetProcessDPIAware过程")
+	}
+
+	log.Printf("[桌面穿透] 设置DPI感知失败，可能影响高DPI显示效果")
+	return false
 }

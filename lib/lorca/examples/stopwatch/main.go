@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	ui, err := lorca.New("", "", 480, 320)
+	ui, err := lorca.New("", "", "", 480, 320)
 	if err != nil {
 		log.Fatal(err)
 	}

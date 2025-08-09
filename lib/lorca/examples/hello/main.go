@@ -14,7 +14,7 @@ func main() {
 		<head><title>Hello</title></head>
 		<body><h1>Hello, world!</h1></body>
 	</html>
-	`), "", 480, 320)
+	`), "", "",480, 320)
 	if err != nil {
 		log.Fatal(err)
 	}
